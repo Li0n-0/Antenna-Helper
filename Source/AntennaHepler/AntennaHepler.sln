@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AntennaHepler", "AntennaHepler.csproj", "{4E217FCF-95D4-46E3-9810-300DFDD59FB4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4E217FCF-95D4-46E3-9810-300DFDD59FB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E217FCF-95D4-46E3-9810-300DFDD59FB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E217FCF-95D4-46E3-9810-300DFDD59FB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E217FCF-95D4-46E3-9810-300DFDD59FB4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = None
+		$1.ResourceNamePolicy = FileFormatDefault
+		$0.VersionControlPolicy = $2
+		$2.inheritsSet = Mono
+	EndGlobalSection
+EndGlobal

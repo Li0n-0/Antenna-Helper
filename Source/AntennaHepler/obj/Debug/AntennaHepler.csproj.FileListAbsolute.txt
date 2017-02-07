@@ -1,0 +1,7 @@
+D:\GitHub\Antenna-Helper\Source\AntennaHepler\obj\Debug\AntennaHepler.csprojResolveAssemblyReference.cache
+D:\GitHub\Antenna-Helper\GameData\AntennaHepler\AntennaHepler.dll
+D:\GitHub\Antenna-Helper\GameData\AntennaHepler\AntennaHepler.pdb
+D:\GitHub\Antenna-Helper\Source\AntennaHepler\obj\Debug\AntennaHepler.dll
+D:\GitHub\Antenna-Helper\Source\AntennaHepler\obj\Debug\AntennaHepler.pdb
+D:\GitHub\Antenna-Helper\GameData\AntennaHelper\AntennaHepler.dll
+D:\GitHub\Antenna-Helper\GameData\AntennaHelper\AntennaHepler.pdb
