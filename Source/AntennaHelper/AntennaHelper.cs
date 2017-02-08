@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AntennaHepler
+namespace AntennaHelper
 {
 	[KSPAddon (KSPAddon.Startup.EditorAny, false)]
 	public class AntennaHelper : MonoBehaviour
@@ -15,16 +15,16 @@ namespace AntennaHepler
 		private Rect mainWindowRect = new Rect(400f, 400f, 400f, 350f);
 		private Rect targetWindowRect = new Rect (0, 0, 400, 500);
 
-//		private GUIStyle centeredStyle;
+		//		private GUIStyle centeredStyle;
 		// Toolbars :
 		private int toolbarTypeIndex = 0;
-//		private int toolbarTypeIndex {
-//			get {return _toolbarTypeIndex;}
-//			set {
-//				_toolbarTypeIndex = value;
-//				CalcAntennas ();
-//			}
-//		}
+		//		private int toolbarTypeIndex {
+		//			get {return _toolbarTypeIndex;}
+		//			set {
+		//				_toolbarTypeIndex = value;
+		//				CalcAntennas ();
+		//			}
+		//		}
 		private string[] toolbarTypeStrings = {"Direct", "Relay"};
 
 		private string targetStr = "DSN lvl 3";
@@ -62,6 +62,8 @@ namespace AntennaHepler
 
 			GameEvents.onGUIApplicationLauncherReady.Remove (ToolbarButton);
 			GameEvents.onGUIApplicationLauncherDestroyed.Remove (DestroyButton);
+
+			DestroyButton ();
 		}
 
 		#region ToolbarButton
@@ -77,8 +79,8 @@ namespace AntennaHepler
 			KSP.UI.Screens.ApplicationLauncher.AppScenes visibleScene = 
 				KSP.UI.Screens.ApplicationLauncher.AppScenes.VAB | KSP.UI.Screens.ApplicationLauncher.AppScenes.SPH;
 
-//			string path = @"file://" + KSPUtil.ApplicationRootPath + "GameData/AntennaHelper/icon.png";
-//			WWW www = new WWW (path);
+			//			string path = @"file://" + KSPUtil.ApplicationRootPath + "GameData/AntennaHelper/icon.png";
+			//			WWW www = new WWW (path);
 			Texture tex = new Texture ();
 			tex = (Texture)GameDatabase.Instance.GetTexture ("AntennaHelper/icon", false);
 
@@ -226,8 +228,8 @@ namespace AntennaHepler
 
 		private void OnGUI ()
 		{
-//			centeredStyle = GUI.skin.GetStyle("Label");
-//			centeredStyle.alignment = TextAnchor.UpperLeft;
+			//			centeredStyle = GUI.skin.GetStyle("Label");
+			//			centeredStyle.alignment = TextAnchor.UpperLeft;
 			if (showMainWindow) {
 				mainWindowRect = GUILayout.Window (0, mainWindowRect, MainWindow, "Antenna Helper");
 			}
@@ -268,7 +270,7 @@ namespace AntennaHepler
 			GUILayout.EndVertical ();
 			GUILayout.EndHorizontal ();
 			GUILayout.EndVertical ();
-//			GUILayout.EndArea ();
+			//			GUILayout.EndArea ();
 
 			GUI.DragWindow ();
 		}
@@ -286,15 +288,15 @@ namespace AntennaHepler
 
 			scrollPos = GUILayout.BeginScrollView (scrollPos, GUILayout.Width (380), GUILayout.Height (400));
 
-//			if (flightVesselList.Count == 0) {
-//				GUILayout.Label ("No vessel in FlightGlobals.vessels");
-//			}
-//
-//			foreach (List<ModuleDataTransmitter> listModule in flightVesselList) {
-//				if (GUILayout.Button (listModule[0].vessel.GetName ())) {
-//					
-//				}
-//			}
+			//			if (flightVesselList.Count == 0) {
+			//				GUILayout.Label ("No vessel in FlightGlobals.vessels");
+			//			}
+			//
+			//			foreach (List<ModuleDataTransmitter> listModule in flightVesselList) {
+			//				if (GUILayout.Button (listModule[0].vessel.GetName ())) {
+			//					
+			//				}
+			//			}
 			if (GUILayout.Button ("DSN lvl 1")) {
 				targetPower = 2000000000;
 				targetStr = "DSN lvl 1";
@@ -310,10 +312,10 @@ namespace AntennaHepler
 				targetStr = "DSN lvl 3";
 				CalcAntennas ();
 			}
-//			if (GUILayout.Button ("Current Vessel")) {
-//				targetPower = maxRangeVessel;
-//				CalcAntennas ();
-//			}
+			//			if (GUILayout.Button ("Current Vessel")) {
+			//				targetPower = maxRangeVessel;
+			//				CalcAntennas ();
+			//			}
 
 			GUILayout.EndScrollView ();
 
@@ -331,38 +333,38 @@ namespace AntennaHepler
 		private void GetFlightSat ()
 		{
 
-//			flightVesselList = new List<List<ModuleDataTransmitter>> ();
-//			int vesselId = 0;
-//			if (HighLogic.fetch == null) {
-//				Debug.Log ("No Highlogic.fetch at this time");
-//			}
-//			if (HighLogic.CurrentGame == null) {
-//				Debug.Log ("No CurrentGame at this time");
-//			}
-//			if (HighLogic.CurrentGame.flightState == null) {
-//				Debug.Log ("No flightState at this time");
-//			}
-//			foreach(ProtoVessel v in HighLogic.CurrentGame.flightState.protoVessels) {
-//				flightVesselList.Add (new List<ModuleDataTransmitter> ());
-//				foreach (ProtoPartSnapshot part in v.protoPartSnapshots) {
-//					foreach (ProtoPartModuleSnapshot module in part.modules) {
-//						if (module.moduleName == "ModuleDataTransmitter") {
-//							flightVesselList [vesselId].Add (module.moduleRef.GetComponent<ModuleDataTransmitter> ());
-//						}
-//					}
-//				}
-//				vesselId++;
-//			}
-//
-//			// Clean the list :
-//			List<List<ModuleDataTransmitter>> workList = new List<List<ModuleDataTransmitter>> (flightVesselList);
-//			int listId = 0;
-//			foreach (List<ModuleDataTransmitter> list in workList) {
-//				if (list.Count == 0) {
-//					flightVesselList.RemoveAt (listId);
-//				}
-//				listId++;
-//			}
+			//			flightVesselList = new List<List<ModuleDataTransmitter>> ();
+			//			int vesselId = 0;
+			//			if (HighLogic.fetch == null) {
+			//				Debug.Log ("No Highlogic.fetch at this time");
+			//			}
+			//			if (HighLogic.CurrentGame == null) {
+			//				Debug.Log ("No CurrentGame at this time");
+			//			}
+			//			if (HighLogic.CurrentGame.flightState == null) {
+			//				Debug.Log ("No flightState at this time");
+			//			}
+			//			foreach(ProtoVessel v in HighLogic.CurrentGame.flightState.protoVessels) {
+			//				flightVesselList.Add (new List<ModuleDataTransmitter> ());
+			//				foreach (ProtoPartSnapshot part in v.protoPartSnapshots) {
+			//					foreach (ProtoPartModuleSnapshot module in part.modules) {
+			//						if (module.moduleName == "ModuleDataTransmitter") {
+			//							flightVesselList [vesselId].Add (module.moduleRef.GetComponent<ModuleDataTransmitter> ());
+			//						}
+			//					}
+			//				}
+			//				vesselId++;
+			//			}
+			//
+			//			// Clean the list :
+			//			List<List<ModuleDataTransmitter>> workList = new List<List<ModuleDataTransmitter>> (flightVesselList);
+			//			int listId = 0;
+			//			foreach (List<ModuleDataTransmitter> list in workList) {
+			//				if (list.Count == 0) {
+			//					flightVesselList.RemoveAt (listId);
+			//				}
+			//				listId++;
+			//			}
 		}
 
 		#endregion

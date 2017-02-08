@@ -1,0 +1,5 @@
+D:\GitHub\Antenna-Helper\GameData\AntennaHelper\AntennaHelper.dll
+D:\GitHub\Antenna-Helper\GameData\AntennaHelper\AntennaHelper.pdb
+D:\GitHub\Antenna-Helper\Source\AntennaHelper\obj\Debug\AntennaHelper.csprojResolveAssemblyReference.cache
+D:\GitHub\Antenna-Helper\Source\AntennaHelper\obj\Debug\AntennaHelper.dll
+D:\GitHub\Antenna-Helper\Source\AntennaHelper\obj\Debug\AntennaHelper.pdb

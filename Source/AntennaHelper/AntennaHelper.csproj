@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4E217FCF-95D4-46E3-9810-300DFDD59FB4}</ProjectGuid>
+    <ProjectGuid>{87AB48C7-8BD8-42C7-867F-E6EA6458A44A}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>AntennaHepler</RootNamespace>
-    <AssemblyName>AntennaHepler</AssemblyName>
+    <RootNamespace>AntennaHelper</RootNamespace>
+    <AssemblyName>AntennaHelper</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -35,10 +35,6 @@
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>..\..\..\..\KSP_Projects\KSP_devTest\KSP_x64_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="KSPAssets">
-      <HintPath>..\..\..\..\KSP_Projects\KSP_devTest\KSP_x64_Data\Managed\KSPAssets.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine">
