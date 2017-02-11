@@ -135,7 +135,7 @@ namespace AntennaHelper
 
 		private void PartChange (Part part)
 		{
-			if (part.Modules.Contains<ModuleDataTransmitter> ()) {
+			if (part.Modules.Contains<ModuleDataTransmitter> () || part.Modules == null) {
 				activeAntennas = ParseVessel (EditorLogic.fetch.ship.Parts);
 				CalcAntennas ();
 				PopulatePlanetWindowList ();
@@ -320,16 +320,19 @@ namespace AntennaHelper
 				targetPower = 2000000000;
 				targetStr = "DSN lvl 1";
 				CalcAntennas ();
+				PopulatePlanetWindowList ();
 			}
 			if (GUILayout.Button ("DSN lvl 2")) {
 				targetPower = 50000000000;
 				targetStr = "DSN lvl 2";
 				CalcAntennas ();
+				PopulatePlanetWindowList ();
 			}
 			if (GUILayout.Button ("DSN lvl 3")) {
 				targetPower = 250000000000;
 				targetStr = "DSN lvl 3";
 				CalcAntennas ();
+				PopulatePlanetWindowList ();
 			}
 //			if (GUILayout.Button ("Current Vessel")) {
 //				targetPower = maxRangeVessel;
