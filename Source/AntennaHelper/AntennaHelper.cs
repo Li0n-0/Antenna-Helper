@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AntennaHepler
+namespace AntennaHelper
 {
 	[KSPAddon (KSPAddon.Startup.EditorAny, false)]
 	public class AntennaHelper : MonoBehaviour
@@ -47,7 +47,8 @@ namespace AntennaHepler
 			GameEvents.onEditorLoad.Add (NewShip);
 
 			GameEvents.onEditorPartPlaced.Add (PartChange);
-			GameEvents.onEditorPartDeleted.Add (PartChange);
+			GameEvents.onEditorPartPicked.Add (PartChange);
+			GameEvents.onEditorPartDeleted.Add (PartRemoved);
 
 			GameEvents.onGUIApplicationLauncherReady.Add (ToolbarButton);
 			GameEvents.onGUIApplicationLauncherDestroyed.Add (DestroyButton);
@@ -58,10 +59,13 @@ namespace AntennaHepler
 			GameEvents.onEditorLoad.Remove (NewShip);
 
 			GameEvents.onEditorPartPlaced.Remove (PartChange);
-			GameEvents.onEditorPartDeleted.Remove (PartChange);
+			GameEvents.onEditorPartPicked.Remove (PartChange);
+			GameEvents.onEditorPartDeleted.Remove (PartRemoved);
 
 			GameEvents.onGUIApplicationLauncherReady.Remove (ToolbarButton);
 			GameEvents.onGUIApplicationLauncherDestroyed.Remove (DestroyButton);
+
+			DestroyButton ();
 		}
 
 		#region ToolbarButton
@@ -114,6 +118,7 @@ namespace AntennaHepler
 			targetAntennas = activeAntennas;
 
 			CalcAntennas ();
+			PopulatePlanetWindowList ();
 		}
 
 		private List<ModuleDataTransmitter> ParseVessel (List<Part> vessel)
@@ -132,11 +137,20 @@ namespace AntennaHepler
 
 		private void PartChange (Part part)
 		{
-			if (part.Modules.Contains<ModuleDataTransmitter> ()) {
+			if (part.Modules.Contains<ModuleDataTransmitter> () || part == null) {
 				activeAntennas = ParseVessel (EditorLogic.fetch.ship.Parts);
 				CalcAntennas ();
+				PopulatePlanetWindowList ();
 			}
 		}
+
+		private void PartRemoved (Part part)
+		{
+			activeAntennas = ParseVessel (EditorLogic.fetch.ship.Parts);
+			CalcAntennas ();
+			PopulatePlanetWindowList ();
+		}
+			
 
 		#endregion
 
@@ -172,11 +186,8 @@ namespace AntennaHepler
 			nbCombAntenna = workCombAntennas.Count;
 			if (nbCombAntenna > 0) {
 				maxRangeVessel = GetVesselPower (workCombAntennas);
-
-
 				maxRange = GetRange (GetVesselPower (workCombAntennas), targetPower);
 			}
-
 		}
 
 		private double GetAWCE (List<ModuleDataTransmitter> antennas)
@@ -228,17 +239,30 @@ namespace AntennaHepler
 		{
 //			centeredStyle = GUI.skin.GetStyle("Label");
 //			centeredStyle.alignment = TextAnchor.UpperLeft;
-			if (showMainWindow) {
-				mainWindowRect = GUILayout.Window (0, mainWindowRect, MainWindow, "Antenna Helper");
+			if (showPlanetWindow) {
+				GUILayout.BeginArea (planetWindowRect);
+				planetWindowRect = GUILayout.Window (2, planetWindowRect, PlanetWindow, "Planets Range");
+				GUILayout.EndArea ();
 			}
 
 			if (showTargetWindow) {
+				GUILayout.BeginArea (targetWindowRect);
 				targetWindowRect = GUILayout.Window (1, targetWindowRect, TargetWindow, "Choose a target");
+				GUILayout.EndArea ();
+			}
+
+			if (showMainWindow) {
+				GUILayout.BeginArea (mainWindowRect);
+				mainWindowRect = GUILayout.Window (0, mainWindowRect, MainWindow, "Antenna Helper");
+				GUILayout.EndArea ();
 			}
 		}
 
+
+
 		private void MainWindow (int id)
 		{
+			//
 			GUILayout.BeginVertical ();
 
 			GUILayout.Label ("Type of antennas :");
@@ -252,7 +276,9 @@ namespace AntennaHepler
 			GUILayout.BeginHorizontal ();
 			GUILayout.BeginVertical ();
 
+		
 			GUILayout.Label ("Number of antennas :");
+
 			GUILayout.Label ("Max range with 100% signal :");
 			GUILayout.Label ("Max range from the target :");
 			GUILayout.Label ("Max power :");
@@ -267,6 +293,11 @@ namespace AntennaHepler
 
 			GUILayout.EndVertical ();
 			GUILayout.EndHorizontal ();
+
+			if (GUILayout.Button ("See Per Planet Strength")) {
+				showPlanetWindow = ! showPlanetWindow;
+			}
+
 			GUILayout.EndVertical ();
 //			GUILayout.EndArea ();
 
@@ -299,16 +330,19 @@ namespace AntennaHepler
 				targetPower = 2000000000;
 				targetStr = "DSN lvl 1";
 				CalcAntennas ();
+				PopulatePlanetWindowList ();
 			}
 			if (GUILayout.Button ("DSN lvl 2")) {
 				targetPower = 50000000000;
 				targetStr = "DSN lvl 2";
 				CalcAntennas ();
+				PopulatePlanetWindowList ();
 			}
 			if (GUILayout.Button ("DSN lvl 3")) {
 				targetPower = 250000000000;
 				targetStr = "DSN lvl 3";
 				CalcAntennas ();
+				PopulatePlanetWindowList ();
 			}
 //			if (GUILayout.Button ("Current Vessel")) {
 //				targetPower = maxRangeVessel;
@@ -319,6 +353,50 @@ namespace AntennaHepler
 
 			GUILayout.EndVertical ();
 
+			GUI.DragWindow ();
+		}
+
+		bool showPlanetWindow = false;
+		Rect planetWindowRect = new Rect (0, 0, 300, 240);
+
+		private void PlanetWindow (int id)
+		{
+			GUILayout.BeginVertical ();
+			GUILayout.BeginHorizontal ();
+			// Planet name
+			GUILayout.BeginVertical ();
+			GUILayout.Label ("Planet :");
+			foreach (string str in planetNames) {
+				GUILayout.Label (str);
+			}
+			GUILayout.EndVertical ();
+			// Strength at min distance
+			GUILayout.BeginVertical ();
+			GUILayout.Label ("Min Distance :");
+			foreach (GUIContent guiC in minStrengthGui) {
+				GUILayout.BeginHorizontal ();
+				GUILayout.Label (guiC);
+				GUILayout.BeginArea (new Rect (Mouse.screenPos.x - planetWindowRect.position.x, Mouse.screenPos.y - planetWindowRect.position.y - 15, 300, 30));
+				GUILayout.Label (GUI.tooltip);
+				GUILayout.EndArea ();
+				GUILayout.EndHorizontal ();
+			}
+			GUILayout.EndVertical ();
+			// Strength at max distance
+			GUILayout.BeginVertical ();
+			GUILayout.Label ("Max Distance :");
+			foreach (GUIContent guiC in maxStrengthGui) {
+				GUILayout.BeginHorizontal ();
+				GUILayout.Label (guiC);
+				GUILayout.BeginArea (new Rect (Mouse.screenPos.x - planetWindowRect.position.x, Mouse.screenPos.y - planetWindowRect.position.y - 15, 300, 30));
+				GUILayout.Label (GUI.tooltip);
+				GUILayout.EndArea ();
+				GUILayout.EndHorizontal ();
+			}
+			GUILayout.EndVertical ();
+
+			GUILayout.EndHorizontal ();
+			GUILayout.EndVertical ();
 			GUI.DragWindow ();
 		}
 
@@ -363,6 +441,77 @@ namespace AntennaHepler
 //				}
 //				listId++;
 //			}
+		}
+
+		#endregion
+
+		#region Planet
+
+		private CelestialBody homePlanet;
+		private List<CelestialBody> planetList;
+
+		private void GetPlanetList ()
+		{
+			planetList = new List<CelestialBody> ();
+			homePlanet = Planetarium.fetch.Home;
+
+			foreach (CelestialBody planet in Planetarium.fetch.Sun.orbitingBodies) {
+				if (planet != homePlanet) {
+					planetList.Add (planet);
+					Debug.Log ("[Antenna] : " + planet.bodyName);
+				}
+			}
+		}
+
+		private double GetMaxDistance (CelestialBody planet)
+		{
+			return homePlanet.orbit.ApR + planet.orbit.ApR;
+		}
+
+		private double GetMinDistance (CelestialBody planet)
+		{
+			if (homePlanet.orbit.PeR > planet.orbit.PeR) {
+				return homePlanet.orbit.PeR - planet.orbit.PeR;
+			} else {
+				return planet.orbit.PeR - homePlanet.orbit.PeR;
+			}
+		}
+
+		private double GetPlanetRange (double range, double distance)
+		{
+			if (distance > range) { return 0; }
+			double relDist = Math.Abs(1 - (distance / range));
+			if (relDist > 1) { return 0; }
+			double strength = (3 - (2 * relDist)) * (relDist * relDist);
+			if (strength > 1) { strength = 1; }
+			if (strength < 0) { strength = 0; }
+			return strength;// * 100;
+		}
+
+		private List<String> planetNames;
+		private List<double> maxStrength;
+		private List<double> minStrength;
+		private List<GUIContent> maxStrengthGui;
+		private List<GUIContent> minStrengthGui;
+
+		private void PopulatePlanetWindowList ()
+		{
+			planetNames = new List<string> ();
+			maxStrength = new List<double> ();
+			minStrength = new List<double> ();
+
+			maxStrengthGui = new List<GUIContent> ();
+			minStrengthGui = new List<GUIContent> ();
+			GetPlanetList ();
+
+			foreach (CelestialBody planet in planetList) {
+				planetNames.Add (planet.bodyName);
+				maxStrength.Add (GetPlanetRange (maxRange, GetMaxDistance (planet)));
+				minStrength.Add (GetPlanetRange (maxRange, GetMinDistance (planet)));
+
+				maxStrengthGui.Add (new GUIContent (GetPlanetRange (maxRange, GetMaxDistance (planet)).ToString ("p"), GetMaxDistance (planet).ToString ("n")));
+				minStrengthGui.Add (new GUIContent (GetPlanetRange (maxRange, GetMinDistance (planet)).ToString ("p"), GetMinDistance (planet).ToString ("n")));
+			}
 		}
 
 		#endregion
