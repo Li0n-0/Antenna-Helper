@@ -47,7 +47,8 @@ namespace AntennaHelper
 			GameEvents.onEditorLoad.Add (NewShip);
 
 			GameEvents.onEditorPartPlaced.Add (PartChange);
-			GameEvents.onEditorPartDeleted.Add (PartChange);
+			GameEvents.onEditorPartPicked.Add (PartChange);
+			GameEvents.onEditorPartDeleted.Add (PartRemoved);
 
 			GameEvents.onGUIApplicationLauncherReady.Add (ToolbarButton);
 			GameEvents.onGUIApplicationLauncherDestroyed.Add (DestroyButton);
@@ -58,7 +59,8 @@ namespace AntennaHelper
 			GameEvents.onEditorLoad.Remove (NewShip);
 
 			GameEvents.onEditorPartPlaced.Remove (PartChange);
-			GameEvents.onEditorPartDeleted.Remove (PartChange);
+			GameEvents.onEditorPartPicked.Remove (PartChange);
+			GameEvents.onEditorPartDeleted.Remove (PartRemoved);
 
 			GameEvents.onGUIApplicationLauncherReady.Remove (ToolbarButton);
 			GameEvents.onGUIApplicationLauncherDestroyed.Remove (DestroyButton);
@@ -135,12 +137,20 @@ namespace AntennaHelper
 
 		private void PartChange (Part part)
 		{
-			if (part.Modules.Contains<ModuleDataTransmitter> () || part.Modules == null) {
+			if (part.Modules.Contains<ModuleDataTransmitter> () || part == null) {
 				activeAntennas = ParseVessel (EditorLogic.fetch.ship.Parts);
 				CalcAntennas ();
 				PopulatePlanetWindowList ();
 			}
 		}
+
+		private void PartRemoved (Part part)
+		{
+			activeAntennas = ParseVessel (EditorLogic.fetch.ship.Parts);
+			CalcAntennas ();
+			PopulatePlanetWindowList ();
+		}
+			
 
 		#endregion
 
