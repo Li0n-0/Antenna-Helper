@@ -1,0 +1,196 @@
+﻿using System;
+using UnityEngine;
+
+namespace AntennaHelper
+{
+	public class EditorWindows
+	{
+		private static string antennaTypeStr = "Direct";
+		private static bool antennaTypeIsDirect = true;
+
+		public static void MainWindow (int id)
+		{
+			GUILayout.BeginVertical ();
+
+			// Choose direct / relay antennas
+			GUILayout.Label ("Selected type : " + antennaTypeStr);
+			GUILayout.BeginHorizontal ();
+			if (GUILayout.Button ("Direct (All Antennas)")) {
+				antennaTypeStr = "Direct";
+				antennaTypeIsDirect = true;
+			}
+			if (GUILayout.Button ("Relay")) {
+				antennaTypeStr = "Relay";
+				antennaTypeIsDirect = false;
+			}
+			GUILayout.EndHorizontal ();
+
+			// Pick a target :
+			GUILayout.Label ("Current target : " + AntennaHelperEditor.targetName);
+			if (GUILayout.Button ("Pick A Target")) {
+				AntennaHelperEditor.showTargetWindow = !AntennaHelperEditor.showTargetWindow;
+			}
+
+			// Number display :
+			GUILayout.BeginHorizontal ();
+			GUILayout.BeginVertical ();
+			GUILayout.Label ("Status : ");
+			GUILayout.Label ("Power : ");
+			GUILayout.Label ("Range : ");
+			GUILayout.EndVertical ();
+			GUILayout.BeginVertical ();
+			if (antennaTypeIsDirect) {
+				GUILayout.Label (AntennaHelperEditor.statusStringDirect);
+				GUILayout.Label (AntennaHelperEditor.directBetterPower.ToString ("n"));
+				GUILayout.Label (AntennaHelperEditor.directBetterRange.ToString ("n") + " m");
+			} else {
+				GUILayout.Label (AntennaHelperEditor.statusStringRelay);
+				GUILayout.Label (AntennaHelperEditor.relayBetterPower.ToString ("n"));
+				GUILayout.Label (AntennaHelperEditor.relayBetterRange.ToString ("n") + " m");
+			}
+			GUILayout.EndVertical ();
+			GUILayout.EndHorizontal ();
+
+
+
+
+			// Most powerfull antenna :
+//			GUILayout.Label ("Most Powerfull Antenna");
+//			GUILayout.BeginHorizontal ();
+//			GUILayout.BeginVertical ();
+//			GUILayout.Label ("Name of the antenna :");
+//			GUILayout.Label ("Power :");
+//			GUILayout.Label ("Range :");
+//			GUILayout.EndVertical ();
+//			GUILayout.BeginVertical ();
+//			if (antennaTypeIsDirect) {
+//				GUILayout.Label (AntennaHelperEditor.directAntennaName);
+//				GUILayout.Label (AntennaHelperEditor.directPower.ToString ("n"));
+//				GUILayout.Label (AntennaHelperEditor.directRange.ToString ("n") + " m");
+//			} else {
+//				GUILayout.Label (AntennaHelperEditor.relayAntennaName);
+//				GUILayout.Label (AntennaHelperEditor.relayPower.ToString ("n"));
+//				GUILayout.Label (AntennaHelperEditor.relayRange.ToString ("n") + " m");
+//			}
+//			GUILayout.EndVertical ();
+//			GUILayout.EndHorizontal ();
+//
+//			GUILayout.Space (5f);
+//			GUILayout.Box ("", new GUILayoutOption []{ GUILayout.ExpandWidth (true), GUILayout.Height (1) });
+//			GUILayout.Space (5f);
+//
+//			// Combinable antennas :
+//			GUILayout.Label ("Combinable Antennas");
+//			GUILayout.BeginHorizontal ();
+//			GUILayout.BeginVertical ();
+//			GUILayout.Label ("Number of antennas :");
+//			GUILayout.Label ("Number of combinable antennas :");
+//			GUILayout.Label ("Power :");
+//			GUILayout.Label ("Range :");
+//			GUILayout.EndVertical ();
+//			GUILayout.BeginVertical ();
+//			if (antennaTypeIsDirect) {
+//				GUILayout.Label (AntennaHelperEditor.nbDirectAntenna.ToString ());
+//				GUILayout.Label (AntennaHelperEditor.nbDirectCombAntenna.ToString ());
+//				GUILayout.Label (AntennaHelperEditor.directCombPower.ToString ("n"));
+//				GUILayout.Label (AntennaHelperEditor.directCombRange.ToString ("n") + " m");
+//			} else {
+//				GUILayout.Label (AntennaHelperEditor.nbRelayAntenna.ToString ());
+//				GUILayout.Label (AntennaHelperEditor.nbRelayCombAntenna.ToString ());
+//				GUILayout.Label (AntennaHelperEditor.relayCombPower.ToString ("n"));
+//				GUILayout.Label (AntennaHelperEditor.relayCombRange.ToString ("n") + " m");
+//			}
+//			GUILayout.EndVertical ();
+//			GUILayout.EndHorizontal ();
+
+			// Planet view button :
+			if (GUILayout.Button ("Signal Strength / Distance")) {
+				AntennaHelperEditor.showPlanetWindow = !AntennaHelperEditor.showPlanetWindow;
+			}
+
+			GUILayout.EndVertical ();
+			GUI.DragWindow ();
+		}
+
+		public static void TargetWindow (int id)
+		{
+			GUILayout.BeginVertical ();
+			foreach (MyTuple target in AntennaHelperUtil.targetDSNList) {
+				if (GUILayout.Button (target.item1)) {
+					AntennaHelperEditor.SetTarget (target);
+//					AntennaHelperEditor.targetName = target.item1;
+				}
+			}
+			GUILayout.EndVertical ();
+			GUI.DragWindow ();
+		}
+
+		public static void PlanetWindow (int id)
+		{
+			GUILayout.BeginVertical ();
+			GUILayout.BeginHorizontal ();
+			GUILayout.BeginVertical ();
+			// Planet name
+			GUILayout.Label ("Planet / Moon");
+			foreach (MyTuple planet in AntennaHelperUtil.signalPlanetList) {
+				GUILayout.Label (new GUIContent (planet.item1, "Min = " + planet.item2.ToString ("n") + "m | Max = " + planet.item3.ToString ("n") + "m"));
+//				GUI.Label (new Rect (Mouse.screenPos.x, Mouse.screenPos.y, 50, 20), GUI.tooltip);
+				GUILayout.BeginArea (new Rect (Mouse.screenPos.x - AntennaHelperEditor.rectPlanetWindow.position.x, Mouse.screenPos.y - AntennaHelperEditor.rectPlanetWindow.position.y - 15, 450, 30));
+				GUILayout.Label (GUI.tooltip);
+				GUILayout.EndArea ();
+			}
+			GUILayout.EndVertical ();
+			GUILayout.BeginVertical ();
+			// Min distance
+			GUILayout.Label ("Signal at Min Distance");
+			if (antennaTypeIsDirect) {
+				foreach (double signal in AntennaHelperEditor.signalMinDirect) {
+					GUILayout.Label (signal.ToString ("0.0%"));
+				}
+			} else {
+				foreach (double signal in AntennaHelperEditor.signalMinRelay) {
+					GUILayout.Label (signal.ToString ("0.0%"));
+				}
+			}
+
+			GUILayout.EndVertical ();
+			GUILayout.BeginVertical ();
+			// Max distance
+			GUILayout.Label ("Signal at Max Distance");
+			if (antennaTypeIsDirect) {
+				foreach (double signal in AntennaHelperEditor.signalMaxDirect) {
+					GUILayout.Label (signal.ToString ("0.0%"));
+				}
+			} else {
+				foreach (double signal in AntennaHelperEditor.signalMaxRelay) {
+					GUILayout.Label (signal.ToString ("0.0%"));
+				}
+			}
+			GUILayout.EndVertical ();
+			GUILayout.EndHorizontal ();
+
+			// Custom distance
+			GUILayout.Label ("Check the Signal Strength at a given distance :");
+			GUILayout.BeginHorizontal ();
+			GUILayout.BeginVertical ();
+			AntennaHelperEditor.customDistance = GUILayout.TextField (AntennaHelperEditor.customDistance);
+			GUILayout.EndVertical ();
+			GUILayout.BeginVertical ();
+			if (antennaTypeIsDirect) {
+				GUILayout.Label (AntennaHelperEditor.signalCustomDistanceDirect.ToString ("0.0%"));
+			} else {
+				GUILayout.Label (AntennaHelperEditor.signalCustomDistanceRelay.ToString ("0.0%"));
+			}
+			GUILayout.EndVertical ();
+			GUILayout.BeginVertical ();
+			if (GUILayout.Button ("Math !")) {
+				AntennaHelperEditor.CalcCustomDistance ();
+			}
+			GUILayout.EndVertical ();
+			GUILayout.EndHorizontal ();
+			GUILayout.EndVertical ();
+			GUI.DragWindow ();
+		}
+	}
+}
+

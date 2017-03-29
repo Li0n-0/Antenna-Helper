@@ -1,8 +1,11 @@
 ﻿<Properties StartupItem="AntennaHelper.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="AntennaHelper.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="EditorWindows.cs">
     <Files>
-      <File FileName="AntennaHelper.cs" Line="180" Column="5" />
+      <File FileName="EditorWindows.cs" Line="166" Column="22" />
+      <File FileName="FlightMainWindow.cs" Line="1" Column="1" />
+      <File FileName="AntennaHelperEditor.cs" Line="169" Column="24" />
+      <File FileName="AntennaHelperUtil.cs" Line="58" Column="13" NotebookId="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

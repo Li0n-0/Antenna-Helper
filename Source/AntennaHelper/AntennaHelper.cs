@@ -483,7 +483,7 @@ namespace AntennaHelper
 			double relDist = Math.Abs(1 - (distance / range));
 			if (relDist > 1) { return 0; }
 			double strength = (3 - (2 * relDist)) * (relDist * relDist);
-			if (strength > 1) { strength = 1; }
+//			if (strength > 1) { strength = 1; }
 			if (strength < 0) { strength = 0; }
 			return strength;// * 100;
 		}
