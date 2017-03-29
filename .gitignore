@@ -41,4 +41,7 @@
 # KSP stuff
 *.log
 PartDatabase.cfg
+KSP/
+relay.png
+direct.png
 
