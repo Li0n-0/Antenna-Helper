@@ -28,6 +28,7 @@ namespace AntennaHelper
 		{
 			GameEvents.onGUIApplicationLauncherReady.Remove (AddToolbarButton);
 			GameEvents.onGUIApplicationLauncherDestroyed.Remove (RemoveToolbarButton);
+			RemoveToolbarButton ();
 
 			GameEvents.onEditorLoad.Remove (VesselLoad);
 			GameEvents.onEditorPartEvent.Remove (PartEvent);
