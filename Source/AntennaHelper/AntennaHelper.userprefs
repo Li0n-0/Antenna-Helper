@@ -1,9 +1,9 @@
 ﻿<Properties StartupItem="AntennaHelper.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="AntennaHelperEditor.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="AHFligh.cs">
     <Files>
-      <File FileName="EditorWindows.cs" Line="138" Column="181" />
-      <File FileName="FlightMainWindow.cs" Line="1" Column="1" />
+      <File FileName="EditorWindows.cs" Line="141" Column="35" />
+      <File FileName="AHFligh.cs" Line="58" Column="9" />
       <File FileName="AntennaHelperEditor.cs" Line="31" Column="27" />
       <File FileName="AntennaHelperUtil.cs" Line="183" Column="91" NotebookId="1" />
     </Files>

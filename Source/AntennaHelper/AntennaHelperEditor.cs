@@ -49,9 +49,22 @@ namespace AntennaHelper
 			if (showMainWindow || showPlanetWindow || showTargetWindow) {
 				if (eventType == ConstructionEventType.PartAttached) {
 					AntennaListAddItem (part);
+					foreach (Part symPart in part.symmetryCounterparts) {
+						AntennaListAddItem (symPart);
+					}
 					DoTheMath ();
+
 				} else if (eventType == ConstructionEventType.PartDetached) {
 					AntennaListRemoveItem (part);
+					List<ModuleDataTransmitter> remAntenna = new List<ModuleDataTransmitter> ();
+					foreach (ModuleDataTransmitter antennaSym in directAntennaList) {
+						if (antennaSym.part.isSymmetryCounterPart (part)) {
+							remAntenna.Add (antennaSym);
+						}
+					}
+					foreach (ModuleDataTransmitter remA in remAntenna) {
+						AntennaListRemoveItem (remA);
+					}
 					DoTheMath ();
 				}
 			}
@@ -70,7 +83,7 @@ namespace AntennaHelper
 		}
 
 		#region Logic
-		public List<ModuleDataTransmitter> directAntennaList = new List<ModuleDataTransmitter> ();
+		public List<ModuleDataTransmitter> directAntennaList = new List<ModuleDataTransmitter> ();// Main list
 		public List<ModuleDataTransmitter> relayAntennaList = new List<ModuleDataTransmitter> ();
 
 		public List<ModuleDataTransmitter> directCombAntennaList = new List<ModuleDataTransmitter> ();

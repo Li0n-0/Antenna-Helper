@@ -135,7 +135,9 @@ namespace AntennaHelper
 			foreach (MyTuple planet in AntennaHelperUtil.signalPlanetList) {
 				GUILayout.Label (new GUIContent (planet.item1, "Min = " + planet.item2.ToString ("n") + "m | Max = " + planet.item3.ToString ("n") + "m"));
 //				GUI.Label (new Rect (Mouse.screenPos.x, Mouse.screenPos.y, 50, 20), GUI.tooltip);
-				GUILayout.BeginArea (new Rect (Mouse.screenPos.x - AntennaHelperEditor.rectPlanetWindow.position.x, Mouse.screenPos.y - AntennaHelperEditor.rectPlanetWindow.position.y - 15, 450, 30));
+				GUILayout.BeginArea (new Rect 
+					(Mouse.screenPos.x - AntennaHelperEditor.rectPlanetWindow.position.x, 
+						Mouse.screenPos.y - AntennaHelperEditor.rectPlanetWindow.position.y - 15, 450, 30));
 				GUILayout.Label (GUI.tooltip);
 				GUILayout.EndArea ();
 			}
