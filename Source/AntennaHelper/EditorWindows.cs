@@ -36,23 +36,45 @@ namespace AntennaHelper
 			GUILayout.BeginVertical ();
 			GUILayout.Label ("Status : ");
 			GUILayout.Label ("Power : ");
-			GUILayout.Label ("Range : ");
+			GUILayout.Label ("Max Range : ");
+			GUILayout.Label ("Max Distance At 100% : ");
 			GUILayout.EndVertical ();
 			GUILayout.BeginVertical ();
 			if (antennaTypeIsDirect) {
 				GUILayout.Label (AntennaHelperEditor.statusStringDirect);
 				GUILayout.Label (AntennaHelperEditor.directBetterPower.ToString ("n"));
 				GUILayout.Label (AntennaHelperEditor.directBetterRange.ToString ("n") + " m");
+				GUILayout.Label (AntennaHelperEditor.directDistanceAt100.ToString ("n") + " m");
 			} else {
 				GUILayout.Label (AntennaHelperEditor.statusStringRelay);
 				GUILayout.Label (AntennaHelperEditor.relayBetterPower.ToString ("n"));
 				GUILayout.Label (AntennaHelperEditor.relayBetterRange.ToString ("n") + " m");
+				GUILayout.Label (AntennaHelperEditor.relayDistanceAt100.ToString ("n") + " m");
 			}
 			GUILayout.EndVertical ();
 			GUILayout.EndHorizontal ();
 
+			GUILayout.Space (16f);
+			GUIStyle guiStyleCenter = new GUIStyle (GUI.skin.GetStyle ("Label"));
+			guiStyleCenter.alignment = TextAnchor.MiddleCenter;
 
+			GUILayout.BeginHorizontal ();
+			if (antennaTypeIsDirect) {
+				GUILayout.Label (AntennaHelperEditor.directDistanceAt75.ToString ("n") + " m", guiStyleCenter);
+				GUILayout.Label (AntennaHelperEditor.directDistanceAt25.ToString ("n") + " m", guiStyleCenter);
+			} else {
+				GUILayout.Label (AntennaHelperEditor.relayDistanceAt75.ToString ("n") + " m", guiStyleCenter);
+				GUILayout.Label (AntennaHelperEditor.relayDistanceAt25.ToString ("n") + " m", guiStyleCenter);
+			}
+			GUILayout.EndHorizontal ();
 
+			GUILayout.Label (AntennaHelperUtil.signalPerDistanceTex);
+
+			if (antennaTypeIsDirect) {
+				GUILayout.Label (AntennaHelperEditor.directDistanceAt50.ToString ("n") + " m", guiStyleCenter);
+			} else {
+				GUILayout.Label (AntennaHelperEditor.relayDistanceAt50.ToString ("n") + " m", guiStyleCenter);
+			}
 
 			// Most powerfull antenna :
 //			GUILayout.Label ("Most Powerfull Antenna");
