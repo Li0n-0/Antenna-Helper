@@ -113,6 +113,16 @@ namespace AntennaHelper
 		public static List<MyTuple> relaySignalPerPlanet;
 		public static List<MyTuple> directSignalPerPlanet;
 
+		public static double directDistanceAt100;
+		public static double directDistanceAt75;
+		public static double directDistanceAt50;
+		public static double directDistanceAt25;
+
+		public static double relayDistanceAt100;
+		public static double relayDistanceAt75;
+		public static double relayDistanceAt50;
+		public static double relayDistanceAt25;
+
 		public void DoTheMath ()
 		{
 			// Direct antenna (not-relay)
@@ -181,6 +191,16 @@ namespace AntennaHelper
 			FetchBetterAntennas ();
 			FetchAntennaStatus ();
 			SetPerPlanetList ();
+
+			directDistanceAt100 = AntennaHelperUtil.GetDistanceAt100 (directBetterRange);
+			directDistanceAt75 = AntennaHelperUtil.GetDistanceAt75 (directBetterRange);
+			directDistanceAt50 = AntennaHelperUtil.GetDistanceAt50 (directBetterRange);
+			directDistanceAt25 = AntennaHelperUtil.GetDistanceAt25 (directBetterRange);
+
+			relayDistanceAt100 = AntennaHelperUtil.GetDistanceAt100 (relayBetterRange);
+			relayDistanceAt75 = AntennaHelperUtil.GetDistanceAt75 (relayBetterRange);
+			relayDistanceAt50 = AntennaHelperUtil.GetDistanceAt50 (relayBetterRange);
+			relayDistanceAt25 = AntennaHelperUtil.GetDistanceAt25 (relayBetterRange);
 		}
 
 		public static double directBetterPower;

@@ -8,6 +8,7 @@ namespace AntennaHelper
 	public class AntennaHelperUtil : MonoBehaviour
 	{
 		public static Texture toolbarButtonTex;
+		public static Texture signalPerDistanceTex;
 
 		public static float DSNMod;
 		public static float rangeMod;
@@ -33,6 +34,7 @@ namespace AntennaHelper
 			centerScreen = new Vector2 (Screen.width / 2f, Screen.height / 2f);
 
 			toolbarButtonTex = (Texture)GameDatabase.Instance.GetTexture ("AntennaHelper/icon", false);
+			signalPerDistanceTex = (Texture)GameDatabase.Instance.GetTexture ("AntennaHelper/signal_per_distance", false);
 
 			DSNMod = HighLogic.CurrentGame.Parameters.CustomParams<CommNet.CommNetParams> ().DSNModifier;
 			rangeMod = HighLogic.CurrentGame.Parameters.CustomParams<CommNet.CommNetParams> ().rangeModifier;
@@ -185,6 +187,26 @@ namespace AntennaHelper
 			if (strength < 0) { return 0; }
 
 			return strength;
+		}
+
+		public static double GetDistanceAt100 (double maxRange)
+		{
+			return maxRange / 77.1241569002155d;
+		}
+
+		public static double GetDistanceAt75 (double maxRange)
+		{
+			return maxRange / 3.060623967191712d;
+		}
+
+		public static double GetDistanceAt50 (double maxRange)
+		{
+			return maxRange / 1.998667554768621d;
+		}
+
+		public static double GetDistanceAt25 (double maxRange)
+		{
+			return maxRange / 1.483619335214967d;
 		}
 		#endregion
 	}
