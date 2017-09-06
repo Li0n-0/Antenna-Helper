@@ -10,6 +10,11 @@ namespace AntennaHelper
 
 		public static void MainWindow (int id)
 		{
+			// Close Button
+			if (GUI.Button (new Rect (AntennaHelperEditor.rectMainWindow.size.x - 22, 2, 20, 20), "X")) {
+				AntennaHelperEditor.showMainWindow = false;
+			}
+
 			GUILayout.BeginVertical ();
 
 			// Choose direct / relay antennas
@@ -136,6 +141,11 @@ namespace AntennaHelper
 
 		public static void TargetWindow (int id)
 		{
+			// Close Button
+			if (GUI.Button (new Rect (AntennaHelperEditor.rectTargetWindow.size.x - 20, 2, 18, 18), "X")) {
+				AntennaHelperEditor.showTargetWindow = false;
+			}
+
 			GUILayout.BeginVertical ();
 			foreach (MyTuple target in AntennaHelperUtil.targetDSNList) {
 				if (GUILayout.Button (target.item1)) {
@@ -149,6 +159,11 @@ namespace AntennaHelper
 
 		public static void PlanetWindow (int id)
 		{
+			// Close Button
+			if (GUI.Button (new Rect (AntennaHelperEditor.rectPlanetWindow.size.x - 22, 2, 20, 20), "X")) {
+				AntennaHelperEditor.showPlanetWindow = false;
+			}
+
 			GUILayout.BeginVertical ();
 			GUILayout.BeginHorizontal ();
 			GUILayout.BeginVertical ();

@@ -393,12 +393,12 @@ namespace AntennaHelper
 		#endregion
 
 		#region GUI
-		private bool showMainWindow = false;
-		private Rect rectMainWindow = new Rect (AntennaHelperUtil.centerScreen.x, 
+		public static bool showMainWindow = false;
+		public static Rect rectMainWindow = new Rect (AntennaHelperUtil.centerScreen.x, 
 			AntennaHelperUtil.centerScreen.y, 400, 200);
 
 		public static bool showTargetWindow = false;
-		private Rect rectTargetWindow = new Rect (AntennaHelperUtil.centerScreen.x - 400, 
+		public static Rect rectTargetWindow = new Rect (AntennaHelperUtil.centerScreen.x - 400, 
 			AntennaHelperUtil.centerScreen.y, 400, 80);
 
 		public static bool showPlanetWindow = false;
