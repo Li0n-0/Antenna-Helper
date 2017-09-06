@@ -49,9 +49,17 @@ namespace AntennaHelper
 			if (showMainWindow || showPlanetWindow || showTargetWindow) {
 				if (eventType == ConstructionEventType.PartAttached) {
 					AntennaListAddItem (part);
+
+					// Symmetry counterparts
 					foreach (Part symPart in part.symmetryCounterparts) {
 						AntennaListAddItem (symPart);
 					}
+
+					// Child part
+					foreach (Part childPart in part.children) {
+						AntennaListAddItem (childPart);
+					}
+
 					DoTheMath ();
 
 				} else if (eventType == ConstructionEventType.PartDetached) {
@@ -62,6 +70,12 @@ namespace AntennaHelper
 							remAntenna.Add (antennaSym);
 						}
 					}
+
+					// Child part
+					foreach (Part childPart in part.children) {
+						AntennaListRemoveItem (childPart);
+					}
+
 					foreach (ModuleDataTransmitter remA in remAntenna) {
 						AntennaListRemoveItem (remA);
 					}
