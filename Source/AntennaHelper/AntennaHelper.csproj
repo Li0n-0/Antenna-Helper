@@ -51,6 +51,7 @@
     <Compile Include="AntennaHelperEditor.cs" />
     <Compile Include="AntennaHelperUtil.cs" />
     <Compile Include="EditorWindows.cs" />
+    <Compile Include="AHSettings.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

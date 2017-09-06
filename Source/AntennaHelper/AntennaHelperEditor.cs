@@ -22,6 +22,8 @@ namespace AntennaHelper
 			GameEvents.onEditorPartEvent.Add (PartEvent);
 			GameEvents.onEditorPodPicked.Add (PodPicked);
 			GameEvents.onEditorPodDeleted.Add (PodDeleted);
+
+			GameEvents.onGameSceneSwitchRequested.Add (QuitEditor);
 		}
 
 		public void OnDestroy ()
@@ -34,6 +36,13 @@ namespace AntennaHelper
 			GameEvents.onEditorPartEvent.Remove (PartEvent);
 			GameEvents.onEditorPodPicked.Remove (PodPicked);
 			GameEvents.onEditorPodDeleted.Remove (PodDeleted);
+
+			GameEvents.onGameSceneSwitchRequested.Remove (QuitEditor);
+		}
+
+		public void QuitEditor (GameEvents.FromToAction<GameScenes, GameScenes> eData)
+		{
+			AHSettings.WriteSave ();
 		}
 
 		public void VesselLoad (ShipConstruct ship, KSP.UI.Screens.CraftBrowserDialog.LoadType screenType)
@@ -49,9 +58,17 @@ namespace AntennaHelper
 			if (showMainWindow || showPlanetWindow || showTargetWindow) {
 				if (eventType == ConstructionEventType.PartAttached) {
 					AntennaListAddItem (part);
+
+					// Symmetry counterparts
 					foreach (Part symPart in part.symmetryCounterparts) {
 						AntennaListAddItem (symPart);
 					}
+
+					// Child part
+					foreach (Part childPart in part.children) {
+						AntennaListAddItem (childPart);
+					}
+
 					DoTheMath ();
 
 				} else if (eventType == ConstructionEventType.PartDetached) {
@@ -62,6 +79,12 @@ namespace AntennaHelper
 							remAntenna.Add (antennaSym);
 						}
 					}
+
+					// Child part
+					foreach (Part childPart in part.children) {
+						AntennaListRemoveItem (childPart);
+					}
+
 					foreach (ModuleDataTransmitter remA in remAntenna) {
 						AntennaListRemoveItem (remA);
 					}
@@ -379,17 +402,35 @@ namespace AntennaHelper
 		#endregion
 
 		#region GUI
-		private bool showMainWindow = false;
-		private Rect rectMainWindow = new Rect (AntennaHelperUtil.centerScreen.x, 
-			AntennaHelperUtil.centerScreen.y, 400, 200);
+		public static bool showMainWindow = false;
+		public static Rect rectMainWindow = new Rect (AHSettings.posMainWindow, new Vector2 (400, 200));
+		public static void CloseMainWindow ()
+		{
+			if (showMainWindow) {
+				AHSettings.SavePosition ("main_window_position", rectMainWindow.position);
+			}
+			showMainWindow = false;
+		}
 
 		public static bool showTargetWindow = false;
-		private Rect rectTargetWindow = new Rect (AntennaHelperUtil.centerScreen.x - 400, 
-			AntennaHelperUtil.centerScreen.y, 400, 80);
+		public static Rect rectTargetWindow = new Rect (AHSettings.posTargetWindow, new Vector2 (400, 80));
+		public static void CloseTargetWindow ()
+		{
+			if (showTargetWindow) {
+				AHSettings.SavePosition ("target_window_position", rectTargetWindow.position);
+			}
+			showTargetWindow = false;
+		}
 
 		public static bool showPlanetWindow = false;
-		public static Rect rectPlanetWindow = new Rect (AntennaHelperUtil.centerScreen.x + 400, 
-			AntennaHelperUtil.centerScreen.y, 450, 240);
+		public static Rect rectPlanetWindow = new Rect (AHSettings.posPlanetWindow, new Vector2 (450, 240));
+		public static void ClosePlanetWindow ()
+		{
+			if (showPlanetWindow) {
+				AHSettings.SavePosition ("signal_strenght_per_planet_window_position", rectPlanetWindow.position);
+			}
+			showPlanetWindow = false;
+		}
 
 		public void OnGUI ()
 		{
@@ -429,22 +470,34 @@ namespace AntennaHelper
 
 		private void RemoveToolbarButton ()
 		{
-			ToolbarButtonOnFalse ();
+			CloseMainWindow ();
+			CloseTargetWindow ();
+			ClosePlanetWindow ();
 			KSP.UI.Screens.ApplicationLauncher.Instance.RemoveModApplication (toolbarButton);
 		}
 
 		private void ToolbarButtonOnTrue ()
 		{
-			CreateAntennaList ();
-			DoTheMath ();
-			showMainWindow = true;
+			ToggleWinows ();
 		}
 
 		private void ToolbarButtonOnFalse ()
 		{
-			showMainWindow = false;
-			showTargetWindow = false;
-			showPlanetWindow = false;
+			ToggleWinows ();
+		}
+
+		private void ToggleWinows ()
+		{
+			CreateAntennaList ();
+			DoTheMath ();
+
+			if (showMainWindow || showTargetWindow || showPlanetWindow) {
+				CloseMainWindow ();
+				CloseTargetWindow ();
+				ClosePlanetWindow ();
+			} else {
+				showMainWindow = true;
+			}
 		}
 		#endregion
 	}

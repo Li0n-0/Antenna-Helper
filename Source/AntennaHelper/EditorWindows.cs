@@ -10,6 +10,11 @@ namespace AntennaHelper
 
 		public static void MainWindow (int id)
 		{
+			// Close Button
+			if (GUI.Button (new Rect (AntennaHelperEditor.rectMainWindow.size.x - 22, 2, 20, 20), "X")) {
+				AntennaHelperEditor.CloseMainWindow ();
+			}
+
 			GUILayout.BeginVertical ();
 
 			// Choose direct / relay antennas
@@ -28,7 +33,11 @@ namespace AntennaHelper
 			// Pick a target :
 			GUILayout.Label ("Current target : " + AntennaHelperEditor.targetName);
 			if (GUILayout.Button ("Pick A Target")) {
-				AntennaHelperEditor.showTargetWindow = !AntennaHelperEditor.showTargetWindow;
+				if (AntennaHelperEditor.showTargetWindow) {
+					AntennaHelperEditor.CloseTargetWindow ();
+				} else {
+					AntennaHelperEditor.showTargetWindow = true;
+				}
 			}
 
 			// Number display :
@@ -127,7 +136,11 @@ namespace AntennaHelper
 
 			// Planet view button :
 			if (GUILayout.Button ("Signal Strength / Distance")) {
-				AntennaHelperEditor.showPlanetWindow = !AntennaHelperEditor.showPlanetWindow;
+				if (AntennaHelperEditor.showPlanetWindow) {
+					AntennaHelperEditor.ClosePlanetWindow ();
+				} else {
+					AntennaHelperEditor.showPlanetWindow = true;
+				}
 			}
 
 			GUILayout.EndVertical ();
@@ -136,6 +149,11 @@ namespace AntennaHelper
 
 		public static void TargetWindow (int id)
 		{
+			// Close Button
+			if (GUI.Button (new Rect (AntennaHelperEditor.rectTargetWindow.size.x - 20, 2, 18, 18), "X")) {
+				AntennaHelperEditor.CloseTargetWindow ();
+			}
+
 			GUILayout.BeginVertical ();
 			foreach (MyTuple target in AntennaHelperUtil.targetDSNList) {
 				if (GUILayout.Button (target.item1)) {
@@ -149,6 +167,11 @@ namespace AntennaHelper
 
 		public static void PlanetWindow (int id)
 		{
+			// Close Button
+			if (GUI.Button (new Rect (AntennaHelperEditor.rectPlanetWindow.size.x - 22, 2, 20, 20), "X")) {
+				AntennaHelperEditor.ClosePlanetWindow ();
+			}
+
 			GUILayout.BeginVertical ();
 			GUILayout.BeginHorizontal ();
 			GUILayout.BeginVertical ();
