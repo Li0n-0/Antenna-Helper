@@ -12,7 +12,7 @@ namespace AntennaHelper
 		{
 			// Close Button
 			if (GUI.Button (new Rect (AntennaHelperEditor.rectMainWindow.size.x - 22, 2, 20, 20), "X")) {
-				AntennaHelperEditor.showMainWindow = false;
+				AntennaHelperEditor.CloseMainWindow ();
 			}
 
 			GUILayout.BeginVertical ();
@@ -33,7 +33,11 @@ namespace AntennaHelper
 			// Pick a target :
 			GUILayout.Label ("Current target : " + AntennaHelperEditor.targetName);
 			if (GUILayout.Button ("Pick A Target")) {
-				AntennaHelperEditor.showTargetWindow = !AntennaHelperEditor.showTargetWindow;
+				if (AntennaHelperEditor.showTargetWindow) {
+					AntennaHelperEditor.CloseTargetWindow ();
+				} else {
+					AntennaHelperEditor.showTargetWindow = true;
+				}
 			}
 
 			// Number display :
@@ -132,7 +136,11 @@ namespace AntennaHelper
 
 			// Planet view button :
 			if (GUILayout.Button ("Signal Strength / Distance")) {
-				AntennaHelperEditor.showPlanetWindow = !AntennaHelperEditor.showPlanetWindow;
+				if (AntennaHelperEditor.showPlanetWindow) {
+					AntennaHelperEditor.ClosePlanetWindow ();
+				} else {
+					AntennaHelperEditor.showPlanetWindow = true;
+				}
 			}
 
 			GUILayout.EndVertical ();
@@ -143,7 +151,7 @@ namespace AntennaHelper
 		{
 			// Close Button
 			if (GUI.Button (new Rect (AntennaHelperEditor.rectTargetWindow.size.x - 20, 2, 18, 18), "X")) {
-				AntennaHelperEditor.showTargetWindow = false;
+				AntennaHelperEditor.CloseTargetWindow ();
 			}
 
 			GUILayout.BeginVertical ();
@@ -161,7 +169,7 @@ namespace AntennaHelper
 		{
 			// Close Button
 			if (GUI.Button (new Rect (AntennaHelperEditor.rectPlanetWindow.size.x - 22, 2, 20, 20), "X")) {
-				AntennaHelperEditor.showPlanetWindow = false;
+				AntennaHelperEditor.ClosePlanetWindow ();
 			}
 
 			GUILayout.BeginVertical ();
