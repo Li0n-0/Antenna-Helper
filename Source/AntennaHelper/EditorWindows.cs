@@ -77,7 +77,7 @@ namespace AntennaHelper
 			}
 			GUILayout.EndHorizontal ();
 
-			GUILayout.Label (AntennaHelperUtil.signalPerDistanceTex);
+			GUILayout.Label (AHUtil.signalPerDistanceTex);
 
 			if (antennaTypeIsDirect) {
 				GUILayout.Label (AntennaHelperEditor.directDistanceAt50.ToString ("n") + " m", guiStyleCenter);
@@ -155,7 +155,7 @@ namespace AntennaHelper
 			}
 
 			GUILayout.BeginVertical ();
-			foreach (MyTuple target in AntennaHelperUtil.targetDSNList) {
+			foreach (MyTuple target in AHUtil.targetDSNList) {
 				if (GUILayout.Button (target.item1)) {
 					AntennaHelperEditor.SetTarget (target);
 //					AntennaHelperEditor.targetName = target.item1;
@@ -177,7 +177,7 @@ namespace AntennaHelper
 			GUILayout.BeginVertical ();
 			// Planet name
 			GUILayout.Label ("Planet / Moon");
-			foreach (MyTuple planet in AntennaHelperUtil.signalPlanetList) {
+			foreach (MyTuple planet in AHUtil.signalPlanetList) {
 				GUILayout.Label (new GUIContent (planet.item1, "Min = " + planet.item2.ToString ("n") + "m | Max = " + planet.item3.ToString ("n") + "m"));
 //				GUI.Label (new Rect (Mouse.screenPos.x, Mouse.screenPos.y, 50, 20), GUI.tooltip);
 				GUILayout.BeginArea (new Rect 
