@@ -60,11 +60,11 @@ namespace AntennaHelper
 			mapMarker.Start ();
 			mapMarker.SetUp (maxRange, FlightGlobals.ActiveVessel.mapObject.trf, FlightGlobals.GetHomeBody ().MapObject.trf, true);
 
-			Debug.Log ("[AH] DSN level = " + ScenarioUpgradeableFacilities.GetFacilityLevel (SpaceCenterFacility.TrackingStation));
-			Debug.Log ("[AH] DSN level int = " + AHUtil.DSNLevel);
-			Debug.Log ("[AH] DSN power = " + AHUtil.DSNLevelList [AHUtil.DSNLevel]);
-			Debug.Log ("[AH] vessel power = " + FlightGlobals.ActiveVessel.Connection.Comm.antennaTransmit.power);
-			Debug.Log ("[AH] max range = " + maxRange);
+//			Debug.Log ("[AH] DSN level = " + ScenarioUpgradeableFacilities.GetFacilityLevel (SpaceCenterFacility.TrackingStation));
+//			Debug.Log ("[AH] DSN level int = " + AHUtil.DSNLevel);
+//			Debug.Log ("[AH] DSN power = " + AHUtil.DSNLevelList [AHUtil.DSNLevel]);
+//			Debug.Log ("[AH] vessel power = " + FlightGlobals.ActiveVessel.Connection.Comm.antennaTransmit.power);
+//			Debug.Log ("[AH] max range = " + maxRange);
 //
 //			CommNet.CommLink firstLink = null;
 //
