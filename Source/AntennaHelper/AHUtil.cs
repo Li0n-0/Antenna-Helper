@@ -5,17 +5,18 @@ using UnityEngine;
 namespace AntennaHelper
 {
 	[KSPAddon (KSPAddon.Startup.SpaceCentre, true)]
-	public class AntennaHelperUtil : MonoBehaviour
+	public class AHUtil : MonoBehaviour
 	{
 		public static Texture toolbarButtonTex;
 		public static Texture signalPerDistanceTex;
 
-		public static float DSNMod;
-		public static float rangeMod;
+		// MapView textures :
+		public static Texture circleGreenTex, circleYellowTex, circleOrangeTex, circleRedTex;
+
+		public static float DSNRangeMod;
+		public static float antennaRangeMod;
 		public static int DSNLevel;
-//		public static double DSNLvl1 = 2000000000d;
-//		public static double DSNLvl2 = 50000000000d;
-//		public static double DSNLvl3 = 250000000000d;
+		public static double[] DSNLevelList = {2000000000d, 50000000000d, 250000000000d};
 		public static List<MyTuple> targetDSNList;
 
 		public static List<MyTuple> signalPlanetList;
@@ -31,21 +32,32 @@ namespace AntennaHelper
 
 		public void Start ()
 		{
+			DontDestroyOnLoad (this);
 			centerScreen = new Vector2 (Screen.width / 2f, Screen.height / 2f);
 
-			toolbarButtonTex = (Texture)GameDatabase.Instance.GetTexture ("AntennaHelper/icon", false);
-			signalPerDistanceTex = (Texture)GameDatabase.Instance.GetTexture ("AntennaHelper/signal_per_distance", false);
+			// load textures :
+			circleGreenTex = (Texture)GameDatabase.Instance.GetTexture ("AntennaHelper/Textures/circle_green_a_1024", false);
+			circleYellowTex = (Texture)GameDatabase.Instance.GetTexture ("AntennaHelper/Textures/circle_yellow_a_1024", false);
+			circleOrangeTex = (Texture)GameDatabase.Instance.GetTexture ("AntennaHelper/Textures/circle_orange_a_1024", false);
+			circleRedTex = (Texture)GameDatabase.Instance.GetTexture ("AntennaHelper/Textures/circle_red_a_1024", false);
 
-			DSNMod = HighLogic.CurrentGame.Parameters.CustomParams<CommNet.CommNetParams> ().DSNModifier;
-			rangeMod = HighLogic.CurrentGame.Parameters.CustomParams<CommNet.CommNetParams> ().rangeModifier;
+			toolbarButtonTex = (Texture)GameDatabase.Instance.GetTexture ("AntennaHelper/Textures/icon", false);
+			signalPerDistanceTex = (Texture)GameDatabase.Instance.GetTexture ("AntennaHelper/Textures/signal_per_distance", false);
+
+
+			antennaRangeMod = HighLogic.CurrentGame.Parameters.CustomParams<CommNet.CommNetParams> ().rangeModifier;
 			FetchDSNLevel ();
-			GameEvents.OnKSCFacilityUpgraded.Add (DSNUpgrade);
+			ApplyModRangeToDSN ();
+			GameEvents.OnGameSettingsApplied.Add (ApplyModRangeToDSN);
+			GameEvents.onGameSceneSwitchRequested.Add (SceneSwitch);
 
 			// Target List (only DSN for now)
 			targetDSNList = new List<MyTuple> ();
 			targetDSNList.Add (new MyTuple ("DSN Level 1", 2000000000d));
 			targetDSNList.Add (new MyTuple ("DSN Level 2", 50000000000d));
 			targetDSNList.Add (new MyTuple ("DSN Level 3", 250000000000d));
+
+
 
 			homePlanet = FlightGlobals.GetHomeBody ();
 //			planetsList = FlightGlobals.Bodies [0].orbitingBodies;
@@ -91,23 +103,37 @@ namespace AntennaHelper
 
 		public void OnDestroy ()
 		{
-			GameEvents.OnKSCFacilityUpgraded.Remove (DSNUpgrade);
+			GameEvents.OnGameSettingsApplied.Remove (ApplyModRangeToDSN);
+			GameEvents.onGameSceneSwitchRequested.Remove (SceneSwitch);
 		}
 
-		public void DSNUpgrade (Upgradeables.UpgradeableFacility facility, int level)
+		private void SceneSwitch (GameEvents.FromToAction<GameScenes, GameScenes> scenes)
 		{
-			FetchDSNLevel ();
+			if (scenes.from == GameScenes.FLIGHT || scenes.from == GameScenes.SPACECENTER 
+				|| scenes.from == GameScenes.TRACKSTATION) {
+				FetchDSNLevel ();
+			}
 		}
 
 		private void FetchDSNLevel ()
 		{
+			// Format the DSN level to an int, this work for stock but will probably need an 
+			// overhaul for Custom Barn Kit
 			float dsnLevelF = ScenarioUpgradeableFacilities.GetFacilityLevel (SpaceCenterFacility.TrackingStation);
 			if (dsnLevelF == 0) {
 				DSNLevel = 0;
-			} else if (dsnLevelF == 1) {
+			} else if (dsnLevelF == 1f) {
 				DSNLevel = 2;
 			} else {
 				DSNLevel = 1;
+			}
+		}
+
+		private void ApplyModRangeToDSN ()
+		{
+			DSNRangeMod = HighLogic.CurrentGame.Parameters.CustomParams<CommNet.CommNetParams> ().DSNModifier;
+			for (int i = 0 ; i < DSNLevelList.Length ; i++) {
+				DSNLevelList [i] *= DSNRangeMod;
 			}
 		}
 
@@ -207,6 +233,11 @@ namespace AntennaHelper
 		public static double GetDistanceAt25 (double maxRange)
 		{
 			return maxRange / 1.483619335214967d;
+		}
+
+		public static float GetMapScale (double distance)
+		{
+			return (float)distance / 2949.852507374631f;
 		}
 		#endregion
 	}

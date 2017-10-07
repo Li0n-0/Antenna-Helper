@@ -154,8 +154,8 @@ namespace AntennaHelper
 
 			// Direct combinable :
 			if (nbDirectCombAntenna > 0) {
-				directCombPower = AntennaHelperUtil.GetVesselPower (directCombAntennaList);
-				directCombRange = AntennaHelperUtil.GetRange (directCombPower, targetPower);
+				directCombPower = AHUtil.GetVesselPower (directCombAntennaList);
+				directCombRange = AHUtil.GetRange (directCombPower, targetPower);
 			} else {
 				directCombPower = 0;
 				directCombRange = 0;
@@ -171,7 +171,7 @@ namespace AntennaHelper
 					}
 				}
 				directPower = bigDirect.antennaPower;
-				directRange = AntennaHelperUtil.GetRange (directPower, targetPower);
+				directRange = AHUtil.GetRange (directPower, targetPower);
 				directAntennaName = bigDirect.part.partInfo.title;
 			} else {
 				directPower = 0;
@@ -186,8 +186,8 @@ namespace AntennaHelper
 
 			// Relay combinable :
 			if (nbRelayCombAntenna > 0) {
-				relayCombPower = AntennaHelperUtil.GetVesselPower (relayCombAntennaList);
-				relayCombRange = AntennaHelperUtil.GetRange (relayCombPower, targetPower);
+				relayCombPower = AHUtil.GetVesselPower (relayCombAntennaList);
+				relayCombRange = AHUtil.GetRange (relayCombPower, targetPower);
 			} else {
 				relayCombPower = 0;
 				relayCombRange = 0;
@@ -203,7 +203,7 @@ namespace AntennaHelper
 					}
 				}
 				relayPower = bigRelay.antennaPower;
-				relayRange = AntennaHelperUtil.GetRange (relayPower, targetPower);
+				relayRange = AHUtil.GetRange (relayPower, targetPower);
 				relayAntennaName = bigRelay.part.partInfo.title;
 			} else {
 				relayPower = 0;
@@ -215,15 +215,15 @@ namespace AntennaHelper
 			FetchAntennaStatus ();
 			SetPerPlanetList ();
 
-			directDistanceAt100 = AntennaHelperUtil.GetDistanceAt100 (directBetterRange);
-			directDistanceAt75 = AntennaHelperUtil.GetDistanceAt75 (directBetterRange);
-			directDistanceAt50 = AntennaHelperUtil.GetDistanceAt50 (directBetterRange);
-			directDistanceAt25 = AntennaHelperUtil.GetDistanceAt25 (directBetterRange);
+			directDistanceAt100 = AHUtil.GetDistanceAt100 (directBetterRange);
+			directDistanceAt75 = AHUtil.GetDistanceAt75 (directBetterRange);
+			directDistanceAt50 = AHUtil.GetDistanceAt50 (directBetterRange);
+			directDistanceAt25 = AHUtil.GetDistanceAt25 (directBetterRange);
 
-			relayDistanceAt100 = AntennaHelperUtil.GetDistanceAt100 (relayBetterRange);
-			relayDistanceAt75 = AntennaHelperUtil.GetDistanceAt75 (relayBetterRange);
-			relayDistanceAt50 = AntennaHelperUtil.GetDistanceAt50 (relayBetterRange);
-			relayDistanceAt25 = AntennaHelperUtil.GetDistanceAt25 (relayBetterRange);
+			relayDistanceAt100 = AHUtil.GetDistanceAt100 (relayBetterRange);
+			relayDistanceAt75 = AHUtil.GetDistanceAt75 (relayBetterRange);
+			relayDistanceAt50 = AHUtil.GetDistanceAt50 (relayBetterRange);
+			relayDistanceAt25 = AHUtil.GetDistanceAt25 (relayBetterRange);
 		}
 
 		public static double directBetterPower;
@@ -299,11 +299,11 @@ namespace AntennaHelper
 			signalMinRelay = new List<double> ();
 			signalMaxRelay = new List<double> ();
 
-			foreach (MyTuple planet in AntennaHelperUtil.signalPlanetList) {
-				signalMinDirect.Add (AntennaHelperUtil.GetSignalStrength (directBetterRange, planet.item2));
-				signalMaxDirect.Add (AntennaHelperUtil.GetSignalStrength (directBetterRange, planet.item3));
-				signalMinRelay.Add (AntennaHelperUtil.GetSignalStrength (relayBetterRange, planet.item2));
-				signalMaxRelay.Add (AntennaHelperUtil.GetSignalStrength (relayBetterRange, planet.item3));
+			foreach (MyTuple planet in AHUtil.signalPlanetList) {
+				signalMinDirect.Add (AHUtil.GetSignalStrength (directBetterRange, planet.item2));
+				signalMaxDirect.Add (AHUtil.GetSignalStrength (directBetterRange, planet.item3));
+				signalMinRelay.Add (AHUtil.GetSignalStrength (relayBetterRange, planet.item2));
+				signalMaxRelay.Add (AHUtil.GetSignalStrength (relayBetterRange, planet.item3));
 			}
 		}
 
@@ -313,8 +313,8 @@ namespace AntennaHelper
 
 		public static void CalcCustomDistance ()
 		{
-			signalCustomDistanceDirect = AntennaHelperUtil.GetSignalStrength (directBetterRange, Double.Parse (customDistance));
-			signalCustomDistanceRelay = AntennaHelperUtil.GetSignalStrength (relayBetterRange, Double.Parse (customDistance));
+			signalCustomDistanceDirect = AHUtil.GetSignalStrength (directBetterRange, Double.Parse (customDistance));
+			signalCustomDistanceRelay = AHUtil.GetSignalStrength (relayBetterRange, Double.Parse (customDistance));
 
 		}
 
@@ -460,12 +460,12 @@ namespace AntennaHelper
 			toolbarButton = KSP.UI.Screens.ApplicationLauncher.Instance.AddModApplication (
 				ToolbarButtonOnTrue, 
 				ToolbarButtonOnFalse, 
-				AntennaHelperUtil.DummyVoid, 
-				AntennaHelperUtil.DummyVoid, 
-				AntennaHelperUtil.DummyVoid, 
-				AntennaHelperUtil.DummyVoid,
+				AHUtil.DummyVoid, 
+				AHUtil.DummyVoid, 
+				AHUtil.DummyVoid, 
+				AHUtil.DummyVoid,
 				KSP.UI.Screens.ApplicationLauncher.AppScenes.VAB | KSP.UI.Screens.ApplicationLauncher.AppScenes.SPH,
-				AntennaHelperUtil.toolbarButtonTex);
+				AHUtil.toolbarButtonTex);
 		}
 
 		private void RemoveToolbarButton ()
