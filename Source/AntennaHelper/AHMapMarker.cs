@@ -135,8 +135,8 @@ namespace AntennaHelper
 		#endregion
 		public void Update ()
 		{
-				marker.transform.LookAt (target);
-				marker.transform.Rotate (Vector3.right, 90f);
+			marker.transform.LookAt (target);
+			marker.transform.Rotate (Vector3.right, 90f);
 		}
 	}
 }
