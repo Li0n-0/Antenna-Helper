@@ -51,8 +51,6 @@ namespace AntennaHelper
 			GameEvents.onGameSceneSwitchRequested.Add (SceneSwitch);
 
 			homePlanet = FlightGlobals.GetHomeBody ();
-//			planetsList = FlightGlobals.Bodies [0].orbitingBodies;
-//			moonsList = homePlanet.orbitingBodies;
 
 			signalPlanetList = new List<MyTuple> ();
 			foreach (CelestialBody moon in homePlanet.orbitingBodies) {
@@ -63,33 +61,6 @@ namespace AntennaHelper
 					signalPlanetList.Add (GetDistancePlanet (homePlanet, planet));
 				}
 			}
-
-//			inFlightRelay = new List<List<ModuleDataTransmitter>> ();
-//			foreach (Vessel vessel in FlightGlobals.VesselsUnloaded) {
-//				if (vessel.FindPartModulesImplementing<ModuleDataTransmitter> ().Count != 0) {
-//					inFlightRelay.Add (new List<ModuleDataTransmitter> 
-//						(vessel.FindPartModulesImplementing<ModuleDataTransmitter> ()));
-//				}
-//			}
-
-
-
-
-//			Debug.Log ("[AntennaHelper] : DSN modificateur : " + DSNMod);
-//			Debug.Log ("[AntennaHelper] : range mod : " + rangeMod);
-//			Debug.Log ("[AntennaHelper] : home planet : " + homePlanet.GetName ());
-//			Debug.Log ("[AntennaHelper] : List of planets : ");
-//			foreach (CelestialBody body in planetsList) {
-//				Debug.Log ("[AntennaHelper] : " + body.GetName ());
-//			}
-//			Debug.Log ("[AntennaHelper] : List of moons : ");
-//			foreach (CelestialBody body in moonsList) {
-//				Debug.Log ("[AntennaHelper] : " + body.GetName ());
-//			}
-//			Debug.Log ("[AntennaHelper] : List of in-fligh relay : ");
-//			foreach (List<ModuleDataTransmitter> v in inFlightRelay) {
-//				Debug.Log ("[AntennaHelper] : " + v[0].vessel.GetName ());
-//			}
 		}
 
 		public void OnDestroy ()
