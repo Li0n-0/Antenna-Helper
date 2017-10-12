@@ -17,7 +17,6 @@ namespace AntennaHelper
 		public static float antennaRangeMod;
 		public static int DSNLevel;
 		public static double[] DSNLevelList = {2000000000d, 50000000000d, 250000000000d};
-		public static List<MyTuple> targetDSNList;
 
 		public static List<MyTuple> signalPlanetList;
 
@@ -50,14 +49,6 @@ namespace AntennaHelper
 			ApplyModRangeToDSN ();
 			GameEvents.OnGameSettingsApplied.Add (ApplyModRangeToDSN);
 			GameEvents.onGameSceneSwitchRequested.Add (SceneSwitch);
-
-			// Target List (only DSN for now)
-			targetDSNList = new List<MyTuple> ();
-			targetDSNList.Add (new MyTuple ("DSN Level 1", 2000000000d));
-			targetDSNList.Add (new MyTuple ("DSN Level 2", 50000000000d));
-			targetDSNList.Add (new MyTuple ("DSN Level 3", 250000000000d));
-
-
 
 			homePlanet = FlightGlobals.GetHomeBody ();
 //			planetsList = FlightGlobals.Bodies [0].orbitingBodies;
