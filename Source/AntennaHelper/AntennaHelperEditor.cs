@@ -14,6 +14,8 @@ namespace AntennaHelper
 			instance = this;
 
 //			SetTarget (AntennaHelperUtil.targetDSNList [AntennaHelperUtil.DSNLevel]);
+			targetPower = AHUtil.DSNLevelList [AHUtil.DSNLevel];
+			targetName = "DSN Level " + (AHUtil.DSNLevel + 1);
 
 			GameEvents.onGUIApplicationLauncherReady.Add (AddToolbarButton);
 			GameEvents.onGUIApplicationLauncherDestroyed.Add (RemoveToolbarButton);
