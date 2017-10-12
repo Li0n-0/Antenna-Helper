@@ -170,7 +170,7 @@ namespace AntennaHelper
 						bigDirect = antenna;
 					}
 				}
-				directPower = bigDirect.antennaPower;
+				directPower = AHUtil.TruePower (bigDirect.antennaPower);
 				directRange = AHUtil.GetRange (directPower, targetPower);
 				directAntennaName = bigDirect.part.partInfo.title;
 			} else {
@@ -202,7 +202,7 @@ namespace AntennaHelper
 						bigRelay = antenna;
 					}
 				}
-				relayPower = bigRelay.antennaPower;
+				relayPower = AHUtil.TruePower (bigRelay.antennaPower);
 				relayRange = AHUtil.GetRange (relayPower, targetPower);
 				relayAntennaName = bigRelay.part.partInfo.title;
 			} else {

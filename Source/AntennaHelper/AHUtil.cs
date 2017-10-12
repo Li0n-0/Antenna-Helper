@@ -140,6 +140,11 @@ namespace AntennaHelper
 		public static void DummyVoid () {}// For the toolbar button
 
 		#region Math
+		public static double TruePower (double power) {
+			// return the "true power" of the antenna, stock power * range modifier
+			return power * HighLogic.CurrentGame.Parameters.CustomParams<CommNet.CommNetParams> ().rangeModifier;
+		}
+
 		public static double GetAWCE (List<ModuleDataTransmitter> antennas)
 		{
 			// Get the Average Weighted Combinability Exponent for this set of antennas
@@ -156,8 +161,8 @@ namespace AntennaHelper
 			}
 
 			foreach (ModuleDataTransmitter ant in antennas) {
-				x += ant.antennaPower * ant.antennaCombinableExponent;
-				y += ant.antennaPower;
+				x += TruePower (ant.antennaPower) * ant.antennaCombinableExponent;
+				y += TruePower (ant.antennaPower);
 			}
 			z = x / y;
 			return z;
@@ -171,9 +176,9 @@ namespace AntennaHelper
 			double allAnt = 0;
 			double awce = GetAWCE (antennas);
 			foreach (ModuleDataTransmitter ant in antennas) {
-				allAnt += ant.antennaPower;
-				if (ant.antennaPower > strongestAnt) {
-					strongestAnt = ant.antennaPower;
+				allAnt += TruePower (ant.antennaPower);
+				if (TruePower (ant.antennaPower) > strongestAnt) {
+					strongestAnt = TruePower (ant.antennaPower);
 				}
 			}
 			double vesselPower = strongestAnt * Math.Pow (allAnt / strongestAnt, awce);
