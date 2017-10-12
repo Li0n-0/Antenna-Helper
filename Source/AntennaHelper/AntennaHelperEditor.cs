@@ -331,6 +331,13 @@ namespace AntennaHelper
 			instance.DoTheMath ();
 		}
 
+		public static void SetTarget (int dsnL)
+		{
+			targetPower = AHUtil.DSNLevelList [dsnL];
+			targetName = "DSN Level " + (dsnL + 1);
+			instance.DoTheMath ();
+		}
+
 		public void CreateAntennaList ()
 		{
 			directAntennaList = new List<ModuleDataTransmitter> ();

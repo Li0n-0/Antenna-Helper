@@ -154,13 +154,23 @@ namespace AntennaHelper
 				AntennaHelperEditor.CloseTargetWindow ();
 			}
 
+			GUIStyle guiStyleBold = new GUIStyle (GUI.skin.GetStyle ("Button"));
+			guiStyleBold.fontStyle = FontStyle.Bold;
+
 			GUILayout.BeginVertical ();
-			foreach (MyTuple target in AHUtil.targetDSNList) {
-				if (GUILayout.Button (target.item1)) {
-					AntennaHelperEditor.SetTarget (target);
-//					AntennaHelperEditor.targetName = target.item1;
+
+			for (int i = 0 ; i < AHUtil.DSNLevelList.Length ; i++) {
+				if (i == AHUtil.DSNLevel) {
+					if (GUILayout.Button ("DSN Level " + (i + 1) + "  (" + AHUtil.DSNLevelList[i] + ")", guiStyleBold)) {
+						AntennaHelperEditor.SetTarget (i);
+					}
+				} else {
+					if (GUILayout.Button ("DSN Level " + (i + 1) + "  (" + AHUtil.DSNLevelList[i] + ")")) {
+						AntennaHelperEditor.SetTarget (i);
+					}
 				}
 			}
+
 			GUILayout.EndVertical ();
 			GUI.DragWindow ();
 		}
