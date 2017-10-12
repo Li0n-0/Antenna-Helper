@@ -12,6 +12,8 @@ namespace AntennaHelper
 
 		public void Start ()
 		{
+			TimingManager.LateUpdateAdd (TimingManager.TimingStage.BetterLateThanNever, DoUpdate);
+
 			isEnabled = false;
 			GameEvents.OnMapEntered.Add (MapEnter);
 			GameEvents.OnMapExited.Add (MapExit);
@@ -103,6 +105,7 @@ namespace AntennaHelper
 
 		public void OnDestroy ()
 		{
+			TimingManager.LateUpdateRemove (TimingManager.TimingStage.BetterLateThanNever, DoUpdate);
 			GameEvents.OnMapEntered.Remove (MapEnter);
 			GameEvents.OnMapExited.Remove (MapExit);
 		}
@@ -133,8 +136,10 @@ namespace AntennaHelper
 			isEnabled = true;
 		}
 		#endregion
-		public void Update ()
+		public void DoUpdate ()
 		{
+			if (! this.isActiveAndEnabled) { return; }
+
 			marker.transform.LookAt (target);
 			marker.transform.Rotate (Vector3.right, 90f);
 		}
