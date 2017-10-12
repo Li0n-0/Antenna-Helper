@@ -37,6 +37,7 @@
 *.zip
 *.gif
 *.bat
+*.userprefs
 
 # KSP stuff
 *.log
