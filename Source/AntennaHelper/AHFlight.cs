@@ -108,13 +108,13 @@ namespace AntennaHelper
 
 		private void SetMapMarker ()
 		{
-			Debug.Log ("[AH] DSN level = " + ScenarioUpgradeableFacilities.GetFacilityLevel (SpaceCenterFacility.TrackingStation));
-			Debug.Log ("[AH] DSN level int = " + AHUtil.DSNLevel);
-			Debug.Log ("[AH] DSN power = " + AHUtil.DSNLevelList [AHUtil.DSNLevel]);
-			Debug.Log ("[AH] vessel transmit power = " + FlightGlobals.ActiveVessel.Connection.Comm.antennaTransmit.power);
-			Debug.Log ("[AH] vessel relay power = " + FlightGlobals.ActiveVessel.Connection.Comm.antennaRelay.power);
-			Debug.Log ("[AH] vessel total power = " + (FlightGlobals.ActiveVessel.Connection.Comm.antennaTransmit.power + FlightGlobals.ActiveVessel.Connection.Comm.antennaRelay.power));
-			Debug.Log ("[AH] max range = " + AHUtil.GetRange (FlightGlobals.ActiveVessel.Connection.Comm.antennaTransmit.power, AHUtil.DSNLevelList [AHUtil.DSNLevel]));
+//			Debug.Log ("[AH] DSN level = " + ScenarioUpgradeableFacilities.GetFacilityLevel (SpaceCenterFacility.TrackingStation));
+//			Debug.Log ("[AH] DSN level int = " + AHUtil.DSNLevel);
+//			Debug.Log ("[AH] DSN power = " + AHUtil.DSNLevelList [AHUtil.DSNLevel]);
+//			Debug.Log ("[AH] vessel transmit power = " + FlightGlobals.ActiveVessel.Connection.Comm.antennaTransmit.power);
+//			Debug.Log ("[AH] vessel relay power = " + FlightGlobals.ActiveVessel.Connection.Comm.antennaRelay.power);
+//			Debug.Log ("[AH] vessel total power = " + (FlightGlobals.ActiveVessel.Connection.Comm.antennaTransmit.power + FlightGlobals.ActiveVessel.Connection.Comm.antennaRelay.power));
+//			Debug.Log ("[AH] max range = " + AHUtil.GetRange (FlightGlobals.ActiveVessel.Connection.Comm.antennaTransmit.power, AHUtil.DSNLevelList [AHUtil.DSNLevel]));
 
 			////
 			/// New idea : 
@@ -187,9 +187,7 @@ namespace AntennaHelper
 			} else {
 				vesselPower = powerBestAntenna;
 			}
-			Debug.Log ("[AH] calc vessel power : " + vesselPower);
-			Debug.Log ("[AH] there is " + antennaList.Count + " antennas on this ship");
-			Debug.Log ("[AH] there is " + antennaListCanCombine.Count + " antennas that are combinable");
+
 			// list of all the relay in-flight :
 			int i = 0;
 			foreach (Vessel v in FlightGlobals.Vessels) {
@@ -217,22 +215,30 @@ namespace AntennaHelper
 					}
 				}
 			}
+//			Debug.Log ("[AH] relay marker done");
 
 			// Active Connection :
-			double rangeAC = AHUtil.GetRange (vesselPower, vessel.Connection.ControlPath[0].b.antennaRelay.power);
+			double rangeAC;
+			Transform relay;
+			double activeSignal;
+			bool isHome;
+			if (!vessel.Connection.IsConnected || vessel.Connection.ControlPath [0].b.isHome) {
+				rangeAC =  AHUtil.GetRange (vesselPower, AHUtil.DSNLevelList [AHUtil.DSNLevel]);
+				relay = FlightGlobals.GetHomeBody ().MapObject.trf;
+				activeSignal = 1d;
+				isHome = true;
+			} else {
+				rangeAC = AHUtil.GetRange (vesselPower, vessel.Connection.ControlPath[0].b.antennaRelay.power);
+				relay = vessel.Connection.ControlPath [0].b.transform.GetComponent<Vessel> ().mapObject.trf;
+				activeSignal = GetRealSignal (vessel.Connection.ControlPath);
+				isHome = false;
+			}
+
 			activeConnect = new GameObject ();
 			activeConnect.AddComponent<AHMapMarker> ();
 			activeConnect.GetComponent<AHMapMarker> ().Start ();
-			Transform relay;
-			double activeSignal;
-			if (vessel.Connection.ControlPath [0].b.isHome) {
-				relay = FlightGlobals.GetHomeBody ().MapObject.trf;
-				activeSignal = 1d;
-			} else {
-				relay = vessel.Connection.ControlPath [0].b.transform.GetComponent<Vessel> ().mapObject.trf;
-				activeSignal = GetRealSignal (vessel.Connection.ControlPath);
-			}
-			activeConnect.GetComponent<AHMapMarker> ().SetUp (rangeAC, vessel.mapObject.trf, relay, vessel.Connection.ControlPath [0].b.isHome, null, activeSignal);
+			activeConnect.GetComponent<AHMapMarker> ().SetUp (rangeAC, vessel.mapObject.trf, relay, isHome, null, activeSignal);
+//			Debug.Log ("[AH] active marker done");
 
 			// DSN Connection :
 			double rangeDSN = AHUtil.GetRange (vesselPower, AHUtil.DSNLevelList [AHUtil.DSNLevel]);
@@ -370,7 +376,6 @@ namespace AntennaHelper
 				foreach (GameObject gO in allRelay) {
 					gO.GetComponent<AHMapMarker> ().Hide ();
 				}
-				Debug.Log ("[AH] toolbar on false");
 				isToolbarOn = false;
 			}
 		}
