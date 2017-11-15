@@ -280,7 +280,7 @@ namespace AntennaHelper
 		{
 			if (isToolbarOn && inMapView) {
 				GUILayout.BeginArea (rectAntennaSelectWindow);
-				rectAntennaSelectWindow = GUILayout.Window (806641, rectAntennaSelectWindow, AHMapViewWindow.AntennaSelectWindow, "Antennas Selection");
+				rectAntennaSelectWindow = GUILayout.Window (806641, rectAntennaSelectWindow, AHMapViewWindow.AntennaSelectWindow, "Antenna Helper");
 				GUILayout.EndArea ();
 			}
 		}
