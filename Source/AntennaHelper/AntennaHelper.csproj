@@ -48,13 +48,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AntennaHelperEditor.cs" />
-    <Compile Include="EditorWindows.cs" />
     <Compile Include="AHSettings.cs" />
     <Compile Include="AHMapMarker.cs" />
     <Compile Include="AHFlight.cs" />
     <Compile Include="AHUtil.cs" />
     <Compile Include="AHMapViewWindow.cs" />
+    <Compile Include="AHEditor.cs" />
+    <Compile Include="AHEditorWindows.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
