@@ -54,6 +54,7 @@
     <Compile Include="AHMapMarker.cs" />
     <Compile Include="AHFlight.cs" />
     <Compile Include="AHUtil.cs" />
+    <Compile Include="AHMapViewWindow.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
