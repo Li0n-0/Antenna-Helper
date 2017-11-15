@@ -10,19 +10,19 @@ namespace AntennaHelper
 			GUILayout.BeginVertical ();
 			GUILayout.Label ("Curently : " + AHFlight.guiCircle.ToString ());
 			if (GUILayout.Button ("Active Connection")) {
-				AHFlight.guiCircle = AHFlight.GUICircleSelection.active;
+				AHFlight.guiCircle = AHFlight.GUICircleSelection.ACTIVE;
 				AHFlight.GUISelectCircle ();
 			}
 			if (GUILayout.Button ("DSN")) {
-				AHFlight.guiCircle = AHFlight.GUICircleSelection.dsn;
+				AHFlight.guiCircle = AHFlight.GUICircleSelection.DSN;
 				AHFlight.GUISelectCircle ();
 			}
 			if (GUILayout.Button ("Relay")) {
-				AHFlight.guiCircle = AHFlight.GUICircleSelection.relay;
+				AHFlight.guiCircle = AHFlight.GUICircleSelection.RELAY;
 				AHFlight.GUISelectCircle ();
 			}
 			if (GUILayout.Button ("DSN + Relay")) {
-				AHFlight.guiCircle = AHFlight.GUICircleSelection.dsnAndRelay;
+				AHFlight.guiCircle = AHFlight.GUICircleSelection.DSN_AND_RELAY;
 				AHFlight.GUISelectCircle ();
 			}
 			GUILayout.EndVertical ();

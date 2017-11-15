@@ -14,6 +14,7 @@ namespace AntennaHelper
 		private List<GameObject> mapMarkerList = new List<GameObject> ();
 		private bool isToolbarOn = false;
 		private static AHFlight instance;
+		private Vessel vessel;
 
 		// GameObjects saves :
 		private List<GameObject> allRelay = new List<GameObject> ();
@@ -22,10 +23,10 @@ namespace AntennaHelper
 
 		public enum GUICircleSelection
 		{
-			active,
-			dsn,
-			relay,
-			dsnAndRelay
+			ACTIVE,
+			DSN,
+			RELAY,
+			DSN_AND_RELAY
 		}
 		public static GUICircleSelection guiCircle;
 
@@ -35,7 +36,9 @@ namespace AntennaHelper
 		{
 			instance = this;
 
-			guiCircle = GUICircleSelection.active;
+			vessel = FlightGlobals.ActiveVessel;
+
+			guiCircle = GUICircleSelection.ACTIVE;
 
 
 			timeAtStart = Time.time;
@@ -165,7 +168,7 @@ namespace AntennaHelper
 			List<ModuleDataTransmitter> antennaList = new List<ModuleDataTransmitter> ();
 			List<ModuleDataTransmitter> antennaListCanCombine = new List<ModuleDataTransmitter> ();
 
-			foreach (Part part in FlightGlobals.ActiveVessel.parts) {
+			foreach (Part part in vessel.parts) {
 				antennaList.AddRange (part.FindModulesImplementing<ModuleDataTransmitter> ());
 			}
 
@@ -190,7 +193,7 @@ namespace AntennaHelper
 			// list of all the relay in-flight :
 			int i = 0;
 			foreach (Vessel v in FlightGlobals.Vessels) {
-				if (v != FlightGlobals.ActiveVessel) {
+				if (v != vessel) {
 					// make sure the active vessel do not end up in the list
 					if (v.vesselType == VesselType.Relay) {
 						// check that the vesselType is Relay
@@ -207,7 +210,7 @@ namespace AntennaHelper
 							allRelay.Add (new GameObject ());
 							allRelay [i].AddComponent<AHMapMarker> ();
 							allRelay [i].GetComponent<AHMapMarker> ().Start ();
-							allRelay [i].GetComponent<AHMapMarker> ().SetUp (range, FlightGlobals.ActiveVessel.mapObject.trf, v.mapObject.trf, false, null, realSignal);
+							allRelay [i].GetComponent<AHMapMarker> ().SetUp (range, vessel.mapObject.trf, v.mapObject.trf, false, null, realSignal);
 
 							i++;
 						}
@@ -216,27 +219,27 @@ namespace AntennaHelper
 			}
 
 			// Active Connection :
-			double rangeAC = AHUtil.GetRange (vesselPower, FlightGlobals.ActiveVessel.Connection.ControlPath[0].b.antennaRelay.power);
+			double rangeAC = AHUtil.GetRange (vesselPower, vessel.Connection.ControlPath[0].b.antennaRelay.power);
 			activeConnect = new GameObject ();
 			activeConnect.AddComponent<AHMapMarker> ();
 			activeConnect.GetComponent<AHMapMarker> ().Start ();
 			Transform relay;
 			double activeSignal;
-			if (FlightGlobals.ActiveVessel.Connection.ControlPath [0].b.isHome) {
+			if (vessel.Connection.ControlPath [0].b.isHome) {
 				relay = FlightGlobals.GetHomeBody ().MapObject.trf;
 				activeSignal = 1d;
 			} else {
-				relay = FlightGlobals.ActiveVessel.Connection.ControlPath [0].b.transform.GetComponent<Vessel> ().mapObject.trf;
-				activeSignal = GetRealSignal (FlightGlobals.ActiveVessel.Connection.ControlPath);
+				relay = vessel.Connection.ControlPath [0].b.transform.GetComponent<Vessel> ().mapObject.trf;
+				activeSignal = GetRealSignal (vessel.Connection.ControlPath);
 			}
-			activeConnect.GetComponent<AHMapMarker> ().SetUp (rangeAC, FlightGlobals.ActiveVessel.mapObject.trf, relay, FlightGlobals.ActiveVessel.Connection.ControlPath [0].b.isHome, null, activeSignal);
+			activeConnect.GetComponent<AHMapMarker> ().SetUp (rangeAC, vessel.mapObject.trf, relay, vessel.Connection.ControlPath [0].b.isHome, null, activeSignal);
 
 			// DSN Connection :
 			double rangeDSN = AHUtil.GetRange (vesselPower, AHUtil.DSNLevelList [AHUtil.DSNLevel]);
 			DSNConnect = new GameObject ();
 			AHMapMarker markerDSN = DSNConnect.AddComponent<AHMapMarker> ();
 			markerDSN.Start ();
-			markerDSN.SetUp (rangeDSN, FlightGlobals.ActiveVessel.mapObject.trf, FlightGlobals.GetHomeBody ().MapObject.trf, true, null, 1d);
+			markerDSN.SetUp (rangeDSN, vessel.mapObject.trf, FlightGlobals.GetHomeBody ().MapObject.trf, true, null, 1d);
 
 //			if (FlightGlobals.ActiveVessel.Connection != null) {
 //				Debug.Log ("[AH] active vessel CommnetVessel found");
@@ -285,28 +288,28 @@ namespace AntennaHelper
 		public static void GUISelectCircle ()
 		{
 			switch (guiCircle) {
-			case GUICircleSelection.active:
+			case GUICircleSelection.ACTIVE:
 				instance.activeConnect.GetComponent<AHMapMarker> ().Show ();
 				instance.DSNConnect.GetComponent<AHMapMarker> ().Hide ();
 				foreach (GameObject gO in instance.allRelay) {
 					gO.GetComponent<AHMapMarker> ().Hide ();
 				}
 				break;
-			case GUICircleSelection.dsn:
+			case GUICircleSelection.DSN:
 				instance.activeConnect.GetComponent<AHMapMarker> ().Hide ();
 				instance.DSNConnect.GetComponent<AHMapMarker> ().Show ();
 				foreach (GameObject gO in instance.allRelay) {
 					gO.GetComponent<AHMapMarker> ().Hide ();
 				}
 				break;
-			case GUICircleSelection.relay:
+			case GUICircleSelection.RELAY:
 				instance.activeConnect.GetComponent<AHMapMarker> ().Hide ();
 				instance.DSNConnect.GetComponent<AHMapMarker> ().Hide ();
 				foreach (GameObject gO in instance.allRelay) {
 					gO.GetComponent<AHMapMarker> ().Show ();
 				}
 				break;
-			case GUICircleSelection.dsnAndRelay:
+			case GUICircleSelection.DSN_AND_RELAY:
 				instance.activeConnect.GetComponent<AHMapMarker> ().Hide ();
 				instance.DSNConnect.GetComponent<AHMapMarker> ().Show ();
 				foreach (GameObject gO in instance.allRelay) {

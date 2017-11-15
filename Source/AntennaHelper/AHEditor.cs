@@ -5,9 +5,9 @@ using UnityEngine;
 namespace AntennaHelper
 {
 	[KSPAddon (KSPAddon.Startup.EditorAny, false)]
-	public class AntennaHelperEditor : MonoBehaviour
+	public class AHEditor : MonoBehaviour
 	{
-		private static AntennaHelperEditor instance;
+		private static AHEditor instance;
 
 		public void Start ()
 		{
@@ -445,17 +445,17 @@ namespace AntennaHelper
 		{
 			if (showMainWindow) {
 				GUILayout.BeginArea (rectMainWindow);
-				rectMainWindow = GUILayout.Window (835298, rectMainWindow, EditorWindows.MainWindow, "Antenna Helper");
+				rectMainWindow = GUILayout.Window (835298, rectMainWindow, AHEditorWindows.MainWindow, "Antenna Helper");
 				GUILayout.EndArea ();
 			}
 			if (showTargetWindow) {
 				GUILayout.BeginArea (rectTargetWindow);
-				rectTargetWindow = GUILayout.Window (419256, rectTargetWindow, EditorWindows.TargetWindow, "Pick A Target");
+				rectTargetWindow = GUILayout.Window (419256, rectTargetWindow, AHEditorWindows.TargetWindow, "Pick A Target");
 				GUILayout.EndArea ();
 			}
 			if (showPlanetWindow) {
 				GUILayout.BeginArea (rectPlanetWindow);
-				rectPlanetWindow = GUILayout.Window (332980, rectPlanetWindow, EditorWindows.PlanetWindow, "Signal Strength / Distance");
+				rectPlanetWindow = GUILayout.Window (332980, rectPlanetWindow, AHEditorWindows.PlanetWindow, "Signal Strength / Distance");
 				GUILayout.EndArea ();
 			}
 		}
