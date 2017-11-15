@@ -271,5 +271,13 @@ namespace AntennaHelper
 			item3 = itemDouble2;
 		}
 	}
+
+	public enum GUICircleSelection
+	{
+		ACTIVE,
+		DSN,
+		RELAY,
+		DSN_AND_RELAY
+	}
 }
 

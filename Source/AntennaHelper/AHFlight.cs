@@ -9,11 +9,13 @@ namespace AntennaHelper
 	[KSPAddon (KSPAddon.Startup.Flight, false)]
 	public class AHFlight : MonoBehaviour
 	{
-		private KSP.UI.Screens.ApplicationLauncherButton toolbarButton;
-		private float timeAtStart;
-		private List<GameObject> mapMarkerList = new List<GameObject> ();
-		private bool isToolbarOn = false;
+		// UI Stuff :
+		public static GUICircleSelection guiCircle;
+		public static Rect rectAntennaSelectWindow = new Rect (Vector2.zero, new Vector2 (100, 100));
+
 		private static AHFlight instance;
+
+		private float timeAtStart;
 		private Vessel vessel;
 
 		// GameObjects saves :
@@ -21,26 +23,16 @@ namespace AntennaHelper
 		private GameObject activeConnect;
 		private GameObject DSNConnect;
 
-		public enum GUICircleSelection
-		{
-			ACTIVE,
-			DSN,
-			RELAY,
-			DSN_AND_RELAY
-		}
-		public static GUICircleSelection guiCircle;
+		// UI stuff :
+		private bool isToolbarOn = false;
+		private KSP.UI.Screens.ApplicationLauncherButton toolbarButton;
 
-		public static Rect rectAntennaSelectWindow = new Rect (Vector2.zero, new Vector2 (100, 100));
 
 		public void Start ()
 		{
 			instance = this;
-
 			vessel = FlightGlobals.ActiveVessel;
-
 			guiCircle = GUICircleSelection.ACTIVE;
-
-
 			timeAtStart = Time.time;
 
 			GameEvents.onGUIApplicationLauncherReady.Add (AddToolbarButton);
