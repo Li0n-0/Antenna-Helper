@@ -12,24 +12,94 @@ namespace AntennaHelper
 
 		public void Start ()
 		{
+//			TimingManager.LateUpdateAdd (TimingManager.TimingStage.BetterLateThanNever, DoUpdate);
+
 			isEnabled = false;
 			GameEvents.OnMapEntered.Add (MapEnter);
 			GameEvents.OnMapExited.Add (MapExit);
 		}
 
-		public void SetUp (double maxRange, Transform mapObjectTransmitter, Transform mapObjectRelay, bool relayIsHome = false)
+		public void SetUp (double maxRange, Transform mapObjectTransmitter, Transform mapObjectRelay, bool relayIsHome = false, CommNet.CommLink link = null, double sS = Double.NaN)
 		{
-			parent = mapObjectRelay;
-			target = mapObjectTransmitter;
+			if (mapObjectRelay != null && mapObjectTransmitter != null) {
+				parent = mapObjectRelay;
+				target = mapObjectTransmitter;
+			}
+
 
 			if (relayIsHome) {
 				maxRange += Planetarium.fetch.Home.Radius;
 			}
 
-			scaleGreen = AHUtil.GetMapScale (AHUtil.GetDistanceAt75 (maxRange));
-			scaleYellow = AHUtil.GetMapScale (AHUtil.GetDistanceAt50 (maxRange));
-			scaleOrange = AHUtil.GetMapScale (AHUtil.GetDistanceAt25 (maxRange));
+
+			//
+			if (link != null) {
+				double rangeOffset = 0;
+				if (link.b.isHome) {
+					Debug.Log ("[AH] MapMarker : link.b is home");
+					parent = FlightGlobals.GetHomeBody ().MapObject.trf;
+					rangeOffset = FlightGlobals.GetHomeBody ().Radius;
+				} else {
+					Debug.Log ("[AH] MapMarker : link.b is a vessel");
+					parent = link.b.transform.GetComponent<Vessel> ().mapObject.trf;
+				}
+				target = link.a.transform.GetComponent<Vessel> ().mapObject.trf;
+			}
+
+			//
+
+
+//			scaleGreen = AHUtil.GetMapScale (AHUtil.GetDistanceAt75 (maxRange));
+//			scaleYellow = AHUtil.GetMapScale (AHUtil.GetDistanceAt50 (maxRange));
+//			scaleOrange = AHUtil.GetMapScale (AHUtil.GetDistanceAt25 (maxRange));
+//			scaleRed = AHUtil.GetMapScale (maxRange);
+//
+//			//
+//			if (sS <= .25d) {
+//				scaleGreen = 0;
+//				scaleYellow = 0;
+//				scaleOrange = 0;
+//				scaleRed = AHUtil.GetMapScale (maxRange);
+//			} else if (sS <= .5d) {
+//				scaleGreen = 0;
+//				scaleYellow = 0;
+//				scaleOrange = AHUtil.GetMapScale (AHUtil.GetDistanceAt25 (maxRange));
+//				scaleRed = AHUtil.GetMapScale (maxRange);
+//			} else if (sS <= .75d) {
+//				scaleGreen = 0;
+//				scaleYellow = AHUtil.GetMapScale (AHUtil.GetDistanceAt50 (maxRange));
+//				scaleOrange = AHUtil.GetMapScale (AHUtil.GetDistanceAt25 (maxRange));
+//				scaleRed = AHUtil.GetMapScale (maxRange);
+//			} else {
+//				scaleGreen = AHUtil.GetMapScale (AHUtil.GetDistanceAt75 (maxRange));
+//				scaleYellow = AHUtil.GetMapScale (AHUtil.GetDistanceAt50 (maxRange));
+//				scaleOrange = AHUtil.GetMapScale (AHUtil.GetDistanceAt25 (maxRange));
+//				scaleRed = AHUtil.GetMapScale (maxRange);
+//			}
+			//
+
+			scaleGreen = 0;
+			scaleYellow = 0;
+			scaleOrange = 0;
 			scaleRed = AHUtil.GetMapScale (maxRange);
+			if (sS >= .25d) {
+				// draw orange circle
+				scaleOrange = AHUtil.GetMapScale (AHUtil.GetDistanceForOrange (sS, maxRange));
+			}
+			if (sS >= .5d) {
+				// draw yellow circle
+				scaleYellow = AHUtil.GetMapScale (AHUtil.GetDistanceForYellow (sS, maxRange));
+			}
+			if (sS >= .75d) {
+				// draw green circle
+				scaleGreen = AHUtil.GetMapScale (AHUtil.GetDistanceForGreen (sS, maxRange));
+			}
+			if (sS == 1d) {
+				scaleGreen = AHUtil.GetMapScale (AHUtil.GetDistanceAt75 (maxRange));
+				scaleYellow = AHUtil.GetMapScale (AHUtil.GetDistanceAt50 (maxRange));
+				scaleOrange = AHUtil.GetMapScale (AHUtil.GetDistanceAt25 (maxRange));
+			}
+
 
 			// Creating circles :
 			circleGreen = GameObject.CreatePrimitive (PrimitiveType.Quad);
@@ -103,6 +173,7 @@ namespace AntennaHelper
 
 		public void OnDestroy ()
 		{
+//			TimingManager.LateUpdateRemove (TimingManager.TimingStage.BetterLateThanNever, DoUpdate);
 			GameEvents.OnMapEntered.Remove (MapEnter);
 			GameEvents.OnMapExited.Remove (MapExit);
 		}
@@ -133,8 +204,10 @@ namespace AntennaHelper
 			isEnabled = true;
 		}
 		#endregion
-		public void Update ()
+		public void Update ()//DoUpdate ()
 		{
+			if (! this.isActiveAndEnabled) { return; }
+
 			marker.transform.LookAt (target);
 			marker.transform.Rotate (Vector3.right, 90f);
 		}

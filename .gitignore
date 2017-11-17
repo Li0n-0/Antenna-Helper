@@ -37,6 +37,7 @@
 *.zip
 *.gif
 *.bat
+*.userprefs
 
 # KSP stuff
 *.log
@@ -46,3 +47,5 @@ relay.png
 direct.png
 Marketing/
 
+*.userprefs
+Source/AntennaHelper/AntennaHelper.userprefs

@@ -5,15 +5,17 @@ using UnityEngine;
 namespace AntennaHelper
 {
 	[KSPAddon (KSPAddon.Startup.EditorAny, false)]
-	public class AntennaHelperEditor : MonoBehaviour
+	public class AHEditor : MonoBehaviour
 	{
-		private static AntennaHelperEditor instance;
+		private static AHEditor instance;
 
 		public void Start ()
 		{
 			instance = this;
 
 //			SetTarget (AntennaHelperUtil.targetDSNList [AntennaHelperUtil.DSNLevel]);
+			targetPower = AHUtil.DSNLevelList [AHUtil.DSNLevel];
+			targetName = "DSN Level " + (AHUtil.DSNLevel + 1);
 
 			GameEvents.onGUIApplicationLauncherReady.Add (AddToolbarButton);
 			GameEvents.onGUIApplicationLauncherDestroyed.Add (RemoveToolbarButton);
@@ -170,7 +172,7 @@ namespace AntennaHelper
 						bigDirect = antenna;
 					}
 				}
-				directPower = bigDirect.antennaPower;
+				directPower = AHUtil.TruePower (bigDirect.antennaPower);
 				directRange = AHUtil.GetRange (directPower, targetPower);
 				directAntennaName = bigDirect.part.partInfo.title;
 			} else {
@@ -202,7 +204,7 @@ namespace AntennaHelper
 						bigRelay = antenna;
 					}
 				}
-				relayPower = bigRelay.antennaPower;
+				relayPower = AHUtil.TruePower (bigRelay.antennaPower);
 				relayRange = AHUtil.GetRange (relayPower, targetPower);
 				relayAntennaName = bigRelay.part.partInfo.title;
 			} else {
@@ -319,13 +321,20 @@ namespace AntennaHelper
 		}
 
 
-		private static double targetPower = 0;
+		public static double targetPower = 0;
 		public static string targetName = "";
 
-		public static void SetTarget (MyTuple tuple)
+//		public static void SetTarget (MyTuple tuple)
+//		{
+//			targetPower = tuple.item2;
+//			targetName = tuple.item1;
+//			instance.DoTheMath ();
+//		}
+
+		public static void SetTarget (int dsnL)
 		{
-			targetPower = tuple.item2;
-			targetName = tuple.item1;
+			targetPower = AHUtil.DSNLevelList [dsnL];
+			targetName = "DSN Level " + (dsnL + 1);
 			instance.DoTheMath ();
 		}
 
@@ -436,17 +445,17 @@ namespace AntennaHelper
 		{
 			if (showMainWindow) {
 				GUILayout.BeginArea (rectMainWindow);
-				rectMainWindow = GUILayout.Window (835298, rectMainWindow, EditorWindows.MainWindow, "Antenna Helper");
+				rectMainWindow = GUILayout.Window (835298, rectMainWindow, AHEditorWindows.MainWindow, "Antenna Helper");
 				GUILayout.EndArea ();
 			}
 			if (showTargetWindow) {
 				GUILayout.BeginArea (rectTargetWindow);
-				rectTargetWindow = GUILayout.Window (419256, rectTargetWindow, EditorWindows.TargetWindow, "Pick A Target");
+				rectTargetWindow = GUILayout.Window (419256, rectTargetWindow, AHEditorWindows.TargetWindow, "Pick A Target");
 				GUILayout.EndArea ();
 			}
 			if (showPlanetWindow) {
 				GUILayout.BeginArea (rectPlanetWindow);
-				rectPlanetWindow = GUILayout.Window (332980, rectPlanetWindow, EditorWindows.PlanetWindow, "Signal Strength / Distance");
+				rectPlanetWindow = GUILayout.Window (332980, rectPlanetWindow, AHEditorWindows.PlanetWindow, "Signal Strength / Distance");
 				GUILayout.EndArea ();
 			}
 		}

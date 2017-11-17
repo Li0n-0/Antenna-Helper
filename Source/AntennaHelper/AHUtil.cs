@@ -17,12 +17,9 @@ namespace AntennaHelper
 		public static float antennaRangeMod;
 		public static int DSNLevel;
 		public static double[] DSNLevelList = {2000000000d, 50000000000d, 250000000000d};
-		public static List<MyTuple> targetDSNList;
 
 		public static List<MyTuple> signalPlanetList;
 
-//		public static List<CelestialBody> planetsList;
-//		public static List<CelestialBody> moonsList;
 		public static CelestialBody homePlanet;
 
 		public static Vector2 centerScreen;
@@ -51,17 +48,7 @@ namespace AntennaHelper
 			GameEvents.OnGameSettingsApplied.Add (ApplyModRangeToDSN);
 			GameEvents.onGameSceneSwitchRequested.Add (SceneSwitch);
 
-			// Target List (only DSN for now)
-			targetDSNList = new List<MyTuple> ();
-			targetDSNList.Add (new MyTuple ("DSN Level 1", 2000000000d));
-			targetDSNList.Add (new MyTuple ("DSN Level 2", 50000000000d));
-			targetDSNList.Add (new MyTuple ("DSN Level 3", 250000000000d));
-
-
-
 			homePlanet = FlightGlobals.GetHomeBody ();
-//			planetsList = FlightGlobals.Bodies [0].orbitingBodies;
-//			moonsList = homePlanet.orbitingBodies;
 
 			signalPlanetList = new List<MyTuple> ();
 			foreach (CelestialBody moon in homePlanet.orbitingBodies) {
@@ -72,33 +59,6 @@ namespace AntennaHelper
 					signalPlanetList.Add (GetDistancePlanet (homePlanet, planet));
 				}
 			}
-
-//			inFlightRelay = new List<List<ModuleDataTransmitter>> ();
-//			foreach (Vessel vessel in FlightGlobals.VesselsUnloaded) {
-//				if (vessel.FindPartModulesImplementing<ModuleDataTransmitter> ().Count != 0) {
-//					inFlightRelay.Add (new List<ModuleDataTransmitter> 
-//						(vessel.FindPartModulesImplementing<ModuleDataTransmitter> ()));
-//				}
-//			}
-
-
-
-
-//			Debug.Log ("[AntennaHelper] : DSN modificateur : " + DSNMod);
-//			Debug.Log ("[AntennaHelper] : range mod : " + rangeMod);
-//			Debug.Log ("[AntennaHelper] : home planet : " + homePlanet.GetName ());
-//			Debug.Log ("[AntennaHelper] : List of planets : ");
-//			foreach (CelestialBody body in planetsList) {
-//				Debug.Log ("[AntennaHelper] : " + body.GetName ());
-//			}
-//			Debug.Log ("[AntennaHelper] : List of moons : ");
-//			foreach (CelestialBody body in moonsList) {
-//				Debug.Log ("[AntennaHelper] : " + body.GetName ());
-//			}
-//			Debug.Log ("[AntennaHelper] : List of in-fligh relay : ");
-//			foreach (List<ModuleDataTransmitter> v in inFlightRelay) {
-//				Debug.Log ("[AntennaHelper] : " + v[0].vessel.GetName ());
-//			}
 		}
 
 		public void OnDestroy ()
@@ -140,7 +100,12 @@ namespace AntennaHelper
 		public static void DummyVoid () {}// For the toolbar button
 
 		#region Math
-		public static double GetAWCE (List<ModuleDataTransmitter> antennas)
+		public static double TruePower (double power) {
+			// return the "true power" of the antenna, stock power * range modifier
+			return power * HighLogic.CurrentGame.Parameters.CustomParams<CommNet.CommNetParams> ().rangeModifier;
+		}
+
+		public static double GetAWCE (List<ModuleDataTransmitter> antennas, bool applyMod = true)
 		{
 			// Get the Average Weighted Combinability Exponent for this set of antennas
 			// From the wiki : SUM (( Antenna 'n' Power * Antenna 'n' Exponent ) : ( Antenna 'n+1' Power * Antenna 'n+1' Exponent )) / SUM ( Antenna 'n' Power ) : ( Antenna 'n+1' Power )
@@ -156,24 +121,30 @@ namespace AntennaHelper
 			}
 
 			foreach (ModuleDataTransmitter ant in antennas) {
-				x += ant.antennaPower * ant.antennaCombinableExponent;
-				y += ant.antennaPower;
+				if (applyMod) {
+					x += TruePower (ant.antennaPower) * ant.antennaCombinableExponent;
+					y += TruePower (ant.antennaPower);
+				} else {
+					x += ant.antennaPower * ant.antennaCombinableExponent;
+					y += ant.antennaPower;
+				}
 			}
 			z = x / y;
 			return z;
 		}
 
-		public static double GetVesselPower (List<ModuleDataTransmitter> antennas)
+		public static double GetVesselPower (List<ModuleDataTransmitter> antennas, bool applyMod = true)
 		{
-			// Get the total antenna power for the vessel
+			// Get the total antenna power for the vessel, the list in parameter need to be carefully selected, 
+			// remove not combinable, relay and/or direct
 
 			double strongestAnt = 0;
 			double allAnt = 0;
-			double awce = GetAWCE (antennas);
+			double awce = GetAWCE (antennas, applyMod);
 			foreach (ModuleDataTransmitter ant in antennas) {
-				allAnt += ant.antennaPower;
-				if (ant.antennaPower > strongestAnt) {
-					strongestAnt = ant.antennaPower;
+				allAnt += TruePower (ant.antennaPower);
+				if (TruePower (ant.antennaPower) > strongestAnt) {
+					strongestAnt = TruePower (ant.antennaPower);
 				}
 			}
 			double vesselPower = strongestAnt * Math.Pow (allAnt / strongestAnt, awce);
@@ -196,11 +167,6 @@ namespace AntennaHelper
 			}
 			return new MyTuple (target.bodyName, min, max);
 		}
-
-//		public static MyTuple GetDistanceMoon (CelestialBody home, CelestialBody moon)
-//		{
-//			return new MyTuple (moon.bodyName, moon.orbit.PeR, moon.orbit.ApR);
-//		}
 
 		public static double GetSignalStrength (double maxRange, double distance)
 		{
@@ -235,6 +201,76 @@ namespace AntennaHelper
 			return maxRange / 1.483619335214967d;
 		}
 
+		public static double GetDistanceAt0 (double maxRange)
+		{
+			return maxRange / 1.013136434488117d;
+		}
+
+		public static double GetDistanceFor (double sS, double maxRange)
+		{
+			if (sS < .25d) {
+				return (double)Mathf.Lerp ((float)GetDistanceAt25 (maxRange), (float)maxRange, (float)sS);
+			}
+			if (sS == .25d) {
+				return GetDistanceAt25 (maxRange);
+			}
+			if (sS < .5d) {
+				return (double)Mathf.Lerp ((float)GetDistanceAt50 (maxRange), (float)GetDistanceAt25 (maxRange), (float)sS);
+			}
+			if (sS == .5d) {
+				return GetDistanceAt50 (maxRange);
+			}
+			if (sS < .75d) {
+				return (double)Mathf.Lerp ((float)GetDistanceAt75 (maxRange), (float)GetDistanceAt50 (maxRange), (float)sS);
+			}
+			if (sS == .75d) {
+				return GetDistanceAt75 (maxRange);
+			}
+			if (sS < 1d) {
+				return (double)Mathf.Lerp ((float)GetDistanceAt100 (maxRange), (float)GetDistanceAt75 (maxRange), (float)sS);
+			}
+			if (sS == 1d) {
+				return GetDistanceAt100 (maxRange);
+			} else { return Double.NaN; }
+		}
+
+		public static double GetDistanceForOrange (double sS, double maxRange)
+		{
+//			float ratio = 1f - ((float)sS / .25f);
+//			float ratio = ((float)sS / 4f);
+//			return maxRange / (double)Mathf.Lerp (1.483619335214967f, 1.998667554768621f, (float)ratio);
+//			return (double)Mathf.Lerp ((float)GetDistanceAt50 (maxRange), (float)GetDistanceAt25 (maxRange), ratio);
+			return GetDistanceAt25 (maxRange);
+
+//			return (double)Mathf.Lerp ((float)GetDistanceAt50 (maxRange), (float)GetDistanceAt25 (maxRange), ((float)sS * (float)sS));
+
+
+//			return (double)Mathf.Lerp (0, ((float)GetDistanceAt25 (maxRange)), 1f - (float)sS);
+		}
+
+		public static double GetDistanceForYellow (double sS, double maxRange)
+		{
+//			return maxRange / (double)Mathf.Lerp (1.998667554768621f, 3.060623967191712f, (float)(sS / .5d));
+//			float ratio = 1f - ((float)sS / .5f);
+//			float ratio = ((float)sS / 2f);
+//			return (double)Mathf.Lerp ((float)GetDistanceAt75 (maxRange), (float)GetDistanceAt50 (maxRange), ratio);
+//			return (double)Mathf.Lerp ((float)GetDistanceAt75 (maxRange), (float)GetDistanceAt50 (maxRange), ((float)sS * (float)sS));
+
+//			return (double)Mathf.Sqrt (Mathf.Lerp (0, ((float)maxRange * .5f) * ((float)maxRange * .5f), ((float)sS - .25f)));
+
+//			return (double)Mathf.Lerp (0, ((float)GetDistanceAt50 (maxRange)), 1f - (float)sS);
+			return GetDistanceAt50 (maxRange);
+		}
+
+		public static double GetDistanceForGreen (double sS, double maxRange)
+		{
+//			return maxRange / (double)Mathf.Lerp (3.060623967191712f, 77.1241569002155f, (float)(sS / .75d));
+//			float ratio = 1f - ((float)sS / .75f);
+//			float ratio = ((float)sS / 4f) * 3f;
+//			return (double)Mathf.Lerp ((float)GetDistanceAt100 (maxRange), (float)GetDistanceAt75 (maxRange), ratio);
+			return GetDistanceAt75 (maxRange);
+		}
+
 		public static float GetMapScale (double distance)
 		{
 			return (float)distance / 2949.852507374631f;
@@ -260,6 +296,14 @@ namespace AntennaHelper
 			item2 = itemDouble;
 			item3 = itemDouble2;
 		}
+	}
+
+	public enum GUICircleSelection
+	{
+		ACTIVE,
+		DSN,
+		RELAY,
+		DSN_AND_RELAY
 	}
 }
 
