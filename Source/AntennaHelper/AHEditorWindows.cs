@@ -31,7 +31,7 @@ namespace AntennaHelper
 			GUILayout.EndHorizontal ();
 
 			// Pick a target :
-			GUILayout.Label ("Current target : " + AHEditor.targetName);
+			GUILayout.Label ("Current target : " + AHEditor.targetName + "  (" + AHEditor.targetPower + ")");
 			if (GUILayout.Button ("Pick A Target")) {
 				if (AHEditor.showTargetWindow) {
 					AHEditor.CloseTargetWindow ();

@@ -196,6 +196,8 @@ namespace AntennaHelper
 
 							// math the max range :
 							double range = AHUtil.GetRange (vesselPower, v.Connection.Comm.antennaRelay.power);
+							// get real maxRange :
+							range = AHUtil.GetDistanceAt0 (range);
 
 							allRelay.Add (new GameObject ());
 							allRelay [i].AddComponent<AHMapMarker> ();
@@ -225,6 +227,8 @@ namespace AntennaHelper
 				activeSignal = GetRealSignal (vessel.Connection.ControlPath);
 				isHome = false;
 			}
+			// get real maxRange :
+			rangeAC = AHUtil.GetDistanceAt0 (rangeAC);
 
 			activeConnect = new GameObject ();
 			activeConnect.AddComponent<AHMapMarker> ();
@@ -234,6 +238,8 @@ namespace AntennaHelper
 
 			// DSN Connection :
 			double rangeDSN = AHUtil.GetRange (vesselPower, AHUtil.DSNLevelList [AHUtil.DSNLevel]);
+			// get real maxRange
+			rangeDSN = AHUtil.GetDistanceAt0 (rangeDSN);
 			DSNConnect = new GameObject ();
 			AHMapMarker markerDSN = DSNConnect.AddComponent<AHMapMarker> ();
 			markerDSN.Start ();
@@ -260,14 +266,10 @@ namespace AntennaHelper
 
 		private double GetRealSignal (CommNet.CommPath path)
 		{
-			double signal = Double.NaN;
+			double signal = 1d;
 			foreach (CommNet.CommLink link in path) {
-				if (signal == Double.NaN) {
-					signal = path.signalStrength;
-				} else {
-					if (signal > path.signalStrength) {
-						signal = path.signalStrength;
-					}
+				if (link.a.transform.GetComponent<Vessel> () != vessel) {
+					signal *= link.signalStrength;
 				}
 			}
 			return signal;

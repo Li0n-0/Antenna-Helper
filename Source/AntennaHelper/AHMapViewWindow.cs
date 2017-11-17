@@ -9,6 +9,7 @@ namespace AntennaHelper
 		{
 			GUILayout.BeginVertical ();
 			GUILayout.Label ("Curently : " + AHFlight.guiCircle.ToString ());
+			GUILayout.Space (3f);
 			if (GUILayout.Button ("Active Connection")) {
 				AHFlight.guiCircle = GUICircleSelection.ACTIVE;
 				AHFlight.GUISelectCircle ();

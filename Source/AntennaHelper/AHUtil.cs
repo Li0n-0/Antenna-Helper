@@ -201,6 +201,11 @@ namespace AntennaHelper
 			return maxRange / 1.483619335214967d;
 		}
 
+		public static double GetDistanceAt0 (double maxRange)
+		{
+			return maxRange / 1.013136434488117d;
+		}
+
 		public static double GetDistanceFor (double sS, double maxRange)
 		{
 			if (sS < .25d) {
@@ -231,18 +236,39 @@ namespace AntennaHelper
 
 		public static double GetDistanceForOrange (double sS, double maxRange)
 		{
-			double ratio = sS / .25d;
-			return maxRange / (double)Mathf.Lerp (1.483619335214967f, 1.998667554768621f, (float)ratio);
+//			float ratio = 1f - ((float)sS / .25f);
+//			float ratio = ((float)sS / 4f);
+//			return maxRange / (double)Mathf.Lerp (1.483619335214967f, 1.998667554768621f, (float)ratio);
+//			return (double)Mathf.Lerp ((float)GetDistanceAt50 (maxRange), (float)GetDistanceAt25 (maxRange), ratio);
+			return GetDistanceAt25 (maxRange);
+
+//			return (double)Mathf.Lerp ((float)GetDistanceAt50 (maxRange), (float)GetDistanceAt25 (maxRange), ((float)sS * (float)sS));
+
+
+//			return (double)Mathf.Lerp (0, ((float)GetDistanceAt25 (maxRange)), 1f - (float)sS);
 		}
 
 		public static double GetDistanceForYellow (double sS, double maxRange)
 		{
-			return maxRange / (double)Mathf.Lerp (1.998667554768621f, 3.060623967191712f, (float)(sS / .5d));
+//			return maxRange / (double)Mathf.Lerp (1.998667554768621f, 3.060623967191712f, (float)(sS / .5d));
+//			float ratio = 1f - ((float)sS / .5f);
+//			float ratio = ((float)sS / 2f);
+//			return (double)Mathf.Lerp ((float)GetDistanceAt75 (maxRange), (float)GetDistanceAt50 (maxRange), ratio);
+//			return (double)Mathf.Lerp ((float)GetDistanceAt75 (maxRange), (float)GetDistanceAt50 (maxRange), ((float)sS * (float)sS));
+
+//			return (double)Mathf.Sqrt (Mathf.Lerp (0, ((float)maxRange * .5f) * ((float)maxRange * .5f), ((float)sS - .25f)));
+
+//			return (double)Mathf.Lerp (0, ((float)GetDistanceAt50 (maxRange)), 1f - (float)sS);
+			return GetDistanceAt50 (maxRange);
 		}
 
 		public static double GetDistanceForGreen (double sS, double maxRange)
 		{
-			return maxRange / (double)Mathf.Lerp (3.060623967191712f, 77.1241569002155f, (float)(sS / .75d));
+//			return maxRange / (double)Mathf.Lerp (3.060623967191712f, 77.1241569002155f, (float)(sS / .75d));
+//			float ratio = 1f - ((float)sS / .75f);
+//			float ratio = ((float)sS / 4f) * 3f;
+//			return (double)Mathf.Lerp ((float)GetDistanceAt100 (maxRange), (float)GetDistanceAt75 (maxRange), ratio);
+			return GetDistanceAt75 (maxRange);
 		}
 
 		public static float GetMapScale (double distance)

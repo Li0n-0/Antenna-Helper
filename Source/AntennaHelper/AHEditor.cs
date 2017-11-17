@@ -321,15 +321,15 @@ namespace AntennaHelper
 		}
 
 
-		private static double targetPower = 0;
+		public static double targetPower = 0;
 		public static string targetName = "";
 
-		public static void SetTarget (MyTuple tuple)
-		{
-			targetPower = tuple.item2;
-			targetName = tuple.item1;
-			instance.DoTheMath ();
-		}
+//		public static void SetTarget (MyTuple tuple)
+//		{
+//			targetPower = tuple.item2;
+//			targetName = tuple.item1;
+//			instance.DoTheMath ();
+//		}
 
 		public static void SetTarget (int dsnL)
 		{
