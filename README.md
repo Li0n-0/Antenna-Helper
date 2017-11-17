@@ -13,6 +13,7 @@ You could use Antenna Helper to do all that, and more, for you.
 ## How it works ?
 
 For the example we'll use this craft :
+
 ![example craft in editor](https://i.imgur.com/mpTWdHv.png)
 
 There is three antennas on it : 
@@ -26,6 +27,7 @@ There is three antennas on it :
 Click on the Antenna Helper icon on the app launcher : ![Antenna Helper icon](https://i.imgur.com/Ii6G55t.png)
 
 It will bring this window : 
+
 ![Antenna Helper main editor window](https://i.imgur.com/Rk2JQu4.png)
 
 1. The type of antenna you want info about. Direct, by default, will take into account all the antennas, DIRECT, RELAY and INTERNAL. Select Relay if you plan to build a relay, hmm, as only the relay antenna will be used by connection going through.
@@ -38,6 +40,7 @@ With the available DSN level and their power, the one in bold is your current DS
 6. The distance from the target where your signal will start to decay.
 7. The value in front of each black bars are the distance from the target at which the signal strength will "change color", 75%, 50%, 25%. The value at the extreme left is 0m from the target, the value at the extreme right is the "Max Range".
 8. Open this window :
+
 ![Antenna Helper signal strength per distance window](https://i.imgur.com/XgaNVCd.png)
         1. Show the signal strength at the distance between the target (the home body) and its moons and the planet of the solar system. Hovering over the planet/moon name will show the distance used for the calcul. Those distance are approximate, specially for planet with high inclination.
         2. Enter any distance in the input box on the left, click "Math !" on the right, the signal strength to expect will show on the middle.
@@ -58,6 +61,7 @@ In the green circle the signal strength will vary from 100% to 75%.
 Those circle match the value on the color bar of the editor window (item 7. above).
 
 After clicking on the Antenna Helper icon you'll see a window right next to it : 
+
 ![Antenna Helper map view window](https://i.imgur.com/AQMotEv.png)
 
 1. The current selection.
