@@ -98,6 +98,7 @@ This is still a work in progress, you can use it safely, it won't break any thin
 * in the editor, a window showing a list of antenna with their caracteristics.
 * in the editor, add all the in-flight relay to the list of target.
 * in the editor, add relay antennas (part) to the list of target.
+* re-work the GUI, possibly with the new GUI system instead of on OnGUI.
 
 
 ## Credits
