@@ -57,9 +57,4 @@
     <Compile Include="AHEditorWindows.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <None Include="AHFlightWindow.cs" />
-    <None Include="AHFlighDev.cs" />
-    <None Include="AHMapView.cs" />
-  </ItemGroup>
 </Project>

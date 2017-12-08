@@ -19,7 +19,7 @@ namespace AntennaHelper
 			GameEvents.OnMapExited.Add (MapExit);
 		}
 
-		public void SetUp (double maxRange, Transform mapObjectTransmitter, Transform mapObjectRelay, bool relayIsHome = false, CommNet.CommLink link = null, double sS = Double.NaN)
+		public void SetUp (double maxRange, Transform mapObjectTransmitter, Transform mapObjectRelay, bool relayIsHome = false, double sS = Double.NaN)
 		{
 			if (mapObjectRelay != null && mapObjectTransmitter != null) {
 				parent = mapObjectRelay;
@@ -31,73 +31,26 @@ namespace AntennaHelper
 				maxRange += Planetarium.fetch.Home.Radius;
 			}
 
-
-			//
-			if (link != null) {
-				double rangeOffset = 0;
-				if (link.b.isHome) {
-					Debug.Log ("[AH] MapMarker : link.b is home");
-					parent = FlightGlobals.GetHomeBody ().MapObject.trf;
-					rangeOffset = FlightGlobals.GetHomeBody ().Radius;
-				} else {
-					Debug.Log ("[AH] MapMarker : link.b is a vessel");
-					parent = link.b.transform.GetComponent<Vessel> ().mapObject.trf;
-				}
-				target = link.a.transform.GetComponent<Vessel> ().mapObject.trf;
-			}
-
-			//
-
-
-//			scaleGreen = AHUtil.GetMapScale (AHUtil.GetDistanceAt75 (maxRange));
-//			scaleYellow = AHUtil.GetMapScale (AHUtil.GetDistanceAt50 (maxRange));
-//			scaleOrange = AHUtil.GetMapScale (AHUtil.GetDistanceAt25 (maxRange));
-//			scaleRed = AHUtil.GetMapScale (maxRange);
-//
-//			//
-//			if (sS <= .25d) {
-//				scaleGreen = 0;
-//				scaleYellow = 0;
-//				scaleOrange = 0;
-//				scaleRed = AHUtil.GetMapScale (maxRange);
-//			} else if (sS <= .5d) {
-//				scaleGreen = 0;
-//				scaleYellow = 0;
-//				scaleOrange = AHUtil.GetMapScale (AHUtil.GetDistanceAt25 (maxRange));
-//				scaleRed = AHUtil.GetMapScale (maxRange);
-//			} else if (sS <= .75d) {
-//				scaleGreen = 0;
-//				scaleYellow = AHUtil.GetMapScale (AHUtil.GetDistanceAt50 (maxRange));
-//				scaleOrange = AHUtil.GetMapScale (AHUtil.GetDistanceAt25 (maxRange));
-//				scaleRed = AHUtil.GetMapScale (maxRange);
-//			} else {
-//				scaleGreen = AHUtil.GetMapScale (AHUtil.GetDistanceAt75 (maxRange));
-//				scaleYellow = AHUtil.GetMapScale (AHUtil.GetDistanceAt50 (maxRange));
-//				scaleOrange = AHUtil.GetMapScale (AHUtil.GetDistanceAt25 (maxRange));
-//				scaleRed = AHUtil.GetMapScale (maxRange);
-//			}
-			//
-
 			scaleGreen = 0;
 			scaleYellow = 0;
 			scaleOrange = 0;
 			scaleRed = AHUtil.GetMapScale (maxRange);
 			if (sS >= .25d) {
 				// draw orange circle
-				scaleOrange = AHUtil.GetMapScale (AHUtil.GetDistanceForOrange (sS, maxRange));
+				scaleOrange = AHUtil.GetMapScale (AHUtil.GetDistanceFor (.25d * (1d / sS), maxRange));
 			}
 			if (sS >= .5d) {
 				// draw yellow circle
-				scaleYellow = AHUtil.GetMapScale (AHUtil.GetDistanceForYellow (sS, maxRange));
+				scaleYellow = AHUtil.GetMapScale (AHUtil.GetDistanceFor (.5d * (1d / sS), maxRange));
 			}
 			if (sS >= .75d) {
 				// draw green circle
-				scaleGreen = AHUtil.GetMapScale (AHUtil.GetDistanceForGreen (sS, maxRange));
+				scaleGreen = AHUtil.GetMapScale (AHUtil.GetDistanceFor (.75d * (1d / sS), maxRange));
 			}
 			if (sS == 1d) {
-				scaleGreen = AHUtil.GetMapScale (AHUtil.GetDistanceAt75 (maxRange));
-				scaleYellow = AHUtil.GetMapScale (AHUtil.GetDistanceAt50 (maxRange));
-				scaleOrange = AHUtil.GetMapScale (AHUtil.GetDistanceAt25 (maxRange));
+				scaleGreen = AHUtil.GetMapScale (AHUtil.GetDistanceFor (75, maxRange));
+				scaleYellow = AHUtil.GetMapScale (AHUtil.GetDistanceFor (50, maxRange));
+				scaleOrange = AHUtil.GetMapScale (AHUtil.GetDistanceFor (25, maxRange));
 			}
 
 
