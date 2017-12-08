@@ -98,6 +98,7 @@ This is still a work in progress, you can use it safely, it won't break any thin
 * in the editor, add all the in-flight relay to the list of target.
 * in the editor, add relay antennas (part) to the list of target.
 * re-work the GUI, possibly with the new GUI system instead of on OnGUI.
+* map view window should be clamped to the toolbar button.
 
 
 ## Credits
