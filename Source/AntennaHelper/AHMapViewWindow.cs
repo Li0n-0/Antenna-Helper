@@ -27,6 +27,8 @@ namespace AntennaHelper
 				AHFlight.GUISelectCircle ();
 			}
 			GUILayout.EndVertical ();
+
+			GUI.DragWindow ();
 		}
 	}
 }
