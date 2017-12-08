@@ -72,7 +72,6 @@ After clicking on the Antenna Helper icon you'll see a window right next to it :
 	* DSN + Relay : the two above combined.
 
 ![Antenna Helper map view dsn and relay connection](https://i.imgur.com/NPIFmOD.png)
-Green, yellow and orange circle of the relay are not exact, the red one (the maximum range) is tho.
 
 
 
@@ -85,10 +84,10 @@ This is still a work in progress, you can use it safely, it won't break any thin
 
 * the circle of the map view jitter at high time-wrap. Almost fixed.
 * the orientation of the map view circle, relative to the camera, is, most of the time, sub-optimal.
-* transparency of the circle are not good, specially they overlap.
-* signal strength decay when connected to a relay is wrong, so green, yellow and orange circle are not properly scaled.
+* transparency of the circle are not good, specially when they overlap.
 * in-flight, antennas of the active ship are all considered extended.
 * in-flight math are done only once on loading. It need to be re-done when the ship stage, dock, etc...
+* DSN and range modifier may not be corectly set when loading a new game (after an "exit to main menu")
 
 ### Future plans :
 
@@ -107,3 +106,6 @@ The idea for an in-game calculator is from [this thread](https://forum.kerbalspa
 
 Thanks to [Poodmund](https://forum.kerbalspaceprogram.com/index.php?/profile/128643-poodmund/) for his [google docs's calculator](https://docs.google.com/spreadsheets/d/1qIgFB8OXnlgpPCGsxv7JYUYQq5O671IcZXpumVaStek/edit?usp=sharing), and for the help he provide to this mod.
 
+Thanks to [Skalou](https://forum.kerbalspaceprogram.com/index.php?/profile/133496-skalou/) for his help with the math :wink:
+
+## [Thread on offical KSP forum](https://forum.kerbalspaceprogram.com/index.php?/topic/156122-wip131-antenna-helper-in-game-antennas-range-calculation-v08-17-nov-2017/)

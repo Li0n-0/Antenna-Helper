@@ -208,67 +208,321 @@ namespace AntennaHelper
 
 		public static double GetDistanceFor (double sS, double maxRange)
 		{
-			if (sS < .25d) {
-				return (double)Mathf.Lerp ((float)GetDistanceAt25 (maxRange), (float)maxRange, (float)sS);
-			}
-			if (sS == .25d) {
-				return GetDistanceAt25 (maxRange);
-			}
-			if (sS < .5d) {
-				return (double)Mathf.Lerp ((float)GetDistanceAt50 (maxRange), (float)GetDistanceAt25 (maxRange), (float)sS);
-			}
-			if (sS == .5d) {
-				return GetDistanceAt50 (maxRange);
-			}
-			if (sS < .75d) {
-				return (double)Mathf.Lerp ((float)GetDistanceAt75 (maxRange), (float)GetDistanceAt50 (maxRange), (float)sS);
-			}
-			if (sS == .75d) {
-				return GetDistanceAt75 (maxRange);
-			}
-			if (sS < 1d) {
-				return (double)Mathf.Lerp ((float)GetDistanceAt100 (maxRange), (float)GetDistanceAt75 (maxRange), (float)sS);
-			}
-			if (sS == 1d) {
-				return GetDistanceAt100 (maxRange);
-			} else { return Double.NaN; }
+			int newSS = (int)Math.Truncate (sS * 100d);
+			return GetDistanceFor (newSS, maxRange);
 		}
 
-		public static double GetDistanceForOrange (double sS, double maxRange)
+		public static double GetDistanceFor (int sS, double maxRange)
 		{
-//			float ratio = 1f - ((float)sS / .25f);
-//			float ratio = ((float)sS / 4f);
-//			return maxRange / (double)Mathf.Lerp (1.483619335214967f, 1.998667554768621f, (float)ratio);
-//			return (double)Mathf.Lerp ((float)GetDistanceAt50 (maxRange), (float)GetDistanceAt25 (maxRange), ratio);
-			return GetDistanceAt25 (maxRange);
-
-//			return (double)Mathf.Lerp ((float)GetDistanceAt50 (maxRange), (float)GetDistanceAt25 (maxRange), ((float)sS * (float)sS));
-
-
-//			return (double)Mathf.Lerp (0, ((float)GetDistanceAt25 (maxRange)), 1f - (float)sS);
-		}
-
-		public static double GetDistanceForYellow (double sS, double maxRange)
-		{
-//			return maxRange / (double)Mathf.Lerp (1.998667554768621f, 3.060623967191712f, (float)(sS / .5d));
-//			float ratio = 1f - ((float)sS / .5f);
-//			float ratio = ((float)sS / 2f);
-//			return (double)Mathf.Lerp ((float)GetDistanceAt75 (maxRange), (float)GetDistanceAt50 (maxRange), ratio);
-//			return (double)Mathf.Lerp ((float)GetDistanceAt75 (maxRange), (float)GetDistanceAt50 (maxRange), ((float)sS * (float)sS));
-
-//			return (double)Mathf.Sqrt (Mathf.Lerp (0, ((float)maxRange * .5f) * ((float)maxRange * .5f), ((float)sS - .25f)));
-
-//			return (double)Mathf.Lerp (0, ((float)GetDistanceAt50 (maxRange)), 1f - (float)sS);
-			return GetDistanceAt50 (maxRange);
-		}
-
-		public static double GetDistanceForGreen (double sS, double maxRange)
-		{
-//			return maxRange / (double)Mathf.Lerp (3.060623967191712f, 77.1241569002155f, (float)(sS / .75d));
-//			float ratio = 1f - ((float)sS / .75f);
-//			float ratio = ((float)sS / 4f) * 3f;
-//			return (double)Mathf.Lerp ((float)GetDistanceAt100 (maxRange), (float)GetDistanceAt75 (maxRange), ratio);
-			return GetDistanceAt75 (maxRange);
+			if (sS < 0) { sS = 0; }
+			double dist;
+			switch (sS) {
+			case 0://0.6
+				dist = maxRange / 1.047584719414499d;
+				break;
+			case 1:
+				dist = maxRange / 1.062582782629115d;
+				break;
+			case 2:
+				dist = maxRange / 1.091742601042011d;
+				break;
+			case 3:
+				dist = maxRange / 1.115636532280093d;
+					break;
+			case 4:
+				dist = maxRange / 1.136881804217293d;
+					break;
+			case 5:
+				dist = maxRange / 1.156539171888104d;
+					break;
+			case 6:
+				dist = maxRange / 1.175114349153859d;
+					break;
+			case 7:
+				dist = maxRange / 1.192913846438235d;
+					break;
+			case 8:
+				dist = maxRange / 1.206241638748131d;
+					break;
+			case 9:
+				dist = maxRange / 1.226975913232661d;
+					break;
+			case 10:
+				dist = maxRange / 1.243470663744964d;
+					break;
+			case 11:
+				dist = maxRange / 1.259730368945333d;
+					break;
+			case 12:
+				dist = maxRange / 1.275806578169752d;
+					break;
+			case 13:
+				dist = maxRange / 1.291758601383292d;
+					break;
+			case 14:
+				dist = maxRange / 1.307635208199639d;
+					break;
+			case 15:
+				dist = maxRange / 1.323453676909387d;
+					break;
+			case 16:
+				dist = maxRange / 1.339253428483652d;
+					break;
+			case 17:
+				dist = maxRange / 1.355078621631047d;
+					break;
+			case 18:
+				dist = maxRange / 1.370917540988991d;
+					break;
+			case 19:
+				dist = maxRange / 1.386820077901072d;
+					break;
+			case 20:
+				dist = maxRange / 1.402798862196235d;
+				break;
+			case 21:
+				dist = maxRange / 1.418867995463065d;
+				break;
+			case 22:
+				dist = maxRange / 1.435065319133585d;
+				break;
+			case 23:
+				dist = maxRange / 1.451375558323068d;
+				break;
+			case 24:
+				dist = maxRange / 1.467828538111668d;
+				break;
+			case 25:
+				dist = maxRange / 1.484408895648559d;
+				break;
+			case 26:
+				dist = maxRange / 1.501247657713d;
+				break;
+			case 27:
+				dist = maxRange / 1.518236239211017d;
+				break;
+			case 28:
+				dist = maxRange / 1.535435813964251d;
+				break;
+			case 29:
+				dist = maxRange / 1.552847588503511d;
+				break;
+			case 30:
+				dist = maxRange / 1.570499259413742d;
+				break;
+			case 31:
+				dist = maxRange / 1.588393660939914d;
+				break;
+			case 32:
+				dist = maxRange / 1.606561427456803d;
+				break;
+			case 33:
+				dist = maxRange / 1.62500727343559d;
+				break;
+			case 34:
+				dist = maxRange / 1.643750547060143d;
+				break;
+			case 35:
+				dist = maxRange / 1.66281202561854d;
+				break;
+			case 36:
+				dist = maxRange / 1.682214011810481d;
+				break;
+			case 37:
+				dist = maxRange / 1.701949216230781d;
+				break;
+			case 38:
+				dist = maxRange / 1.722057073010135d;
+				break;
+			case 39:
+				dist = maxRange / 1.742547548414234d;
+				break;
+			case 40:
+				dist = maxRange / 1.763464478536904d;
+				break;
+			case 41:
+				dist = maxRange / 1.784786655598696d;
+				break;
+			case 42:
+				dist = maxRange / 1.806560399410912d;
+				break;
+			case 43:
+				dist = maxRange / 1.828817890188019d;
+				break;
+			case 44:
+				dist = maxRange / 1.851556754706981d;
+				break;
+			case 45:
+				dist = maxRange / 1.874830303761782d;
+				break;
+			case 46:
+				dist = maxRange / 1.898638099017631d;
+				break;
+			case 47:
+				dist = maxRange / 1.923038393801196d;
+				break;
+			case 48:
+				dist = maxRange / 1.948033107987443d;
+				break;
+			case 49:
+				dist = maxRange / 1.973686116546957d;
+				break;
+			case 50:
+				dist = maxRange / 2.000002215089314d;
+				break;
+			case 51:
+				dist = maxRange / 2.027029567308258d;
+				break;
+			case 52:
+				dist = maxRange / 2.054797403130631d;
+				break;
+			case 53:
+				dist = maxRange / 2.08338336087284d;
+				break;
+			case 54:
+				dist = maxRange / 2.11277590470151d;
+				break;
+			case 55:
+				dist = maxRange / 2.143083916640055d;
+				break;
+			case 56:
+				dist = maxRange / 2.174325085575795d;
+				break;
+			case 57:
+				dist = maxRange / 2.206543055092116d;
+				break;
+			case 58:
+				dist = maxRange / 2.23983830882057d;
+				break;
+			case 59:
+				dist = maxRange / 2.2742373846654d;
+				break;
+			case 60:
+				dist = maxRange / 2.309824542545699d;
+				break;
+			case 61:
+				dist = maxRange / 2.346691525050539d;
+				break;
+			case 62:
+				dist = maxRange / 2.384938374070643d;
+				break;
+			case 63:
+				dist = maxRange / 2.42461099354079d;
+				break;
+			case 64:
+				dist = maxRange / 2.465822420565277d;
+				break;
+			case 65:
+				dist = maxRange / 2.508696431987994d;
+				break;
+			case 66:
+				dist = maxRange / 2.55336882125139d;
+				break;
+			case 67:
+				dist = maxRange / 2.599988867129489d;
+				break;
+			case 68:
+				dist = maxRange / 2.648645409294202d;
+				break;
+			case 69:
+				dist = maxRange / 2.699550514348217d;
+				break;
+			case 70:
+				dist = maxRange / 2.75285904724928d;
+				break;
+			case 71:
+				dist = maxRange / 2.80882552722106d;
+				break;
+			case 72:
+				dist = maxRange / 2.867646598397255d;
+				break;
+			case 73:
+				dist = maxRange / 2.929585156983327d;
+				break;
+			case 74:
+				dist = maxRange / 2.995031726218621d;
+				break;
+			case 75:
+				dist = maxRange / 3.064177519283549d;
+				break;
+			case 76:
+				dist = maxRange / 3.13754617171186d;
+				break;
+			case 77:
+				dist = maxRange / 3.215461493851417d;
+				break;
+			case 78:
+				dist = maxRange / 3.298517483870725d;
+				break;
+			case 79:
+				dist = maxRange / 3.387337851702284d;
+				break;
+			case 80:
+				dist = maxRange / 3.482642094348437d;
+				break;
+			case 81:
+				dist = maxRange / 3.58519545354361d;
+				break;
+			case 82:
+				dist = maxRange / 3.696032140207482d;
+				break;
+			case 83:
+				dist = maxRange / 3.816293819471329d;
+				break;
+			case 84:
+				dist = maxRange / 3.947582186300789d;
+				break;
+			case 85:
+				dist = maxRange / 4.091651351827997d;
+				break;
+			case 86:
+				dist = maxRange / 4.25062323611051d;
+				break;
+			case 87:
+				dist = maxRange / 4.427512778054214d;
+				break;
+			case 88:
+				dist = maxRange / 4.625753029085959d;
+				break;
+			case 89:
+				dist = maxRange / 4.85017266579611d;
+				break;
+			case 90:
+				dist = maxRange / 5.107299903735095d;
+				break;
+			case 91:
+				dist = maxRange / 5.405786199239483d;
+				break;
+			case 92:
+				dist = maxRange / 5.75843229789262d;
+				break;
+			case 93:
+				dist = maxRange / 6.183785876726211d;
+				break;
+			case 94:
+				dist = maxRange / 6.710604177312694d;
+				break;
+			case 95:
+				dist = maxRange / 7.38823785548682d;
+				break;
+			case 96:
+				dist = maxRange / 8.305649306297941d;
+				break;
+			case 97:
+				dist = maxRange / 9.648892641845866d;
+				break;
+			case 98:
+				dist = maxRange / 11.89869215741285d;
+				break;
+			case 99:
+				dist = maxRange / 16.97604807892919d;
+				break;
+			case 100:// 99.5
+			default:
+				dist = maxRange / 24.15992259149688d;
+				break;
+			}
+			return dist;
 		}
 
 		public static float GetMapScale (double distance)
