@@ -1,13 +1,13 @@
 ﻿<Properties StartupItem="AntennaHelper.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="AHMapMarker.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="AHFlight.cs">
     <Files>
       <File FileName="AHSettings.cs" Line="16" Column="23" NotebookId="1" />
       <File FileName="AHMapViewWindow.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="AHEditorWindows.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="AHFlight.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="AHFlight.cs" Line="225" Column="20" NotebookId="1" />
       <File FileName="AHEditor.cs" Line="1" Column="1" NotebookId="2" />
-      <File FileName="AHMapMarker.cs" Line="187" Column="128" NotebookId="2" />
+      <File FileName="AHMapMarker.cs" Line="19" Column="41" NotebookId="2" />
     </Files>
     <FloatingWindows>
       <FloatingWindow WindowId="1" X="2761" Y="0" Width="1063" Height="1045">
