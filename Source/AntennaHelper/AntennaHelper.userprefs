@@ -1,16 +1,16 @@
 ﻿<Properties StartupItem="AntennaHelper.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="AHMapViewWindow.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="AHFlight.cs">
     <Files>
-      <File FileName="AHSettings.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="AHMapViewWindow.cs" Line="31" Column="22" NotebookId="1" />
-      <File FileName="AHEditorWindows.cs" Line="244" Column="36" NotebookId="1" />
-      <File FileName="AHFlight.cs" Line="283" Column="57" NotebookId="1" />
-      <File FileName="AHEditor.cs" Line="48" Column="4" NotebookId="2" />
-      <File FileName="AHMapMarker.cs" Line="32" Column="5" NotebookId="2" />
+      <File FileName="AHSettings.cs" Line="16" Column="23" NotebookId="1" />
+      <File FileName="AHMapViewWindow.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="AHEditorWindows.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="AHFlight.cs" Line="225" Column="20" NotebookId="1" />
+      <File FileName="AHEditor.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="AHMapMarker.cs" Line="19" Column="41" NotebookId="2" />
     </Files>
     <FloatingWindows>
-      <FloatingWindow WindowId="1" X="3840" Y="0" Width="1063" Height="1048">
+      <FloatingWindow WindowId="1" X="2761" Y="0" Width="1063" Height="1045">
         <Files>
           <File FileName="AHUtil.cs" Line="212" Column="44" />
         </Files>

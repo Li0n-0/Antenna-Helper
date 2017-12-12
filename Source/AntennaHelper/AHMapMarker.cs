@@ -10,9 +10,9 @@ namespace AntennaHelper
 		private float scaleGreen, scaleYellow, scaleOrange, scaleRed;
 		private bool isEnabled;
 
-		public void Start ()
+		void Start ()
 		{
-//			TimingManager.LateUpdateAdd (TimingManager.TimingStage.BetterLateThanNever, DoUpdate);
+			TimingManager.LateUpdateAdd (TimingManager.TimingStage.BetterLateThanNever, DoUpdate);
 
 			isEnabled = false;
 			GameEvents.OnMapEntered.Add (MapEnter);
@@ -87,7 +87,7 @@ namespace AntennaHelper
 			marker = this.gameObject;
 			marker.layer = 10;
 			marker.transform.localPosition = Vector3.zero;
-			marker.transform.SetParent (parent);
+//			marker.transform.SetParent (parent);
 			marker.transform.position = parent.position;
 
 			circleGreen.transform.localPosition = Vector3.zero;
@@ -126,7 +126,7 @@ namespace AntennaHelper
 
 		public void OnDestroy ()
 		{
-//			TimingManager.LateUpdateRemove (TimingManager.TimingStage.BetterLateThanNever, DoUpdate);
+			TimingManager.LateUpdateRemove (TimingManager.TimingStage.BetterLateThanNever, DoUpdate);
 			GameEvents.OnMapEntered.Remove (MapEnter);
 			GameEvents.OnMapExited.Remove (MapExit);
 		}
@@ -157,11 +157,15 @@ namespace AntennaHelper
 			isEnabled = true;
 		}
 		#endregion
-		public void Update ()//DoUpdate ()
+		public void DoUpdate ()
 		{
 			if (! this.isActiveAndEnabled) { return; }
 
-			marker.transform.LookAt (target);
+			marker.transform.position = parent.position;
+			Vector3 relativePos = target.position - marker.transform.position;
+			marker.transform.rotation = Quaternion.LookRotation (relativePos);
+			// Quaternion.LookRotation give the same result than Transform.LookAt
+//			marker.transform.LookAt (target);
 			marker.transform.Rotate (Vector3.right, 90f);
 		}
 	}

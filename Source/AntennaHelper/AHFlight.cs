@@ -83,11 +83,8 @@ namespace AntennaHelper
 
 		private void VesselSwitch (Vessel fromVessel, Vessel toVessel)
 		{
-			StopAllCoroutines ();
-			DestroyMarker ();
-			timeAtStart = Time.time;
-			StartCoroutine ("WaitAtStart");
-			SetMapMarker ();
+			StopCoroutine ("WaitAtStart");
+			Destroy (this);
 		}
 
 		private IEnumerator WaitAtStart ()
@@ -201,7 +198,7 @@ namespace AntennaHelper
 
 							allRelay.Add (new GameObject ());
 							allRelay [i].AddComponent<AHMapMarker> ();
-							allRelay [i].GetComponent<AHMapMarker> ().Start ();
+//							allRelay [i].GetComponent<AHMapMarker> ().Start ();
 							allRelay [i].GetComponent<AHMapMarker> ().SetUp (range, vessel.mapObject.trf, v.mapObject.trf, false, realSignal);
 
 							i++;
@@ -232,7 +229,7 @@ namespace AntennaHelper
 
 			activeConnect = new GameObject ();
 			activeConnect.AddComponent<AHMapMarker> ();
-			activeConnect.GetComponent<AHMapMarker> ().Start ();
+//			activeConnect.GetComponent<AHMapMarker> ().Start ();
 			activeConnect.GetComponent<AHMapMarker> ().SetUp (rangeAC, vessel.mapObject.trf, relay, isHome, activeSignal);
 //			Debug.Log ("[AH] active marker done");
 
@@ -242,7 +239,7 @@ namespace AntennaHelper
 			rangeDSN = AHUtil.GetDistanceAt0 (rangeDSN);
 			DSNConnect = new GameObject ();
 			AHMapMarker markerDSN = DSNConnect.AddComponent<AHMapMarker> ();
-			markerDSN.Start ();
+//			markerDSN.Start ();
 			markerDSN.SetUp (rangeDSN, vessel.mapObject.trf, FlightGlobals.GetHomeBody ().MapObject.trf, true, 1d);
 
 //			if (FlightGlobals.ActiveVessel.Connection != null) {
@@ -343,7 +340,6 @@ namespace AntennaHelper
 
 		private void RemoveToolbarButton ()
 		{
-			ToolbarButtonOnFalse ();
 			KSP.UI.Screens.ApplicationLauncher.Instance.RemoveModApplication (toolbarButton);
 		}
 		private bool guiWindowAtZero = true;
