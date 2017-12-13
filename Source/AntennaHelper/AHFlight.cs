@@ -11,7 +11,7 @@ namespace AntennaHelper
 	{
 		// UI Stuff :
 		public static GUICircleSelection guiCircle;
-		public static Rect rectAntennaSelectWindow = new Rect (Vector2.zero, new Vector2 (100, 100));
+		public static Rect windowRect = new Rect (Vector2.zero, new Vector2 (138, 154));
 
 		private static AHFlight instance;
 
@@ -276,8 +276,8 @@ namespace AntennaHelper
 		public void OnGUI ()
 		{
 			if (isToolbarOn && inMapView) {
-				GUILayout.BeginArea (rectAntennaSelectWindow);
-				rectAntennaSelectWindow = GUILayout.Window (806641, rectAntennaSelectWindow, AHMapViewWindow.AntennaSelectWindow, "Antenna Helper");
+				GUILayout.BeginArea (windowRect);
+				windowRect = GUILayout.Window (806641, windowRect, AHMapViewWindow.AntennaSelectWindow, "Antenna Helper");
 				GUILayout.EndArea ();
 			}
 		}
@@ -322,6 +322,25 @@ namespace AntennaHelper
 				break;
 			}
 		}
+		private void SetWindowPos ()
+		{
+			float posX = toolbarButton.transform.position.x * 2f - windowRect.width + 38f;
+			if (posX + windowRect.width > Screen.width) {
+				posX = Screen.width - windowRect.width;
+			} else if (posX < 0) {
+				posX = 0;
+			}
+
+			float posY = Screen.height / 2f - toolbarButton.transform.position.y - windowRect.height / 3f;
+			if (posY + windowRect.height > Screen.height) {
+				posY = Screen.height - windowRect.height;
+			} else if (posY < 0) {
+				posY = 0;
+			}
+
+			windowRect.position = new Vector2 (posX, posY);
+
+		}
 		#endregion
 
 		#region ToolbarButton
@@ -342,18 +361,13 @@ namespace AntennaHelper
 		{
 			KSP.UI.Screens.ApplicationLauncher.Instance.RemoveModApplication (toolbarButton);
 		}
-		private bool guiWindowAtZero = true;
+
 		private void ToolbarButtonOnTrue ()
 		{
 			if (activeConnect != null) {
 				GUISelectCircle ();
-				// Set the position of the gui window, its position been related to the postion of the toolbar button
-				//  it need to be done when the toolbar is fully loaded, doing it now is safe, even if not intuitive
-				if (guiWindowAtZero) {
-					rectAntennaSelectWindow.position = new Vector2 (Screen.width - 180f, toolbarButton.transform.position.y - 20f);
-
-					guiWindowAtZero = false;
-				}
+				// Reset window position each time it is clicked, I can't predict where the button will be
+				SetWindowPos ();
 				isToolbarOn = true;
 			}
 		}
