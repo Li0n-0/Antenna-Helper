@@ -88,7 +88,15 @@ namespace AntennaHelper
 			marker.layer = 24;
 			marker.transform.localPosition = Vector3.zero;
 //			marker.transform.SetParent (parent);
-			marker.transform.position = parent.position;
+			// Working :
+//			marker.transform.position = parent.position;
+			//
+
+			//
+//			Vector3 pos = new Vector3 (parent.position.x, target.position.y, parent.position.z);
+//			marker.transform.position = pos;
+//			marker.transform.rotation = FlightGlobals.Bodies [0].MapObject.trf.rotation;
+			//
 
 			circleGreen.transform.localPosition = Vector3.zero;
 			circleGreen.transform.SetParent (marker.transform);
@@ -160,13 +168,22 @@ namespace AntennaHelper
 		public void DoUpdate ()
 		{
 			if (! this.isActiveAndEnabled) { return; }
+			// Working :
+			//
+//			marker.transform.position = parent.position;
+//			Vector3 relativePos = target.position - marker.transform.position;
+//			marker.transform.rotation = Quaternion.LookRotation (relativePos);
+//			// Quaternion.LookRotation give the same result than Transform.LookAt
+////			marker.transform.LookAt (target);
+//			marker.transform.Rotate (Vector3.right, 90f);
+			//
 
-			marker.transform.position = parent.position;
-			Vector3 relativePos = target.position - marker.transform.position;
-			marker.transform.rotation = Quaternion.LookRotation (relativePos);
-			// Quaternion.LookRotation give the same result than Transform.LookAt
-//			marker.transform.LookAt (target);
+			//
+			Vector3 pos = new Vector3 (parent.position.x, target.position.y, parent.position.z);
+			marker.transform.position = pos;
+			marker.transform.rotation = FlightGlobals.Bodies [0].MapObject.trf.rotation;
 			marker.transform.Rotate (Vector3.right, 90f);
+			//
 		}
 	}
 }
