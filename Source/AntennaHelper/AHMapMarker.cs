@@ -56,28 +56,28 @@ namespace AntennaHelper
 
 			// Creating circles :
 			circleGreen = GameObject.CreatePrimitive (PrimitiveType.Quad);
-			circleGreen.layer = 10;
+			circleGreen.layer = 24;
 			Destroy (circleGreen.GetComponent<MeshCollider> ());
 			circleGreen.GetComponent<MeshRenderer> ().material = new Material (Shader.Find ("Unlit/Transparent"));
 			circleGreen.GetComponent<MeshRenderer> ().material.mainTexture = AHUtil.circleGreenTex;
 			circleGreen.transform.localScale = new Vector3 (scaleGreen, scaleGreen, 1f);
 
 			circleYellow = GameObject.CreatePrimitive (PrimitiveType.Quad);
-			circleYellow.layer = 10;
+			circleYellow.layer = 24;
 			Destroy (circleYellow.GetComponent<MeshCollider> ());
 			circleYellow.GetComponent<MeshRenderer> ().material = new Material (Shader.Find ("Unlit/Transparent"));
 			circleYellow.GetComponent<MeshRenderer> ().material.mainTexture = AHUtil.circleYellowTex;
 			circleYellow.transform.localScale = new Vector3 (scaleYellow, scaleYellow, 1f);
 
 			circleOrange = GameObject.CreatePrimitive (PrimitiveType.Quad);
-			circleOrange.layer = 10;
+			circleOrange.layer = 24;
 			Destroy (circleOrange.GetComponent<MeshCollider> ());
 			circleOrange.GetComponent<MeshRenderer> ().material = new Material (Shader.Find ("Unlit/Transparent"));
 			circleOrange.GetComponent<MeshRenderer> ().material.mainTexture = AHUtil.circleOrangeTex;
 			circleOrange.transform.localScale = new Vector3 (scaleOrange, scaleOrange, 1f);
 
 			circleRed = GameObject.CreatePrimitive (PrimitiveType.Quad);
-			circleRed.layer = 10;
+			circleRed.layer = 24;
 			Destroy (circleRed.GetComponent<MeshCollider> ());
 			circleRed.GetComponent<MeshRenderer> ().material = new Material (Shader.Find ("Unlit/Transparent"));
 			circleRed.GetComponent<MeshRenderer> ().material.mainTexture = AHUtil.circleRedTex;
@@ -85,7 +85,7 @@ namespace AntennaHelper
 
 			// set position and parenting :
 			marker = this.gameObject;
-			marker.layer = 10;
+			marker.layer = 24;
 			marker.transform.localPosition = Vector3.zero;
 //			marker.transform.SetParent (parent);
 			marker.transform.position = parent.position;
