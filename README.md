@@ -24,7 +24,7 @@ There is three antennas on it :
 
 ### In the editor : 
 
-Click on the Antenna Helper icon on the app launcher : ![Antenna Helper icon](https://i.imgur.com/Ii6G55t.png)
+Click on the Antenna Helper icon on the app launcher : ![Antenna Helper icon](https://i.imgur.com/BXuEy3o.png)
 
 It will bring this window : 
 
@@ -48,7 +48,7 @@ With the available DSN level and their power, the one in bold is your current DS
 
 ### In flight :
 
-Go to the Map View, click the Antenna Helper icon on the app launcher : ![Antenna Helper icon](https://i.imgur.com/Ii6G55t.png)
+Go to the Map View, click the Antenna Helper icon on the app launcher : ![Antenna Helper icon](https://i.imgur.com/BXuEy3o.png)
 
 (Zoom out)
 
@@ -82,11 +82,11 @@ This is still a work in progress, you can use it safely, it won't break any thin
 
 ### Know issues :
 
-* the circle of the map view jitter at high time-wrap. Almost fixed.
-* the orientation of the map view circle, relative to the camera, is, most of the time, sub-optimal.
+* ~~the circle of the map view jitter at high time-wrap. Almost fixed.~~
+* the orientation of the map view circle, relative to the camera, is, most of the time, sub-optimal. Fixed when orbiting the DSN's planet
 * transparency of the circle are not good, specially when they overlap.
-* in-flight, antennas of the active ship are all considered extended.
-* in-flight math are done only once on loading. It need to be re-done when the ship stage, dock, etc...
+* ~~in-flight, antennas of the active ship are all considered extended.~~
+* ~~in-flight math are done only once on loading. It need to be re-done when the ship stage, dock, etc...~~
 * DSN and range modifier may not be corectly set when loading a new game (after an "exit to main menu")
 
 ### Future plans :
@@ -98,7 +98,7 @@ This is still a work in progress, you can use it safely, it won't break any thin
 * in the editor, add all the in-flight relay to the list of target.
 * in the editor, add relay antennas (part) to the list of target.
 * re-work the GUI, possibly with the new GUI system instead of on OnGUI.
-* map view window should be clamped to the toolbar button.
+* ~~map view window should be clamped to the toolbar button.~~ Done
 
 
 ## Credits
