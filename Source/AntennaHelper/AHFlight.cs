@@ -98,10 +98,8 @@ namespace AntennaHelper
 
 		private void VesselModified (Vessel v = null)
 		{
-			Debug.Log("[AH] the vessel '" + v.vesselName + "' has been modified");
 			double newPower = GetActualVesselPower (FlightGlobals.ActiveVessel);
 			if (newPower != antennaPower) {
-				Debug.Log("[AH] the active vessel has been modified");
 				DestroyMarker ();
 				vessel = FlightGlobals.ActiveVessel;
 				timeAtStart = Time.time;
@@ -126,7 +124,7 @@ namespace AntennaHelper
 			while (true) {
 				foreach(KeyValuePair<ModuleDeployableAntenna, bool> kvp in deployableAntennas) {
 					if (((kvp.Key.deployState == ModuleDeployablePart.DeployState.EXTENDED) && (kvp.Value != true)) || ((kvp.Key.deployState != ModuleDeployablePart.DeployState.EXTENDED) && (kvp.Value == true))) {
-						VesselModified (/*For debug*/vessel);
+						VesselModified ();
 					}
 				}
 				yield return new WaitForSeconds (2f);
@@ -190,31 +188,6 @@ namespace AntennaHelper
 			/// Anyway, best will be to manually do the math with info directly from the part
 			/// 
 
-//			double powerBestAntenna = 0;
-//			ModuleDataTransmitter bestAntenna;
-//			List<ModuleDataTransmitter> antennaList = new List<ModuleDataTransmitter> ();
-//			List<ModuleDataTransmitter> antennaListCanCombine = new List<ModuleDataTransmitter> ();
-//
-//			foreach (Part part in vessel.parts) {
-//				antennaList.AddRange (part.FindModulesImplementing<ModuleDataTransmitter> ());
-//			}
-//
-//			foreach (ModuleDataTransmitter antenna in antennaList) {
-//				if (antenna.antennaCombinable) {antennaListCanCombine.Add (antenna);}
-//				if (antenna.antennaPower > powerBestAntenna) {
-//					powerBestAntenna = antenna.antennaPower;
-//					bestAntenna = antenna;
-//				}
-//			}
-//
-//			powerBestAntenna = AHUtil.TruePower (powerBestAntenna);
-//			double combinePower = AHUtil.GetVesselPower (antennaListCanCombine);
-//			if (combinePower > powerBestAntenna) {
-//				antennaPower = combinePower;
-//			} else {
-//				antennaPower = powerBestAntenna;
-//			}
-
 			antennaPower = GetActualVesselPower (vessel);
 
 			// list of all the relay in-flight :
@@ -239,7 +212,6 @@ namespace AntennaHelper
 
 							allRelay.Add (new GameObject ());
 							allRelay [i].AddComponent<AHMapMarker> ();
-//							allRelay [i].GetComponent<AHMapMarker> ().Start ();
 							allRelay [i].GetComponent<AHMapMarker> ().SetUp (range, vessel, v.mapObject.trf, false, realSignal);
 
 							i++;
@@ -270,7 +242,6 @@ namespace AntennaHelper
 
 			activeConnect = new GameObject ();
 			activeConnect.AddComponent<AHMapMarker> ();
-//			activeConnect.GetComponent<AHMapMarker> ().Start ();
 			activeConnect.GetComponent<AHMapMarker> ().SetUp (rangeAC, vessel, relay, isHome, activeSignal);
 //			Debug.Log ("[AH] active marker done");
 
@@ -280,29 +251,10 @@ namespace AntennaHelper
 			rangeDSN = AHUtil.GetDistanceAt0 (rangeDSN);
 			DSNConnect = new GameObject ();
 			AHMapMarker markerDSN = DSNConnect.AddComponent<AHMapMarker> ();
-//			markerDSN.Start ();
 			markerDSN.SetUp (rangeDSN, vessel, FlightGlobals.GetHomeBody ().MapObject.trf, true, 1d);
 
 
 			StartCoroutine ("UpdateCheckExtend");
-
-//			if (FlightGlobals.ActiveVessel.Connection != null) {
-//				Debug.Log ("[AH] active vessel CommnetVessel found");
-//				if (FlightGlobals.ActiveVessel.Connection.ControlPath != null) {
-//					Debug.Log ("[AH] active vessel ControlPath found");
-//					if (FlightGlobals.ActiveVessel.Connection.ControlPath.First != null) {
-//						Debug.Log ("[AH] active vessel ControlPath.First found");
-//						Debug.Log ("[AH] ControlPath.First : " + FlightGlobals.ActiveVessel.Connection.ControlPath.First.ToString ());
-//
-//					} else {
-//						Debug.Log ("[AH] active vessel ControlPath.First not found");
-//					}
-//				} else {
-//					Debug.Log ("[AH] active vessel ControlPath not found");
-//				}
-//			} else {
-//				Debug.Log ("[AH] active vessel CommnetVessel not found");
-//			}
 		}
 
 		private double GetRealSignal (CommNet.CommPath path)

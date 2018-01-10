@@ -88,7 +88,6 @@ namespace AntennaHelper
 			marker = this.gameObject;
 			marker.layer = 24;
 			marker.transform.localPosition = Vector3.zero;
-//			marker.transform.SetParent (parent);
 			marker.transform.position = parent.position;
 
 			circleGreen.transform.localPosition = Vector3.zero;
