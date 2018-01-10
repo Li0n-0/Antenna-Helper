@@ -354,7 +354,7 @@ namespace AntennaHelper
 				AHUtil.DummyVoid, 
 				AHUtil.DummyVoid,
 				KSP.UI.Screens.ApplicationLauncher.AppScenes.MAPVIEW,
-				AHUtil.toolbarButtonTex);
+				AHUtil.toolbarButtonTexOff);
 		}
 
 		private void RemoveToolbarButton ()
@@ -369,6 +369,13 @@ namespace AntennaHelper
 				// Reset window position each time it is clicked, I can't predict where the button will be
 				SetWindowPos ();
 				isToolbarOn = true;
+
+				// Change the button texture :
+				if (UnityEngine.Random.Range (0, 2) == 1) {
+					toolbarButton.SetTexture (AHUtil.toolbarButtonTexSatOn);
+				} else {
+					toolbarButton.SetTexture (AHUtil.toolbarButtonTexDishOn);
+				}
 			}
 		}
 
@@ -381,6 +388,9 @@ namespace AntennaHelper
 					gO.GetComponent<AHMapMarker> ().Hide ();
 				}
 				isToolbarOn = false;
+
+				// Change the button texture :
+				toolbarButton.SetTexture (AHUtil.toolbarButtonTexOff);
 			}
 		}
 		#endregion
