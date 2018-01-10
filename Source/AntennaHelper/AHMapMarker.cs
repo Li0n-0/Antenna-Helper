@@ -10,6 +10,7 @@ namespace AntennaHelper
 		private float scaleGreen, scaleYellow, scaleOrange, scaleRed;
 		private bool isEnabled;
 		private Orbit transmitOrbit;
+		private bool connectedToHome;
 
 		void Start ()
 		{
@@ -31,6 +32,7 @@ namespace AntennaHelper
 			if (relayIsHome) {
 				maxRange += Planetarium.fetch.Home.Radius;
 			}
+			connectedToHome = relayIsHome;
 
 			scaleGreen = 0;
 			scaleYellow = 0;
@@ -170,7 +172,7 @@ namespace AntennaHelper
 			marker.transform.position = parent.position;
 			marker.transform.rotation = Planetarium.Rotation;
 
-			if (transmitOrbit.referenceBody == Planetarium.fetch.Home) {
+			if (connectedToHome && transmitOrbit.referenceBody == Planetarium.fetch.Home) {
 				// This is the best method for a transmitter orbiting a DSN
 				marker.transform.eulerAngles = new Vector3 
 					(marker.transform.eulerAngles.x, marker.transform.eulerAngles.y - (float)transmitOrbit.LAN, marker.transform.eulerAngles.z);
