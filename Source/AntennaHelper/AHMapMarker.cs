@@ -9,6 +9,8 @@ namespace AntennaHelper
 		private GameObject marker, markerMirror, circleGreen, circleYellow, circleOrange, circleRed;
 		private float scaleGreen, scaleYellow, scaleOrange, scaleRed;
 		private bool isEnabled;
+		private Orbit transmitOrbit;
+		private bool connectedToHome;
 
 		void Start ()
 		{
@@ -19,17 +21,18 @@ namespace AntennaHelper
 			GameEvents.OnMapExited.Add (MapExit);
 		}
 
-		public void SetUp (double maxRange, Transform mapObjectTransmitter, Transform mapObjectRelay, bool relayIsHome = false, double sS = Double.NaN)
+		public void SetUp (double maxRange, Vessel vesselTransmitter, Transform mapObjectRelay, bool relayIsHome = false, double sS = Double.NaN)
 		{
-			if (mapObjectRelay != null && mapObjectTransmitter != null) {
-				parent = mapObjectRelay;
-				target = mapObjectTransmitter;
-			}
+			parent = mapObjectRelay;
+			target = vesselTransmitter.mapObject.trf;
+
+			transmitOrbit = vesselTransmitter.orbit;
 
 
 			if (relayIsHome) {
 				maxRange += Planetarium.fetch.Home.Radius;
 			}
+			connectedToHome = relayIsHome;
 
 			scaleGreen = 0;
 			scaleYellow = 0;
@@ -56,28 +59,28 @@ namespace AntennaHelper
 
 			// Creating circles :
 			circleGreen = GameObject.CreatePrimitive (PrimitiveType.Quad);
-			circleGreen.layer = 10;
+			circleGreen.layer = 24;
 			Destroy (circleGreen.GetComponent<MeshCollider> ());
 			circleGreen.GetComponent<MeshRenderer> ().material = new Material (Shader.Find ("Unlit/Transparent"));
 			circleGreen.GetComponent<MeshRenderer> ().material.mainTexture = AHUtil.circleGreenTex;
 			circleGreen.transform.localScale = new Vector3 (scaleGreen, scaleGreen, 1f);
 
 			circleYellow = GameObject.CreatePrimitive (PrimitiveType.Quad);
-			circleYellow.layer = 10;
+			circleYellow.layer = 24;
 			Destroy (circleYellow.GetComponent<MeshCollider> ());
 			circleYellow.GetComponent<MeshRenderer> ().material = new Material (Shader.Find ("Unlit/Transparent"));
 			circleYellow.GetComponent<MeshRenderer> ().material.mainTexture = AHUtil.circleYellowTex;
 			circleYellow.transform.localScale = new Vector3 (scaleYellow, scaleYellow, 1f);
 
 			circleOrange = GameObject.CreatePrimitive (PrimitiveType.Quad);
-			circleOrange.layer = 10;
+			circleOrange.layer = 24;
 			Destroy (circleOrange.GetComponent<MeshCollider> ());
 			circleOrange.GetComponent<MeshRenderer> ().material = new Material (Shader.Find ("Unlit/Transparent"));
 			circleOrange.GetComponent<MeshRenderer> ().material.mainTexture = AHUtil.circleOrangeTex;
 			circleOrange.transform.localScale = new Vector3 (scaleOrange, scaleOrange, 1f);
 
 			circleRed = GameObject.CreatePrimitive (PrimitiveType.Quad);
-			circleRed.layer = 10;
+			circleRed.layer = 24;
 			Destroy (circleRed.GetComponent<MeshCollider> ());
 			circleRed.GetComponent<MeshRenderer> ().material = new Material (Shader.Find ("Unlit/Transparent"));
 			circleRed.GetComponent<MeshRenderer> ().material.mainTexture = AHUtil.circleRedTex;
@@ -85,30 +88,33 @@ namespace AntennaHelper
 
 			// set position and parenting :
 			marker = this.gameObject;
-			marker.layer = 10;
+			marker.layer = 24;
 			marker.transform.localPosition = Vector3.zero;
-//			marker.transform.SetParent (parent);
 			marker.transform.position = parent.position;
 
 			circleGreen.transform.localPosition = Vector3.zero;
 			circleGreen.transform.SetParent (marker.transform);
 			circleGreen.transform.position = marker.transform.position;
 			circleGreen.transform.localRotation = Quaternion.Euler (Vector3.zero);
+			circleGreen.transform.eulerAngles = new Vector3 (90f, 0, 0);
 
 			circleYellow.transform.localPosition = Vector3.zero;
 			circleYellow.transform.SetParent (marker.transform);
 			circleYellow.transform.position = marker.transform.position;
 			circleYellow.transform.localRotation = Quaternion.Euler (Vector3.zero);
+			circleYellow.transform.eulerAngles = new Vector3 (90f, 0, 0);
 
 			circleOrange.transform.localPosition = Vector3.zero;
 			circleOrange.transform.SetParent (marker.transform);
 			circleOrange.transform.position = marker.transform.position;
 			circleOrange.transform.localRotation = Quaternion.Euler (Vector3.zero);
+			circleOrange.transform.eulerAngles = new Vector3 (90f, 0, 0);
 
 			circleRed.transform.localPosition = Vector3.zero;
 			circleRed.transform.SetParent (marker.transform);
 			circleRed.transform.position = marker.transform.position;
 			circleRed.transform.localRotation = Quaternion.Euler (Vector3.zero);
+			circleRed.transform.eulerAngles = new Vector3 (90f, 0, 0);
 
 			//Set a mirror of the circles
 			markerMirror = (GameObject)Instantiate (marker, marker.transform);
@@ -159,14 +165,23 @@ namespace AntennaHelper
 		#endregion
 		public void DoUpdate ()
 		{
-			if (! this.isActiveAndEnabled) { return; }
+			if (!this.isActiveAndEnabled) {
+				return;
+			}
 
 			marker.transform.position = parent.position;
-			Vector3 relativePos = target.position - marker.transform.position;
-			marker.transform.rotation = Quaternion.LookRotation (relativePos);
-			// Quaternion.LookRotation give the same result than Transform.LookAt
-//			marker.transform.LookAt (target);
-			marker.transform.Rotate (Vector3.right, 90f);
+			marker.transform.rotation = Planetarium.Rotation;
+
+			if (connectedToHome && transmitOrbit.referenceBody == Planetarium.fetch.Home) {
+				// This is the best method for a transmitter orbiting a DSN
+				marker.transform.eulerAngles = new Vector3 
+					(marker.transform.eulerAngles.x, marker.transform.eulerAngles.y - (float)transmitOrbit.LAN, marker.transform.eulerAngles.z);
+				marker.transform.eulerAngles = new Vector3 
+					(marker.transform.eulerAngles.x - (float)transmitOrbit.inclination, marker.transform.eulerAngles.y, marker.transform.eulerAngles.z);
+			} else {
+				// All in one method :
+				marker.transform.LookAt (target);
+			}
 		}
 	}
 }

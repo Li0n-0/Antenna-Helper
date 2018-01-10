@@ -474,7 +474,7 @@ namespace AntennaHelper
 				AHUtil.DummyVoid, 
 				AHUtil.DummyVoid,
 				KSP.UI.Screens.ApplicationLauncher.AppScenes.VAB | KSP.UI.Screens.ApplicationLauncher.AppScenes.SPH,
-				AHUtil.toolbarButtonTex);
+				AHUtil.toolbarButtonTexOff);
 		}
 
 		private void RemoveToolbarButton ()
@@ -488,11 +488,21 @@ namespace AntennaHelper
 		private void ToolbarButtonOnTrue ()
 		{
 			ToggleWinows ();
+
+			// Change the button texture :
+			if (UnityEngine.Random.Range (0, 2) == 1) {
+				toolbarButton.SetTexture (AHUtil.toolbarButtonTexSatOn);
+			} else {
+				toolbarButton.SetTexture (AHUtil.toolbarButtonTexDishOn);
+			}
 		}
 
 		private void ToolbarButtonOnFalse ()
 		{
 			ToggleWinows ();
+
+			// Change the button texture :
+			toolbarButton.SetTexture (AHUtil.toolbarButtonTexOff);
 		}
 
 		private void ToggleWinows ()

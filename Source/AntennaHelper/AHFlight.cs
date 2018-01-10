@@ -17,6 +17,8 @@ namespace AntennaHelper
 
 		private float timeAtStart;
 		private Vessel vessel;
+		private double antennaPower;
+		private Dictionary<ModuleDeployableAntenna, bool> deployableAntennas;
 
 		// GameObjects saves :
 		private List<GameObject> allRelay = new List<GameObject> ();
@@ -25,6 +27,7 @@ namespace AntennaHelper
 
 		// UI stuff :
 		private bool isToolbarOn = false;
+		private bool toolbarButtonAdded = false;
 		private KSP.UI.Screens.ApplicationLauncherButton toolbarButton;
 
 
@@ -35,7 +38,6 @@ namespace AntennaHelper
 			guiCircle = GUICircleSelection.ACTIVE;
 			timeAtStart = Time.time;
 
-			GameEvents.onGUIApplicationLauncherReady.Add (AddToolbarButton);
 			GameEvents.onGUIApplicationLauncherDestroyed.Add (RemoveToolbarButton);
 
 			GameEvents.onVesselSwitching.Add (VesselSwitch);
@@ -43,6 +45,8 @@ namespace AntennaHelper
 			// for the map view gui :
 			GameEvents.OnMapEntered.Add (MapEnter);
 			GameEvents.OnMapExited.Add (MapExit);
+
+			GameEvents.onVesselWasModified.Add (VesselModified);
 
 			StartCoroutine ("WaitAtStart");
 		}
@@ -52,7 +56,7 @@ namespace AntennaHelper
 			DestroyMarker ();
 			// Toolbar button
 			RemoveToolbarButton ();
-			GameEvents.onGUIApplicationLauncherReady.Remove (AddToolbarButton);
+
 			GameEvents.onGUIApplicationLauncherDestroyed.Remove (RemoveToolbarButton);
 
 			GameEvents.onVesselSwitching.Remove (VesselSwitch);
@@ -60,6 +64,8 @@ namespace AntennaHelper
 			// for the map view gui :
 			GameEvents.OnMapEntered.Remove (MapEnter);
 			GameEvents.OnMapExited.Remove (MapExit);
+
+			GameEvents.onVesselWasModified.Remove (VesselModified);
 		}
 		private bool inMapView = false;
 		private void MapEnter ()
@@ -74,6 +80,8 @@ namespace AntennaHelper
 
 		private void DestroyMarker ()
 		{
+			StopCoroutine ("WaitAtStart");
+			StopCoroutine ("UpdateCheckExtend");
 			Destroy (activeConnect);
 			Destroy (DSNConnect);
 			foreach (GameObject gO in allRelay) {
@@ -84,15 +92,43 @@ namespace AntennaHelper
 		private void VesselSwitch (Vessel fromVessel, Vessel toVessel)
 		{
 			StopCoroutine ("WaitAtStart");
+			StopCoroutine ("UpdateCheckExtend");
 			Destroy (this);
+		}
+
+		private void VesselModified (Vessel v = null)
+		{
+			double newPower = GetActualVesselPower (FlightGlobals.ActiveVessel);
+			if (newPower != antennaPower) {
+				DestroyMarker ();
+				vessel = FlightGlobals.ActiveVessel;
+				timeAtStart = Time.time;
+				StartCoroutine ("WaitAtStart");
+			}
 		}
 
 		private IEnumerator WaitAtStart ()
 		{
+			if (toolbarButtonAdded) {
+				RemoveToolbarButton ();
+			}
 			while (Time.time < timeAtStart + .5f) {
 				yield return new WaitForSeconds (.1f);
 			}
 			SetMapMarker ();
+			AddToolbarButton ();
+		}
+
+		private IEnumerator UpdateCheckExtend ()
+		{
+			while (true) {
+				foreach(KeyValuePair<ModuleDeployableAntenna, bool> kvp in deployableAntennas) {
+					if (((kvp.Key.deployState == ModuleDeployablePart.DeployState.EXTENDED) && (kvp.Value != true)) || ((kvp.Key.deployState != ModuleDeployablePart.DeployState.EXTENDED) && (kvp.Value == true))) {
+						VesselModified ();
+					}
+				}
+				yield return new WaitForSeconds (2f);
+			}
 		}
 
 		private void SetMapMarker ()
@@ -138,7 +174,7 @@ namespace AntennaHelper
 			/// 
 
 			//  Get the Active vessel power
-			double vesselPower;
+//			double antennaPower;
 			//// 
 			/// Here is the thing when trying to get the transmit power from a vessel : 
 			/// (Vessel.Connection.Comm.antennaTransmit.power)
@@ -152,32 +188,10 @@ namespace AntennaHelper
 			/// Anyway, best will be to manually do the math with info directly from the part
 			/// 
 
-			double powerBestAntenna = 0;
-			ModuleDataTransmitter bestAntenna;
-			List<ModuleDataTransmitter> antennaList = new List<ModuleDataTransmitter> ();
-			List<ModuleDataTransmitter> antennaListCanCombine = new List<ModuleDataTransmitter> ();
-
-			foreach (Part part in vessel.parts) {
-				antennaList.AddRange (part.FindModulesImplementing<ModuleDataTransmitter> ());
-			}
-
-			foreach (ModuleDataTransmitter antenna in antennaList) {
-				if (antenna.antennaCombinable) {antennaListCanCombine.Add (antenna);}
-				if (antenna.antennaPower > powerBestAntenna) {
-					powerBestAntenna = antenna.antennaPower;
-					bestAntenna = antenna;
-				}
-			}
-
-			powerBestAntenna = AHUtil.TruePower (powerBestAntenna);
-			double combinePower = AHUtil.GetVesselPower (antennaListCanCombine);
-			if (combinePower > powerBestAntenna) {
-				vesselPower = combinePower;
-			} else {
-				vesselPower = powerBestAntenna;
-			}
+			antennaPower = GetActualVesselPower (vessel);
 
 			// list of all the relay in-flight :
+			allRelay = new List<GameObject> ();
 			int i = 0;
 			foreach (Vessel v in FlightGlobals.Vessels) {
 				if (v != vessel) {
@@ -192,14 +206,13 @@ namespace AntennaHelper
 							double realSignal = GetRealSignal (v.Connection.ControlPath);
 
 							// math the max range :
-							double range = AHUtil.GetRange (vesselPower, v.Connection.Comm.antennaRelay.power);
+							double range = AHUtil.GetRange (antennaPower, v.Connection.Comm.antennaRelay.power);
 							// get real maxRange :
 							range = AHUtil.GetDistanceAt0 (range);
 
 							allRelay.Add (new GameObject ());
 							allRelay [i].AddComponent<AHMapMarker> ();
-//							allRelay [i].GetComponent<AHMapMarker> ().Start ();
-							allRelay [i].GetComponent<AHMapMarker> ().SetUp (range, vessel.mapObject.trf, v.mapObject.trf, false, realSignal);
+							allRelay [i].GetComponent<AHMapMarker> ().SetUp (range, vessel, v.mapObject.trf, false, realSignal);
 
 							i++;
 						}
@@ -214,12 +227,12 @@ namespace AntennaHelper
 			double activeSignal;
 			bool isHome;
 			if (!vessel.Connection.IsConnected || vessel.Connection.ControlPath [0].b.isHome) {
-				rangeAC =  AHUtil.GetRange (vesselPower, AHUtil.DSNLevelList [AHUtil.DSNLevel]);
+				rangeAC =  AHUtil.GetRange (antennaPower, AHUtil.DSNLevelList [AHUtil.DSNLevel]);
 				relay = FlightGlobals.GetHomeBody ().MapObject.trf;
 				activeSignal = 1d;
 				isHome = true;
 			} else {
-				rangeAC = AHUtil.GetRange (vesselPower, vessel.Connection.ControlPath[0].b.antennaRelay.power);
+				rangeAC = AHUtil.GetRange (antennaPower, vessel.Connection.ControlPath[0].b.antennaRelay.power);
 				relay = vessel.Connection.ControlPath [0].b.transform.GetComponent<Vessel> ().mapObject.trf;
 				activeSignal = GetRealSignal (vessel.Connection.ControlPath);
 				isHome = false;
@@ -229,36 +242,19 @@ namespace AntennaHelper
 
 			activeConnect = new GameObject ();
 			activeConnect.AddComponent<AHMapMarker> ();
-//			activeConnect.GetComponent<AHMapMarker> ().Start ();
-			activeConnect.GetComponent<AHMapMarker> ().SetUp (rangeAC, vessel.mapObject.trf, relay, isHome, activeSignal);
+			activeConnect.GetComponent<AHMapMarker> ().SetUp (rangeAC, vessel, relay, isHome, activeSignal);
 //			Debug.Log ("[AH] active marker done");
 
 			// DSN Connection :
-			double rangeDSN = AHUtil.GetRange (vesselPower, AHUtil.DSNLevelList [AHUtil.DSNLevel]);
+			double rangeDSN = AHUtil.GetRange (antennaPower, AHUtil.DSNLevelList [AHUtil.DSNLevel]);
 			// get real maxRange
 			rangeDSN = AHUtil.GetDistanceAt0 (rangeDSN);
 			DSNConnect = new GameObject ();
 			AHMapMarker markerDSN = DSNConnect.AddComponent<AHMapMarker> ();
-//			markerDSN.Start ();
-			markerDSN.SetUp (rangeDSN, vessel.mapObject.trf, FlightGlobals.GetHomeBody ().MapObject.trf, true, 1d);
+			markerDSN.SetUp (rangeDSN, vessel, FlightGlobals.GetHomeBody ().MapObject.trf, true, 1d);
 
-//			if (FlightGlobals.ActiveVessel.Connection != null) {
-//				Debug.Log ("[AH] active vessel CommnetVessel found");
-//				if (FlightGlobals.ActiveVessel.Connection.ControlPath != null) {
-//					Debug.Log ("[AH] active vessel ControlPath found");
-//					if (FlightGlobals.ActiveVessel.Connection.ControlPath.First != null) {
-//						Debug.Log ("[AH] active vessel ControlPath.First found");
-//						Debug.Log ("[AH] ControlPath.First : " + FlightGlobals.ActiveVessel.Connection.ControlPath.First.ToString ());
-//
-//					} else {
-//						Debug.Log ("[AH] active vessel ControlPath.First not found");
-//					}
-//				} else {
-//					Debug.Log ("[AH] active vessel ControlPath not found");
-//				}
-//			} else {
-//				Debug.Log ("[AH] active vessel CommnetVessel not found");
-//			}
+
+			StartCoroutine ("UpdateCheckExtend");
 		}
 
 		private double GetRealSignal (CommNet.CommPath path)
@@ -270,6 +266,46 @@ namespace AntennaHelper
 				}
 			}
 			return signal;
+		}
+
+		private double GetActualVesselPower (Vessel v)
+		{
+			// This function should be more generic and also used in the editor
+			// will see later...
+			double biggest = 0;
+			List<ModuleDataTransmitter> combList = new List<ModuleDataTransmitter> ();
+
+			deployableAntennas = new Dictionary<ModuleDeployableAntenna, bool> ();
+
+			foreach (Part p in v.parts) {
+				if (p.Modules.Contains<ModuleDataTransmitter> ()) {
+					if (p.Modules.Contains<ModuleDeployableAntenna>()) {
+						ModuleDeployableAntenna antDep = p.Modules.GetModule<ModuleDeployableAntenna> ();
+						bool extended = true;
+						if (antDep.deployState != ModuleDeployablePart.DeployState.EXTENDED) {
+							extended = false;
+						}
+						deployableAntennas.Add (antDep, extended);
+						if (!extended) {
+							continue;
+						}
+					}
+					ModuleDataTransmitter ant = p.Modules.GetModule<ModuleDataTransmitter> ();
+					if (ant.antennaPower > biggest) {
+						biggest = ant.antennaPower;
+					}
+					if (ant.antennaCombinable) {
+						combList.Add (ant);
+					}
+				}
+			}
+			biggest = AHUtil.TruePower (biggest);
+			double comb = AHUtil.GetVesselPower (combList);
+			if (comb > biggest) {
+				return comb;
+			} else {
+				return biggest;
+			}
 		}
 
 		#region GUI
@@ -354,12 +390,14 @@ namespace AntennaHelper
 				AHUtil.DummyVoid, 
 				AHUtil.DummyVoid,
 				KSP.UI.Screens.ApplicationLauncher.AppScenes.MAPVIEW,
-				AHUtil.toolbarButtonTex);
+				AHUtil.toolbarButtonTexOff);
+			toolbarButtonAdded = true;
 		}
 
 		private void RemoveToolbarButton ()
 		{
 			KSP.UI.Screens.ApplicationLauncher.Instance.RemoveModApplication (toolbarButton);
+			toolbarButtonAdded = false;
 		}
 
 		private void ToolbarButtonOnTrue ()
@@ -369,6 +407,13 @@ namespace AntennaHelper
 				// Reset window position each time it is clicked, I can't predict where the button will be
 				SetWindowPos ();
 				isToolbarOn = true;
+
+				// Change the button texture :
+				if (UnityEngine.Random.Range (0, 2) == 1) {
+					toolbarButton.SetTexture (AHUtil.toolbarButtonTexSatOn);
+				} else {
+					toolbarButton.SetTexture (AHUtil.toolbarButtonTexDishOn);
+				}
 			}
 		}
 
@@ -381,6 +426,9 @@ namespace AntennaHelper
 					gO.GetComponent<AHMapMarker> ().Hide ();
 				}
 				isToolbarOn = false;
+
+				// Change the button texture :
+				toolbarButton.SetTexture (AHUtil.toolbarButtonTexOff);
 			}
 		}
 		#endregion

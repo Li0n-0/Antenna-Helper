@@ -7,7 +7,7 @@ namespace AntennaHelper
 	[KSPAddon (KSPAddon.Startup.SpaceCentre, true)]
 	public class AHUtil : MonoBehaviour
 	{
-		public static Texture toolbarButtonTex;
+		public static Texture toolbarButtonTexSatOn, toolbarButtonTexDishOn, toolbarButtonTexOff;
 		public static Texture signalPerDistanceTex;
 
 		// MapView textures :
@@ -38,7 +38,9 @@ namespace AntennaHelper
 			circleOrangeTex = (Texture)GameDatabase.Instance.GetTexture ("AntennaHelper/Textures/circle_orange_a_1024", false);
 			circleRedTex = (Texture)GameDatabase.Instance.GetTexture ("AntennaHelper/Textures/circle_red_a_1024", false);
 
-			toolbarButtonTex = (Texture)GameDatabase.Instance.GetTexture ("AntennaHelper/Textures/icon", false);
+			toolbarButtonTexSatOn = (Texture)GameDatabase.Instance.GetTexture ("AntennaHelper/Textures/icon_sat_on", false);
+			toolbarButtonTexDishOn = (Texture)GameDatabase.Instance.GetTexture ("AntennaHelper/Textures/icon_dish_on", false);
+			toolbarButtonTexOff = (Texture)GameDatabase.Instance.GetTexture ("AntennaHelper/Textures/icon_off", false);
 			signalPerDistanceTex = (Texture)GameDatabase.Instance.GetTexture ("AntennaHelper/Textures/signal_per_distance", false);
 
 

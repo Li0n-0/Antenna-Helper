@@ -109,4 +109,6 @@ Thanks to [Poodmund](https://forum.kerbalspaceprogram.com/index.php?/profile/128
 
 Thanks to [Skalou](https://forum.kerbalspaceprogram.com/index.php?/profile/133496-skalou/) for his help with the math :wink:
 
+Antenna Helper icon/logo made by myself with assets from [FlatIcon](https://www.flaticon.com) by [Freepik](https://www.flaticon.com/authors/freepik).
+
 ## [Thread on offical KSP forum](https://forum.kerbalspaceprogram.com/index.php?/topic/156122-wip131-antenna-helper-in-game-antennas-range-calculation-v08-17-nov-2017/)
