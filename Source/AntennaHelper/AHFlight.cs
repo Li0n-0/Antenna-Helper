@@ -199,7 +199,7 @@ namespace AntennaHelper
 							allRelay.Add (new GameObject ());
 							allRelay [i].AddComponent<AHMapMarker> ();
 //							allRelay [i].GetComponent<AHMapMarker> ().Start ();
-							allRelay [i].GetComponent<AHMapMarker> ().SetUp (range, vessel.mapObject.trf, v.mapObject.trf, false, realSignal);
+							allRelay [i].GetComponent<AHMapMarker> ().SetUp (range, vessel, v.mapObject.trf, false, realSignal);
 
 							i++;
 						}
@@ -230,7 +230,7 @@ namespace AntennaHelper
 			activeConnect = new GameObject ();
 			activeConnect.AddComponent<AHMapMarker> ();
 //			activeConnect.GetComponent<AHMapMarker> ().Start ();
-			activeConnect.GetComponent<AHMapMarker> ().SetUp (rangeAC, vessel.mapObject.trf, relay, isHome, activeSignal);
+			activeConnect.GetComponent<AHMapMarker> ().SetUp (rangeAC, vessel, relay, isHome, activeSignal);
 //			Debug.Log ("[AH] active marker done");
 
 			// DSN Connection :
@@ -240,7 +240,7 @@ namespace AntennaHelper
 			DSNConnect = new GameObject ();
 			AHMapMarker markerDSN = DSNConnect.AddComponent<AHMapMarker> ();
 //			markerDSN.Start ();
-			markerDSN.SetUp (rangeDSN, vessel.mapObject.trf, FlightGlobals.GetHomeBody ().MapObject.trf, true, 1d);
+			markerDSN.SetUp (rangeDSN, vessel, FlightGlobals.GetHomeBody ().MapObject.trf, true, 1d);
 
 //			if (FlightGlobals.ActiveVessel.Connection != null) {
 //				Debug.Log ("[AH] active vessel CommnetVessel found");
