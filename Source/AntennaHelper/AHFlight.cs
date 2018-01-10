@@ -18,6 +18,7 @@ namespace AntennaHelper
 		private float timeAtStart;
 		private Vessel vessel;
 		private double antennaPower;
+		private Dictionary<ModuleDeployableAntenna, bool> deployableAntennas;
 
 		// GameObjects saves :
 		private List<GameObject> allRelay = new List<GameObject> ();
@@ -79,6 +80,8 @@ namespace AntennaHelper
 
 		private void DestroyMarker ()
 		{
+			StopCoroutine ("WaitAtStart");
+			StopCoroutine ("UpdateCheckExtend");
 			Destroy (activeConnect);
 			Destroy (DSNConnect);
 			foreach (GameObject gO in allRelay) {
@@ -89,16 +92,16 @@ namespace AntennaHelper
 		private void VesselSwitch (Vessel fromVessel, Vessel toVessel)
 		{
 			StopCoroutine ("WaitAtStart");
+			StopCoroutine ("UpdateCheckExtend");
 			Destroy (this);
 		}
 
-		private void VesselModified (Vessel v)
+		private void VesselModified (Vessel v = null)
 		{
 			Debug.Log("[AH] the vessel '" + v.vesselName + "' has been modified");
 			double newPower = GetActualVesselPower (FlightGlobals.ActiveVessel);
 			if (newPower != antennaPower) {
 				Debug.Log("[AH] the active vessel has been modified");
-				StopCoroutine ("WaitAtStart");
 				DestroyMarker ();
 				vessel = FlightGlobals.ActiveVessel;
 				timeAtStart = Time.time;
@@ -116,6 +119,18 @@ namespace AntennaHelper
 			}
 			SetMapMarker ();
 			AddToolbarButton ();
+		}
+
+		private IEnumerator UpdateCheckExtend ()
+		{
+			while (true) {
+				foreach(KeyValuePair<ModuleDeployableAntenna, bool> kvp in deployableAntennas) {
+					if (((kvp.Key.deployState == ModuleDeployablePart.DeployState.EXTENDED) && (kvp.Value != true)) || ((kvp.Key.deployState != ModuleDeployablePart.DeployState.EXTENDED) && (kvp.Value == true))) {
+						VesselModified (/*For debug*/vessel);
+					}
+				}
+				yield return new WaitForSeconds (2f);
+			}
 		}
 
 		private void SetMapMarker ()
@@ -268,6 +283,9 @@ namespace AntennaHelper
 //			markerDSN.Start ();
 			markerDSN.SetUp (rangeDSN, vessel, FlightGlobals.GetHomeBody ().MapObject.trf, true, 1d);
 
+
+			StartCoroutine ("UpdateCheckExtend");
+
 //			if (FlightGlobals.ActiveVessel.Connection != null) {
 //				Debug.Log ("[AH] active vessel CommnetVessel found");
 //				if (FlightGlobals.ActiveVessel.Connection.ControlPath != null) {
@@ -305,10 +323,18 @@ namespace AntennaHelper
 			double biggest = 0;
 			List<ModuleDataTransmitter> combList = new List<ModuleDataTransmitter> ();
 
+			deployableAntennas = new Dictionary<ModuleDeployableAntenna, bool> ();
+
 			foreach (Part p in v.parts) {
 				if (p.Modules.Contains<ModuleDataTransmitter> ()) {
 					if (p.Modules.Contains<ModuleDeployableAntenna>()) {
-						if (p.Modules.GetModule<ModuleDeployableAntenna> ().deployState != ModuleDeployablePart.DeployState.EXTENDED) {
+						ModuleDeployableAntenna antDep = p.Modules.GetModule<ModuleDeployableAntenna> ();
+						bool extended = true;
+						if (antDep.deployState != ModuleDeployablePart.DeployState.EXTENDED) {
+							extended = false;
+						}
+						deployableAntennas.Add (antDep, extended);
+						if (!extended) {
 							continue;
 						}
 					}
