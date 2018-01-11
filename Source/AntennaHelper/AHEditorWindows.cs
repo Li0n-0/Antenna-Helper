@@ -85,55 +85,6 @@ namespace AntennaHelper
 				GUILayout.Label (AHEditor.relayDistanceAt50.ToString ("n") + " m", guiStyleCenter);
 			}
 
-			// Most powerfull antenna :
-//			GUILayout.Label ("Most Powerfull Antenna");
-//			GUILayout.BeginHorizontal ();
-//			GUILayout.BeginVertical ();
-//			GUILayout.Label ("Name of the antenna :");
-//			GUILayout.Label ("Power :");
-//			GUILayout.Label ("Range :");
-//			GUILayout.EndVertical ();
-//			GUILayout.BeginVertical ();
-//			if (antennaTypeIsDirect) {
-//				GUILayout.Label (AntennaHelperEditor.directAntennaName);
-//				GUILayout.Label (AntennaHelperEditor.directPower.ToString ("n"));
-//				GUILayout.Label (AntennaHelperEditor.directRange.ToString ("n") + " m");
-//			} else {
-//				GUILayout.Label (AntennaHelperEditor.relayAntennaName);
-//				GUILayout.Label (AntennaHelperEditor.relayPower.ToString ("n"));
-//				GUILayout.Label (AntennaHelperEditor.relayRange.ToString ("n") + " m");
-//			}
-//			GUILayout.EndVertical ();
-//			GUILayout.EndHorizontal ();
-//
-//			GUILayout.Space (5f);
-//			GUILayout.Box ("", new GUILayoutOption []{ GUILayout.ExpandWidth (true), GUILayout.Height (1) });
-//			GUILayout.Space (5f);
-//
-//			// Combinable antennas :
-//			GUILayout.Label ("Combinable Antennas");
-//			GUILayout.BeginHorizontal ();
-//			GUILayout.BeginVertical ();
-//			GUILayout.Label ("Number of antennas :");
-//			GUILayout.Label ("Number of combinable antennas :");
-//			GUILayout.Label ("Power :");
-//			GUILayout.Label ("Range :");
-//			GUILayout.EndVertical ();
-//			GUILayout.BeginVertical ();
-//			if (antennaTypeIsDirect) {
-//				GUILayout.Label (AntennaHelperEditor.nbDirectAntenna.ToString ());
-//				GUILayout.Label (AntennaHelperEditor.nbDirectCombAntenna.ToString ());
-//				GUILayout.Label (AntennaHelperEditor.directCombPower.ToString ("n"));
-//				GUILayout.Label (AntennaHelperEditor.directCombRange.ToString ("n") + " m");
-//			} else {
-//				GUILayout.Label (AntennaHelperEditor.nbRelayAntenna.ToString ());
-//				GUILayout.Label (AntennaHelperEditor.nbRelayCombAntenna.ToString ());
-//				GUILayout.Label (AntennaHelperEditor.relayCombPower.ToString ("n"));
-//				GUILayout.Label (AntennaHelperEditor.relayCombRange.ToString ("n") + " m");
-//			}
-//			GUILayout.EndVertical ();
-//			GUILayout.EndHorizontal ();
-
 			// Planet view button :
 			if (GUILayout.Button ("Signal Strength / Distance")) {
 				if (AHEditor.showPlanetWindow) {
@@ -159,14 +110,14 @@ namespace AntennaHelper
 
 			GUILayout.BeginVertical ();
 
-			for (int i = 0 ; i < AHUtil.DSNLevelList.Length ; i++) {
-				if (i == AHUtil.DSNLevel) {
-					if (GUILayout.Button ("DSN Level " + (i + 1) + "  (" + AHUtil.DSNLevelList[i] + ")", guiStyleBold)) {
-						AHEditor.SetTarget (i);
+			for (int i = 0 ; i < 3 ; i++) {
+				if (i / 2f == AHEditor.trackingStationLevel) {
+					if (GUILayout.Button ("DSN Level " + (i + 1) + "  (" + GameVariables.Instance.GetDSNRange (i / 2f) + ")", guiStyleBold)) {
+						AHEditor.SetTarget (i / 2f);
 					}
 				} else {
-					if (GUILayout.Button ("DSN Level " + (i + 1) + "  (" + AHUtil.DSNLevelList[i] + ")")) {
-						AHEditor.SetTarget (i);
+					if (GUILayout.Button ("DSN Level " + (i + 1) + "  (" + GameVariables.Instance.GetDSNRange (i / 2f) + ")")) {
+						AHEditor.SetTarget (i / 2f);
 					}
 				}
 			}
