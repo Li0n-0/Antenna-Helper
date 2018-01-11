@@ -11,12 +11,14 @@ namespace AntennaHelper
 		private bool isEnabled;
 		private Orbit transmitOrbit;
 		private bool connectedToHome;
+		private bool cameraIsClose;
 
 		void Start ()
 		{
 			TimingManager.LateUpdateAdd (TimingManager.TimingStage.BetterLateThanNever, DoUpdate);
 
 			isEnabled = false;
+			cameraIsClose = true;
 			GameEvents.OnMapEntered.Add (MapEnter);
 			GameEvents.OnMapExited.Add (MapExit);
 		}
@@ -59,28 +61,28 @@ namespace AntennaHelper
 
 			// Creating circles :
 			circleGreen = GameObject.CreatePrimitive (PrimitiveType.Quad);
-			circleGreen.layer = 24;
+			circleGreen.layer = 10;
 			Destroy (circleGreen.GetComponent<MeshCollider> ());
 			circleGreen.GetComponent<MeshRenderer> ().material = new Material (Shader.Find ("Unlit/Transparent"));
 			circleGreen.GetComponent<MeshRenderer> ().material.mainTexture = AHUtil.circleGreenTex;
 			circleGreen.transform.localScale = new Vector3 (scaleGreen, scaleGreen, 1f);
 
 			circleYellow = GameObject.CreatePrimitive (PrimitiveType.Quad);
-			circleYellow.layer = 24;
+			circleYellow.layer = 10;
 			Destroy (circleYellow.GetComponent<MeshCollider> ());
 			circleYellow.GetComponent<MeshRenderer> ().material = new Material (Shader.Find ("Unlit/Transparent"));
 			circleYellow.GetComponent<MeshRenderer> ().material.mainTexture = AHUtil.circleYellowTex;
 			circleYellow.transform.localScale = new Vector3 (scaleYellow, scaleYellow, 1f);
 
 			circleOrange = GameObject.CreatePrimitive (PrimitiveType.Quad);
-			circleOrange.layer = 24;
+			circleOrange.layer = 10;
 			Destroy (circleOrange.GetComponent<MeshCollider> ());
 			circleOrange.GetComponent<MeshRenderer> ().material = new Material (Shader.Find ("Unlit/Transparent"));
 			circleOrange.GetComponent<MeshRenderer> ().material.mainTexture = AHUtil.circleOrangeTex;
 			circleOrange.transform.localScale = new Vector3 (scaleOrange, scaleOrange, 1f);
 
 			circleRed = GameObject.CreatePrimitive (PrimitiveType.Quad);
-			circleRed.layer = 24;
+			circleRed.layer = 10;
 			Destroy (circleRed.GetComponent<MeshCollider> ());
 			circleRed.GetComponent<MeshRenderer> ().material = new Material (Shader.Find ("Unlit/Transparent"));
 			circleRed.GetComponent<MeshRenderer> ().material.mainTexture = AHUtil.circleRedTex;
@@ -88,7 +90,7 @@ namespace AntennaHelper
 
 			// set position and parenting :
 			marker = this.gameObject;
-			marker.layer = 24;
+			marker.layer = 10;
 			marker.transform.localPosition = Vector3.zero;
 			marker.transform.position = parent.position;
 
@@ -181,6 +183,22 @@ namespace AntennaHelper
 			} else {
 				// All in one method :
 				marker.transform.LookAt (target);
+			}
+
+			CheckCameraDistance ();
+		}
+
+		private void CheckCameraDistance ()
+		{
+			float distance = Vector3.Distance (marker.transform.position, CameraManager.GetCurrentCamera ().transform.position);
+			if (distance > 3E+07) {
+				if (cameraIsClose) {
+					marker.SetLayerRecursive (24);
+					cameraIsClose = false;
+				}
+			} else if (!cameraIsClose) {
+				marker.SetLayerRecursive (10);
+				cameraIsClose = true;
 			}
 		}
 	}
