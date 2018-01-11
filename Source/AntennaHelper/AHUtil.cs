@@ -137,6 +137,104 @@ namespace AntennaHelper
 			return strength;
 		}
 
+		public static double GetRealSignal (CommNet.CommPath path, Vessel v = null)
+		{
+			// return the signal strength between a vessel and the dsn when there are relays between them
+			if (v == null) {
+				v = FlightGlobals.ActiveVessel;
+			}
+			double signal = 1d;
+			foreach (CommNet.CommLink link in path) {
+				if (link.a.transform.GetComponent<Vessel> () != v) {
+					signal *= link.signalStrength;
+				}
+			}
+			return signal;
+		}
+
+		public static double GetActualVesselPower (Vessel v, bool onlyRelay = false, bool checkIfExtended = true)
+		{
+			// This function should be more generic and also used in the editor
+			// will see later...
+			double biggest = 0;
+			List<ModuleDataTransmitter> combList = new List<ModuleDataTransmitter> ();
+
+			if (v.parts.Count > 0) {
+				foreach (Part p in v.parts) {
+					if (p.Modules.Contains<ModuleDataTransmitter> ()) {
+						// Check extendability
+						if (checkIfExtended) {
+							if (p.Modules.Contains<ModuleDeployableAntenna>()) {
+								ModuleDeployableAntenna antDep = p.Modules.GetModule<ModuleDeployableAntenna> ();
+								if ((antDep.deployState != ModuleDeployablePart.DeployState.EXTENDED) 
+									&& (antDep.deployState != ModuleDeployablePart.DeployState.EXTENDING)) {
+									continue;
+								}
+							}
+						}
+
+						ModuleDataTransmitter ant = p.Modules.GetModule<ModuleDataTransmitter> ();
+
+						// Check if relay
+						if (onlyRelay) {
+							if (ant.antennaType != AntennaType.RELAY) {
+								continue;
+							}
+						}
+
+						// All good
+						if (ant.antennaPower > biggest) {
+							biggest = ant.antennaPower;
+						}
+						if (ant.antennaCombinable) {
+							combList.Add (ant);
+						}
+					}
+				}
+			} else {
+				// This is for the tracking station, as the active vessel isn't actually active
+				foreach (ProtoPartSnapshot p in v.protoVessel.protoPartSnapshots) {
+					
+					if (p.partPrefab.Modules.Contains<ModuleDataTransmitter> ()) {
+						// Check extendability
+						if (checkIfExtended) {
+							if (p.partPrefab.Modules.Contains<ModuleDeployableAntenna>()) {
+								string antDep = p.modules.Find (x => x.moduleName == "ModuleDeployableAntenna").moduleValues.GetValue ("deployState");
+								if ((antDep != "EXTENDED") 
+								    && (antDep != "EXTENDING")) {
+									continue;
+								}
+							}
+						}
+
+						ModuleDataTransmitter ant = p.partPrefab.Modules.GetModule<ModuleDataTransmitter> ();
+						// Check if relay
+						if (onlyRelay) {
+							if (ant.antennaType != AntennaType.RELAY) {
+								continue;
+							}
+						}
+
+						// All good
+						if (ant.antennaPower > biggest) {
+							biggest = ant.antennaPower;
+						}
+						if (ant.antennaCombinable) {
+							combList.Add (ant);
+						}
+					}
+				}
+			}
+
+			biggest = TruePower (biggest);
+			double comb = GetVesselPower (combList);
+			if (comb > biggest) {
+				return comb;
+			} else {
+				return biggest;
+			}
+		}
+
 		public static double GetDistanceAt100 (double maxRange)
 		{
 			return maxRange / 77.1241569002155d;

@@ -55,6 +55,7 @@
     <Compile Include="AHMapViewWindow.cs" />
     <Compile Include="AHEditor.cs" />
     <Compile Include="AHEditorWindows.cs" />
+    <Compile Include="AHTrackingStation.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -257,11 +257,14 @@ namespace AntennaHelper
 			StartCoroutine ("UpdateCheckExtend");
 		}
 
-		private double GetRealSignal (CommNet.CommPath path)
+		private double GetRealSignal (CommNet.CommPath path, Vessel v = null)
 		{
+			if (v == null) {
+				v = FlightGlobals.ActiveVessel;
+			}
 			double signal = 1d;
 			foreach (CommNet.CommLink link in path) {
-				if (link.a.transform.GetComponent<Vessel> () != vessel) {
+				if (link.a.transform.GetComponent<Vessel> () != v) {
 					signal *= link.signalStrength;
 				}
 			}
