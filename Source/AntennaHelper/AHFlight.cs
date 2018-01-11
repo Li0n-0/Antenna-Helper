@@ -227,7 +227,7 @@ namespace AntennaHelper
 			double activeSignal;
 			bool isHome;
 			if (!vessel.Connection.IsConnected || vessel.Connection.ControlPath [0].b.isHome) {
-				rangeAC =  AHUtil.GetRange (antennaPower, AHUtil.DSNLevelList [AHUtil.DSNLevel]);
+				rangeAC =  AHUtil.GetRange (antennaPower, GameVariables.Instance.GetDSNRange (ScenarioUpgradeableFacilities.GetFacilityLevel (SpaceCenterFacility.TrackingStation)));
 				relay = FlightGlobals.GetHomeBody ().MapObject.trf;
 				activeSignal = 1d;
 				isHome = true;
@@ -246,7 +246,7 @@ namespace AntennaHelper
 //			Debug.Log ("[AH] active marker done");
 
 			// DSN Connection :
-			double rangeDSN = AHUtil.GetRange (antennaPower, AHUtil.DSNLevelList [AHUtil.DSNLevel]);
+			double rangeDSN = AHUtil.GetRange (antennaPower, GameVariables.Instance.GetDSNRange (ScenarioUpgradeableFacilities.GetFacilityLevel (SpaceCenterFacility.TrackingStation)));
 			// get real maxRange
 			rangeDSN = AHUtil.GetDistanceAt0 (rangeDSN);
 			DSNConnect = new GameObject ();

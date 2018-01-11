@@ -13,19 +13,11 @@ namespace AntennaHelper
 		// MapView textures :
 		public static Texture circleGreenTex, circleYellowTex, circleOrangeTex, circleRedTex;
 
-		public static float DSNRangeMod;
-		public static float antennaRangeMod;
-		public static int DSNLevel;
-		public static double[] DSNLevelList = {2000000000d, 50000000000d, 250000000000d};
-
 		public static List<MyTuple> signalPlanetList;
 
 		public static CelestialBody homePlanet;
 
 		public static Vector2 centerScreen;
-
-
-//		public static List<List<ModuleDataTransmitter>> inFlightRelay;
 
 		public void Start ()
 		{
@@ -43,13 +35,6 @@ namespace AntennaHelper
 			toolbarButtonTexOff = (Texture)GameDatabase.Instance.GetTexture ("AntennaHelper/Textures/icon_off", false);
 			signalPerDistanceTex = (Texture)GameDatabase.Instance.GetTexture ("AntennaHelper/Textures/signal_per_distance", false);
 
-
-			antennaRangeMod = HighLogic.CurrentGame.Parameters.CustomParams<CommNet.CommNetParams> ().rangeModifier;
-			FetchDSNLevel ();
-			ApplyModRangeToDSN ();
-			GameEvents.OnGameSettingsApplied.Add (ApplyModRangeToDSN);
-			GameEvents.onGameSceneSwitchRequested.Add (SceneSwitch);
-
 			homePlanet = FlightGlobals.GetHomeBody ();
 
 			signalPlanetList = new List<MyTuple> ();
@@ -63,41 +48,10 @@ namespace AntennaHelper
 			}
 		}
 
-		public void OnDestroy ()
-		{
-			GameEvents.OnGameSettingsApplied.Remove (ApplyModRangeToDSN);
-			GameEvents.onGameSceneSwitchRequested.Remove (SceneSwitch);
-		}
-
-		private void SceneSwitch (GameEvents.FromToAction<GameScenes, GameScenes> scenes)
-		{
-			if (scenes.from == GameScenes.FLIGHT || scenes.from == GameScenes.SPACECENTER 
-				|| scenes.from == GameScenes.TRACKSTATION) {
-				FetchDSNLevel ();
-			}
-		}
-
-		private void FetchDSNLevel ()
-		{
-			// Format the DSN level to an int, this work for stock but will probably need an 
-			// overhaul for Custom Barn Kit
-			float dsnLevelF = ScenarioUpgradeableFacilities.GetFacilityLevel (SpaceCenterFacility.TrackingStation);
-			if (dsnLevelF == 0) {
-				DSNLevel = 0;
-			} else if (dsnLevelF == 1f) {
-				DSNLevel = 2;
-			} else {
-				DSNLevel = 1;
-			}
-		}
-
-		private void ApplyModRangeToDSN ()
-		{
-			DSNRangeMod = HighLogic.CurrentGame.Parameters.CustomParams<CommNet.CommNetParams> ().DSNModifier;
-			for (int i = 0 ; i < DSNLevelList.Length ; i++) {
-				DSNLevelList [i] *= DSNRangeMod;
-			}
-		}
+//		public void OnDestroy ()
+//		{
+//			
+//		}
 
 		public static void DummyVoid () {}// For the toolbar button
 

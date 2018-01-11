@@ -8,14 +8,15 @@ namespace AntennaHelper
 	public class AHEditor : MonoBehaviour
 	{
 		private static AHEditor instance;
+		public static float trackingStationLevel;
 
 		public void Start ()
 		{
 			instance = this;
 
-//			SetTarget (AntennaHelperUtil.targetDSNList [AntennaHelperUtil.DSNLevel]);
-			targetPower = AHUtil.DSNLevelList [AHUtil.DSNLevel];
-			targetName = "DSN Level " + (AHUtil.DSNLevel + 1);
+			trackingStationLevel = ScenarioUpgradeableFacilities.GetFacilityLevel (SpaceCenterFacility.TrackingStation);
+			targetPower = GameVariables.Instance.GetDSNRange (trackingStationLevel);
+			targetName = "DSN Level " + (int)(trackingStationLevel * 2 + 1);
 
 			GameEvents.onGUIApplicationLauncherReady.Add (AddToolbarButton);
 			GameEvents.onGUIApplicationLauncherDestroyed.Add (RemoveToolbarButton);
@@ -320,21 +321,13 @@ namespace AntennaHelper
 
 		}
 
-
 		public static double targetPower = 0;
 		public static string targetName = "";
 
-//		public static void SetTarget (MyTuple tuple)
-//		{
-//			targetPower = tuple.item2;
-//			targetName = tuple.item1;
-//			instance.DoTheMath ();
-//		}
-
-		public static void SetTarget (int dsnL)
+		public static void SetTarget (float dsnL)
 		{
-			targetPower = AHUtil.DSNLevelList [dsnL];
-			targetName = "DSN Level " + (dsnL + 1);
+			targetPower = GameVariables.Instance.GetDSNRange (dsnL);
+			targetName = "DSN Level " + (int)((dsnL * 2) + 1);
 			instance.DoTheMath ();
 		}
 

@@ -5,14 +5,14 @@
       <File FileName="AHSettings.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="AHMapViewWindow.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="AHEditorWindows.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="AHFlight.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="AHEditor.cs" Line="1" Column="1" NotebookId="2" />
-      <File FileName="AHMapMarker.cs" Line="187" Column="4" NotebookId="2" />
+      <File FileName="AHFlight.cs" Line="257" Column="41" NotebookId="1" />
+      <File FileName="AHEditor.cs" Line="505" Column="58" NotebookId="2" />
+      <File FileName="AHMapMarker.cs" Line="175" Column="23" NotebookId="2" />
     </Files>
     <FloatingWindows>
-      <FloatingWindow WindowId="1" X="4124" Y="0" Width="1063" Height="1045">
+      <FloatingWindow WindowId="1" X="-32000" Y="-32000" Width="1063" Height="1045">
         <Files>
-          <File FileName="AHUtil.cs" Line="181" Column="20" />
+          <File FileName="AHUtil.cs" Line="153" Column="23" />
         </Files>
       </FloatingWindow>
     </FloatingWindows>
