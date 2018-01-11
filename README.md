@@ -87,8 +87,8 @@ This is still a work in progress, you can use it safely, it won't break any thin
 * transparency of the circle are not good, specially when they overlap.
 * ~~in-flight, antennas of the active ship are all considered extended.~~
 * ~~in-flight math are done only once on loading. It need to be re-done when the ship stage, dock, etc...~~
-* DSN and range modifier may not be corectly set when loading a new game (after an "exit to main menu")
-* range modifier are off when using RSS, see [this thread](https://forum.kerbalspaceprogram.com/index.php?/topic/156122-wip131-antenna-helper-in-game-antennas-range-calculation-v09-8-dec-2017/&do=findComment&comment=3240861)
+* ~~DSN and range modifier may not be corectly set when loading a new game (after an "exit to main menu")~~
+* range modifier are off when using RSS, see [this thread](https://forum.kerbalspaceprogram.com/index.php?/topic/156122-wip131-antenna-helper-in-game-antennas-range-calculation-v09-8-dec-2017/&do=findComment&comment=3240861) should be fixed by v0.13, waiting confirmation
 
 ### Future plans :
 
