@@ -21,7 +21,7 @@ namespace AntennaHelper
 		public void Start ()
 		{
 			isGUIOn = false;
-			windowRect = new Rect (0, 0, 150, 190);
+			windowRect = new Rect (0, 0, 150, 200);
 			windowRect.position = new Vector2 (Screen.width - windowRect.width, Screen.height - windowRect.height - 40);
 			circleType = GUICircleSelection.ACTIVE;
 
@@ -84,7 +84,7 @@ namespace AntennaHelper
 		private IEnumerator WaitAtStart ()
 		{
 			// just to be sure that commnet is ready
-			yield return new WaitForSeconds (.5f);
+			yield return new WaitForSeconds (1f);
 			FetchRelays ();
 			FetchVessels ();
 			aHIsReady = true;
@@ -188,7 +188,8 @@ namespace AntennaHelper
 				}
 				range = AHUtil.GetRange (vesselPower, kvp.Key.Connection.Comm.antennaRelay.power);
 				range = AHUtil.GetDistanceAt0 (range);
-				realSignal = kvp.Value;
+//				realSignal = kvp.Value;
+				realSignal = AHUtil.GetRealSignal (kvp.Key.Connection.ControlPath, v);
 				relay = kvp.Key.mapObject.trf;
 				isHome = false;
 				relaysMarker.Add (new GameObject ());
