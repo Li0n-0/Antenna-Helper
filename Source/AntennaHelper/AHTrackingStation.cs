@@ -84,6 +84,7 @@ namespace AntennaHelper
 		private IEnumerator WaitAtStart ()
 		{
 			// just to be sure that commnet is ready
+			// .5s don't seem to be enough...
 			yield return new WaitForSeconds (1f);
 			FetchRelays ();
 			FetchVessels ();
