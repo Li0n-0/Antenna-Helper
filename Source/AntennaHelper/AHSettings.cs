@@ -15,7 +15,6 @@ namespace AntennaHelper
 
 		static AHSettings ()
 		{
-			Debug.Log ("Check");
 			// Check for the settings file
 			settingsNode = ConfigNode.Load (KSPUtil.ApplicationRootPath + "GameData/AntennaHelper/PluginData/Settings.cfg");
 			if (settingsNode == null) {

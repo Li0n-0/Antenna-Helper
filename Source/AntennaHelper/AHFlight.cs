@@ -203,7 +203,7 @@ namespace AntennaHelper
 							//  as expected.
 
 							// need to get its real signal strength now :
-							double realSignal = GetRealSignal (v.Connection.ControlPath);
+							double realSignal = GetRealSignal (v.Connection.ControlPath, vessel);
 
 							// math the max range :
 							double range = AHUtil.GetRange (antennaPower, v.Connection.Comm.antennaRelay.power);
@@ -234,7 +234,7 @@ namespace AntennaHelper
 			} else {
 				rangeAC = AHUtil.GetRange (antennaPower, vessel.Connection.ControlPath[0].b.antennaRelay.power);
 				relay = vessel.Connection.ControlPath [0].b.transform.GetComponent<Vessel> ().mapObject.trf;
-				activeSignal = GetRealSignal (vessel.Connection.ControlPath);
+				activeSignal = GetRealSignal (vessel.Connection.ControlPath, vessel);
 				isHome = false;
 			}
 			// get real maxRange :
@@ -257,11 +257,14 @@ namespace AntennaHelper
 			StartCoroutine ("UpdateCheckExtend");
 		}
 
-		private double GetRealSignal (CommNet.CommPath path)
+		private double GetRealSignal (CommNet.CommPath path, Vessel v = null)
 		{
+			if (v == null) {
+				v = FlightGlobals.ActiveVessel;
+			}
 			double signal = 1d;
 			foreach (CommNet.CommLink link in path) {
-				if (link.a.transform.GetComponent<Vessel> () != vessel) {
+				if (link.a.transform.GetComponent<Vessel> () != v) {
 					signal *= link.signalStrength;
 				}
 			}
