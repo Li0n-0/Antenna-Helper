@@ -92,14 +92,14 @@ This is still a work in progress, you can use it safely, it won't break any thin
 
 ### Future plans :
 
-* showing the range circle in the tracking station.
+* ~~showing the range circle in the tracking station.~~ **Done** (readme needs to be updated with pics/description etc...)
 * + show range circle for ship not already launched.
 * Window with NUMBERS in flight.
 * in the editor, a window showing a list of antenna with their caracteristics.
 * in the editor, add all the in-flight relay to the list of target.
 * in the editor, add relay antennas (part) to the list of target.
 * re-work the GUI, possibly with the new GUI system instead of on OnGUI.
-* ~~map view window should be clamped to the toolbar button.~~ Done
+* ~~map view window should be clamped to the toolbar button.~~ **Done**
 
 
 ## Credits
