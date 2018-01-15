@@ -18,6 +18,8 @@ namespace AntennaHelper
 			targetPower = GameVariables.Instance.GetDSNRange (trackingStationLevel);
 			targetName = "DSN Level " + (int)(trackingStationLevel * 2 + 1);
 
+			GetShipList ();
+
 			GameEvents.onGUIApplicationLauncherReady.Add (AddToolbarButton);
 			GameEvents.onGUIApplicationLauncherDestroyed.Add (RemoveToolbarButton);
 
@@ -123,9 +125,13 @@ namespace AntennaHelper
 
 		public static double directPower;
 		public static double directCombPower;
+		private double rawDirectPower;
+		private double rawDirectCombPower;
 
 		public static double relayPower;
 		public static double relayCombPower;
+		private double rawRelayPower;
+		private double rawRelayCombPower;
 
 		public static double directRange;
 		public static double directCombRange;
@@ -157,9 +163,11 @@ namespace AntennaHelper
 
 			// Direct combinable :
 			if (nbDirectCombAntenna > 0) {
-				directCombPower = AHUtil.GetVesselPower (directCombAntennaList);
+				rawDirectCombPower = AHUtil.GetVesselPower (directCombAntennaList, false);
+				directCombPower = AHUtil.TruePower (rawDirectCombPower);//AHUtil.GetVesselPower (directCombAntennaList);
 				directCombRange = AHUtil.GetRange (directCombPower, targetPower);
 			} else {
+				rawDirectCombPower = 0;
 				directCombPower = 0;
 				directCombRange = 0;
 			}
@@ -173,10 +181,12 @@ namespace AntennaHelper
 						bigDirect = antenna;
 					}
 				}
-				directPower = AHUtil.TruePower (bigDirect.antennaPower);
+				rawDirectPower = bigDirect.antennaPower;
+				directPower = AHUtil.TruePower (rawDirectPower);//AHUtil.TruePower (bigDirect.antennaPower);
 				directRange = AHUtil.GetRange (directPower, targetPower);
 				directAntennaName = bigDirect.part.partInfo.title;
 			} else {
+				rawDirectPower = 0;
 				directPower = 0;
 				directRange = 0;
 				directAntennaName = "No Antenna";
@@ -189,9 +199,11 @@ namespace AntennaHelper
 
 			// Relay combinable :
 			if (nbRelayCombAntenna > 0) {
-				relayCombPower = AHUtil.GetVesselPower (relayCombAntennaList);
+				rawRelayCombPower = AHUtil.GetVesselPower (relayCombAntennaList, false);
+				relayCombPower = AHUtil.TruePower (rawRelayCombPower);//AHUtil.GetVesselPower (relayCombAntennaList);
 				relayCombRange = AHUtil.GetRange (relayCombPower, targetPower);
 			} else {
+				rawRelayCombPower = 0;
 				relayCombPower = 0;
 				relayCombRange = 0;
 			}
@@ -205,10 +217,12 @@ namespace AntennaHelper
 						bigRelay = antenna;
 					}
 				}
-				relayPower = AHUtil.TruePower (bigRelay.antennaPower);
+				rawRelayPower = bigRelay.antennaPower;
+				relayPower = AHUtil.TruePower (rawRelayPower);//AHUtil.TruePower (bigRelay.antennaPower);
 				relayRange = AHUtil.GetRange (relayPower, targetPower);
 				relayAntennaName = bigRelay.part.partInfo.title;
 			} else {
+				rawRelayPower = 0;
 				relayPower = 0;
 				relayRange = 0;
 				relayAntennaName = "No Antenna";
@@ -231,24 +245,30 @@ namespace AntennaHelper
 
 		public static double directBetterPower;
 		public static double directBetterRange;
+		private double rawDirectBetterPower;
 
 		public static double relayBetterPower;
 		public static double relayBetterRange;
+		private double rawRelayBetterPower;
 
 		private void FetchBetterAntennas ()
 		{
 			if (directRange > directCombRange || directPower > directCombPower) {
+				rawDirectBetterPower = rawDirectPower;
 				directBetterPower = directPower;
 				directBetterRange = directRange;
 			} else {
+				rawDirectBetterPower = rawDirectCombPower;
 				directBetterPower = directCombPower;
 				directBetterRange = directCombRange;
 			}
 
 			if (relayRange > relayCombRange || relayPower > relayCombPower) {
+				rawRelayBetterPower = rawRelayPower;
 				relayBetterPower = relayPower;
 				relayBetterRange = relayRange;
 			} else {
+				rawRelayBetterPower = rawRelayCombPower;
 				relayBetterPower = relayCombPower;
 				relayBetterRange = relayCombRange;
 			}
@@ -331,6 +351,13 @@ namespace AntennaHelper
 			instance.DoTheMath ();
 		}
 
+		public static void SetTarget (KeyValuePair<string, Dictionary <string, string>> relay)
+		{
+			targetPower = AHUtil.TruePower (Double.Parse (relay.Value ["powerRelay"]));
+			targetName = "Vessel : " + relay.Value ["name"];
+			instance.DoTheMath ();
+		}
+
 		public void CreateAntennaList ()
 		{
 			directAntennaList = new List<ModuleDataTransmitter> ();
@@ -403,6 +430,30 @@ namespace AntennaHelper
 		}
 		#endregion
 
+		#region ExternalShipList
+		public static Dictionary<string, Dictionary <string, string>> externListShipEditor;
+		public static Dictionary<string, Dictionary <string, string>> externListShipFlight;
+		public static void AddShipToShipList ()
+		{
+			string type;
+			if (EditorDriver.editorFacility == EditorFacility.SPH) {
+				type = "SPH";
+			} else {
+				type = "VAB";
+			}
+			AHShipList.SaveShip (EditorLogic.fetch.ship.shipName, type, instance.rawDirectBetterPower.ToString(), instance.rawRelayBetterPower.ToString ());
+			instance.GetShipList ();
+
+		}
+
+		private void GetShipList ()
+		{
+			externListShipEditor = AHShipList.GetShipList ();
+			externListShipFlight = AHShipList.GetShipList (false);
+			Debug.Log ("[AH] there is " + externListShipEditor.Count + " ships in the ship list");
+		}
+		#endregion
+
 		#region GUI
 		public static bool showMainWindow = false;
 		public static Rect rectMainWindow = new Rect (AHSettings.posMainWindow, new Vector2 (400, 200));
@@ -422,6 +473,30 @@ namespace AntennaHelper
 				AHSettings.SavePosition ("target_window_position", rectTargetWindow.position);
 			}
 			showTargetWindow = false;
+			CloseTargetShipEditorWindow ();
+			CloseTargetShipFlightWindow ();
+		}
+
+		public static bool showTargetShipEditorWindow = false;
+		public static Rect rectTargetShipEditorWindow = 
+			new Rect (new Vector2 (rectTargetWindow.position.x, rectTargetWindow.position.y + rectTargetWindow.height)
+				, new Vector2 (400, 80));
+		public static void CloseTargetShipEditorWindow ()
+		{
+//			if (showTargetWindow) {
+//				AHSettings.SavePosition ("target_window_position", rectTargetWindow.position);
+//			}
+			showTargetShipEditorWindow = false;
+		}
+
+		public static bool showTargetShipFlightWindow = false;
+		public static Rect rectTargetShipFlightWindow = new Rect (rectTargetShipEditorWindow);
+		public static void CloseTargetShipFlightWindow ()
+		{
+//			if (showTargetWindow) {
+//				AHSettings.SavePosition ("target_window_position", rectTargetWindow.position);
+//			}
+			showTargetShipFlightWindow = false;
 		}
 
 		public static bool showPlanetWindow = false;
@@ -434,6 +509,17 @@ namespace AntennaHelper
 			showPlanetWindow = false;
 		}
 
+		private Vector2 ExtendWindowPos (Rect originalWindow)
+		{
+			float yPos;
+			if (originalWindow.position.y + originalWindow.height * 2 > Screen.height) {
+				yPos = originalWindow.position.y - originalWindow.height;
+			} else {
+				yPos = originalWindow.position.y + originalWindow.height;
+			}
+			return new Vector2 (originalWindow.position.x, yPos);
+		}
+
 		public void OnGUI ()
 		{
 			if (showMainWindow) {
@@ -444,6 +530,22 @@ namespace AntennaHelper
 			if (showTargetWindow) {
 				GUILayout.BeginArea (rectTargetWindow);
 				rectTargetWindow = GUILayout.Window (419256, rectTargetWindow, AHEditorWindows.TargetWindow, "Pick A Target");
+				GUILayout.EndArea ();
+			}
+			if (showTargetShipEditorWindow) {
+//				showTargetShipFlightWindow = false;
+//				CloseTargetShipFlightWindow ();
+				rectTargetShipEditorWindow.position = ExtendWindowPos (rectTargetWindow);
+				GUILayout.BeginArea (rectTargetShipEditorWindow);
+				rectTargetShipEditorWindow = GUILayout.Window (415014, rectTargetShipEditorWindow, AHEditorWindows.TargetWindowShipEditor, "Editor Ship", GUILayout.MinHeight (rectTargetWindow.height));
+				GUILayout.EndArea ();
+			}
+			if (showTargetShipFlightWindow) {
+//				showTargetShipEditorWindow = false;
+//				CloseTargetShipEditorWindow ();
+				rectTargetShipFlightWindow.position = ExtendWindowPos (rectTargetWindow);
+				GUILayout.BeginArea (rectTargetShipFlightWindow);
+				rectTargetShipFlightWindow = GUILayout.Window (892715, rectTargetShipFlightWindow, AHEditorWindows.TargetWindowShipFlight, "In-Flight Ship", GUILayout.MinHeight (rectTargetWindow.height));
 				GUILayout.EndArea ();
 			}
 			if (showPlanetWindow) {
@@ -475,12 +577,14 @@ namespace AntennaHelper
 			CloseMainWindow ();
 			CloseTargetWindow ();
 			ClosePlanetWindow ();
+			CloseTargetShipEditorWindow ();
+			CloseTargetShipFlightWindow ();
 			KSP.UI.Screens.ApplicationLauncher.Instance.RemoveModApplication (toolbarButton);
 		}
 
 		private void ToolbarButtonOnTrue ()
 		{
-			ToggleWinows ();
+			ToggleWindows ();
 
 			// Change the button texture :
 			if (UnityEngine.Random.Range (0, 2) == 1) {
@@ -492,21 +596,27 @@ namespace AntennaHelper
 
 		private void ToolbarButtonOnFalse ()
 		{
-			ToggleWinows ();
+			ToggleWindows ();
 
 			// Change the button texture :
 			toolbarButton.SetTexture (AHUtil.toolbarButtonTexOff);
 		}
 
-		private void ToggleWinows ()
+		private void ToggleWindows ()
 		{
 			CreateAntennaList ();
 			DoTheMath ();
 
-			if (showMainWindow || showTargetWindow || showPlanetWindow) {
+			if (showMainWindow 
+				|| showTargetWindow 
+				|| showPlanetWindow 
+				|| showTargetShipEditorWindow || showTargetShipFlightWindow) {
+
 				CloseMainWindow ();
 				CloseTargetWindow ();
 				ClosePlanetWindow ();
+				CloseTargetShipEditorWindow ();
+				CloseTargetShipFlightWindow ();
 			} else {
 				showMainWindow = true;
 			}

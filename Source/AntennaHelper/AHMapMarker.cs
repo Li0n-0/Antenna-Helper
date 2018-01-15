@@ -12,6 +12,7 @@ namespace AntennaHelper
 		private Orbit transmitOrbit;
 		private bool connectedToHome;
 		private bool cameraIsClose;
+		private bool forTrackingStation;
 
 		void Start ()
 		{
@@ -23,12 +24,19 @@ namespace AntennaHelper
 			GameEvents.OnMapExited.Add (MapExit);
 		}
 
-		public void SetUp (double maxRange, Vessel vesselTransmitter, Transform mapObjectRelay, bool relayIsHome = false, double sS = Double.NaN)
+		public void SetUp (double maxRange, Vessel vesselTransmitter, Transform mapObjectRelay, bool relayIsHome = false, double sS = Double.NaN, bool forTrackingStationParam = false)
 		{
 			parent = mapObjectRelay;
-			target = vesselTransmitter.mapObject.trf;
 
-			transmitOrbit = vesselTransmitter.orbit;
+			forTrackingStation = forTrackingStationParam;
+
+			if (!forTrackingStation) {
+				target = vesselTransmitter.mapObject.trf;
+
+				transmitOrbit = vesselTransmitter.orbit;
+			}
+
+
 
 
 			if (relayIsHome) {
@@ -173,6 +181,11 @@ namespace AntennaHelper
 
 			marker.transform.position = parent.position;
 			marker.transform.rotation = Planetarium.Rotation;
+
+			if (forTrackingStation) {
+				marker.transform.LookAt (Planetarium.fetch.Sun.MapObject.trf);
+				return;
+			}
 
 			if (connectedToHome && transmitOrbit.referenceBody == Planetarium.fetch.Home) {
 				// This is the best method for a transmitter orbiting a DSN

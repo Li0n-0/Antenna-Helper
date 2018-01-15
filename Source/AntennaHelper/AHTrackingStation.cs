@@ -9,25 +9,31 @@ namespace AntennaHelper
 	public class AHTrackingStation : MonoBehaviour
 	{
 		// UI stuff
-		private bool isGUIOn;
+		private bool isGUIOn, isGUIShipListOn;
 		private KSP.UI.Screens.ApplicationLauncherButton toolbarButton;
-		private Rect windowRect;
+		private Rect windowRect, windowShipRect;
 		private GUICircleSelection circleType;
+
 
 		private bool aHIsReady;
 		private float trackingStationLvl;
 		private double dsnRange;
+		private Dictionary<string, Dictionary <string, string>> shipList;
 
 		public void Start ()
 		{
 			isGUIOn = false;
-			windowRect = new Rect (0, 0, 150, 200);
+			isGUIShipListOn = false;
+			windowRect = new Rect (0, 0, 150, 220);
 			windowRect.position = new Vector2 (Screen.width - windowRect.width, Screen.height - windowRect.height - 40);
+			windowShipRect = new Rect (0, 0, 150, 200);
+			windowShipRect.position = new Vector2 (windowRect.position.x - windowShipRect.width, windowRect.position.y);
 			circleType = GUICircleSelection.ACTIVE;
 
 			aHIsReady = false;
 			trackingStationLvl = ScenarioUpgradeableFacilities.GetFacilityLevel (SpaceCenterFacility.TrackingStation);
 			dsnRange = GameVariables.Instance.GetDSNRange (trackingStationLvl);
+			shipList = AHShipList.GetShipList ();
 
 			GameEvents.onGUIApplicationLauncherReady.Add (AddToolbarButton);
 			GameEvents.onGUIApplicationLauncherDestroyed.Add (RemoveToolbarButton);
@@ -96,7 +102,7 @@ namespace AntennaHelper
 			if (mapObject.vessel != null) {
 				lastTarget = mapObject.vessel;
 				if (isGUIOn) {
-					HideCircles ();
+					HideFlightCircles ();
 					ShowCircles ();
 				}
 			}
@@ -118,6 +124,7 @@ namespace AntennaHelper
 		}
 
 		private Dictionary<Vessel, Dictionary<string, List<GameObject>>> listVessels;
+		private Dictionary<string, Dictionary<string, List<GameObject>>> listVesselsPreFlight;
 		private void FetchVessels ()
 		{
 			listVessels = new Dictionary<Vessel, Dictionary<string, List<GameObject>>> ();
@@ -131,6 +138,55 @@ namespace AntennaHelper
 					listVessels.Add (v, MarkersForVessel (v));
 				}
 			}
+
+			listVesselsPreFlight = new Dictionary<string, Dictionary<string, List<GameObject>>> ();
+			foreach (KeyValuePair<string, Dictionary<string, string>> kvp in shipList) {
+				listVesselsPreFlight.Add (kvp.Key, MarkersForPreFlightVessel (Double.Parse (kvp.Value ["powerTotal"])));
+			}
+		}
+
+		private Dictionary<string, List<GameObject>> MarkersForPreFlightVessel (double vesselPower)
+		{
+			Dictionary<string, List<GameObject>> listMarker = new Dictionary<string, List<GameObject>> ();
+
+			double range, realSignal;
+			Transform relay;
+			bool isHome;
+
+			AHMapMarker marker;
+
+			vesselPower = AHUtil.TruePower (vesselPower);
+
+			// Active and DSN marker
+			range = AHUtil.GetDistanceAt0 (AHUtil.GetRange (vesselPower, dsnRange));
+			relay = FlightGlobals.GetHomeBody ().MapObject.trf;
+
+			listMarker.Add ("ACTIVE", new List<GameObject> ());
+			listMarker["ACTIVE"].Add (new GameObject ());
+			marker = listMarker["ACTIVE"][0].AddComponent<AHMapMarker> ();
+			marker.SetUp (range, null, relay, true, 1d, true);
+
+			listMarker.Add ("DSN", new List<GameObject> ());
+			listMarker["DSN"].Add (new GameObject ());
+			marker = listMarker["DSN"][0].AddComponent<AHMapMarker> ();
+			marker.SetUp (range, null, relay, true, 1d, true);
+
+			// Relay marker
+			List<GameObject> relaysMarker = new List<GameObject> ();
+			foreach (KeyValuePair<string, Dictionary<string, string>> kvp in AHShipList.GetShipList (false, true)) {
+				range = range = AHUtil.GetRange (vesselPower, AHUtil.TruePower (Double.Parse (kvp.Value ["powerRelay"])));
+				range = AHUtil.GetDistanceAt0 (range);
+
+				realSignal = Double.Parse (kvp.Value ["realSignal"]);
+				relay = FlightGlobals.Vessels.Find (x => x.id.ToString () == kvp.Key).mapObject.trf;
+				isHome = false;
+				relaysMarker.Add (new GameObject ());
+				marker = relaysMarker [relaysMarker.Count - 1].AddComponent<AHMapMarker> ();
+				marker.SetUp (range, null, relay, isHome, realSignal, true);
+			}
+			listMarker.Add ("RELAY", relaysMarker);
+
+			return listMarker;
 		}
 
 		private Dictionary<string, List<GameObject>> MarkersForVessel (Vessel v)
@@ -157,7 +213,7 @@ namespace AntennaHelper
 				relay = FlightGlobals.GetHomeBody ().MapObject.trf;
 				isHome = true;
 			} else {
-				range = AHUtil.GetRange (vesselPower, v.Connection.ControlPath[0].b.antennaRelay.power);
+				range = AHUtil.GetRange (vesselPower, v.Connection.ControlPath[0].b.antennaRelay.power);//is the range mod applied ?
 				realSignal = AHUtil.GetRealSignal (v.Connection.ControlPath, v);
 				relay = v.Connection.ControlPath [0].b.transform.GetComponent<Vessel> ().mapObject.trf;
 				isHome = false;
@@ -183,20 +239,22 @@ namespace AntennaHelper
 
 			// Relays markers
 			List<GameObject> relaysMarker = new List<GameObject> ();
-			foreach (KeyValuePair<Vessel, double> kvp in listRelays) {
-				if (kvp.Key == v) {
+			foreach (KeyValuePair<string, Dictionary<string, string>> kvp in AHShipList.GetShipList (false, true)) {
+				if (kvp.Key == v.id.ToString ()) {
 					continue;
 				}
-				range = AHUtil.GetRange (vesselPower, kvp.Key.Connection.Comm.antennaRelay.power);
+				Debug.Log ("[AH] powerRelay : " + kvp.Value ["powerRelay"]);
+				range = AHUtil.GetRange (vesselPower, AHUtil.TruePower (Double.Parse (kvp.Value ["powerRelay"])));
 				range = AHUtil.GetDistanceAt0 (range);
-//				realSignal = kvp.Value;
-				realSignal = AHUtil.GetRealSignal (kvp.Key.Connection.ControlPath, v);
-				relay = kvp.Key.mapObject.trf;
+				Debug.Log ("[AH] realSignal : " + kvp.Value ["realSignal"]);
+				realSignal = Double.Parse (kvp.Value ["realSignal"]);
+				relay = FlightGlobals.Vessels.Find (x => x.id.ToString () == kvp.Key).mapObject.trf;
 				isHome = false;
 				relaysMarker.Add (new GameObject ());
 				marker = relaysMarker [relaysMarker.Count - 1].AddComponent<AHMapMarker> ();
 				marker.SetUp (range, v, relay, isHome, realSignal);
 			}
+
 			listMarker.Add ("RELAY", relaysMarker);
 
 			return listMarker;
@@ -204,8 +262,47 @@ namespace AntennaHelper
 
 		private Vessel lastTarget;
 
+		private void ShowPreFlightCircles (string vesselPid)
+		{
+			HideCircles ();
+
+			switch (circleType) {
+			case GUICircleSelection.ACTIVE:
+				listVesselsPreFlight [vesselPid] ["ACTIVE"] [0].GetComponent<AHMapMarker> ().Show ();
+				listVesselsPreFlight [vesselPid] ["DSN"] [0].GetComponent<AHMapMarker> ().Hide ();
+				foreach (GameObject gO in listVesselsPreFlight [vesselPid] ["RELAY"]) {
+					gO.GetComponent<AHMapMarker> ().Hide ();
+				}
+				break;
+			case GUICircleSelection.DSN:
+				listVesselsPreFlight [vesselPid] ["ACTIVE"] [0].GetComponent<AHMapMarker> ().Hide ();
+				listVesselsPreFlight [vesselPid] ["DSN"] [0].GetComponent<AHMapMarker> ().Show ();
+				foreach (GameObject gO in listVesselsPreFlight [vesselPid] ["RELAY"]) {
+					gO.GetComponent<AHMapMarker> ().Hide ();
+				}
+				break;
+			case GUICircleSelection.RELAY:
+				listVesselsPreFlight [vesselPid] ["ACTIVE"] [0].GetComponent<AHMapMarker> ().Hide ();
+				listVesselsPreFlight [vesselPid] ["DSN"] [0].GetComponent<AHMapMarker> ().Hide ();
+				foreach (GameObject gO in listVesselsPreFlight [vesselPid] ["RELAY"]) {
+					gO.GetComponent<AHMapMarker> ().Show ();
+				}
+				break;
+			case GUICircleSelection.DSN_AND_RELAY:
+			default:
+				listVesselsPreFlight [vesselPid] ["ACTIVE"] [0].GetComponent<AHMapMarker> ().Hide ();
+				listVesselsPreFlight [vesselPid] ["DSN"] [0].GetComponent<AHMapMarker> ().Show ();
+				foreach (GameObject gO in listVesselsPreFlight [vesselPid] ["RELAY"]) {
+					gO.GetComponent<AHMapMarker> ().Show ();
+				}
+				break;
+			}
+		}
+
 		private void ShowCircles ()
 		{
+			HideCircles ();
+
 			if (PlanetariumCamera.fetch.target.vessel != null) {
 				lastTarget = PlanetariumCamera.fetch.target.vessel;
 			}
@@ -248,7 +345,24 @@ namespace AntennaHelper
 
 		private void HideCircles ()
 		{
+			HideFlightCircles ();
+			HideEditorCircles ();
+		}
+
+		private void HideFlightCircles ()
+		{
 			foreach (KeyValuePair<Vessel, Dictionary<string, List<GameObject>>> kvpVessel in listVessels) {
+				foreach (KeyValuePair<string, List<GameObject>> kvpObject in kvpVessel.Value) {
+					foreach (GameObject gO in kvpObject.Value) {
+						gO.GetComponent<AHMapMarker> ().Hide ();
+					}
+				}
+			}
+		}
+
+		private void HideEditorCircles ()
+		{
+			foreach (KeyValuePair<string, Dictionary<string, List<GameObject>>> kvpVessel in listVesselsPreFlight) {
 				foreach (KeyValuePair<string, List<GameObject>> kvpObject in kvpVessel.Value) {
 					foreach (GameObject gO in kvpObject.Value) {
 						gO.GetComponent<AHMapMarker> ().Hide ();
@@ -262,6 +376,10 @@ namespace AntennaHelper
 		{
 			if (isGUIOn) {
 				windowRect = GUI.Window (889204, windowRect, WindowTrackingStation, "Antenna Helper");
+			}
+
+			if (isGUIShipListOn) {
+				windowShipRect = GUI.Window (524258, windowShipRect, WindowTrackingStationShipList, "Ship List");
 			}
 		}
 
@@ -293,8 +411,31 @@ namespace AntennaHelper
 				circleType = GUICircleSelection.DSN_AND_RELAY;
 				ShowCircles ();
 			}
+
+			GUILayout.Space (10f);
+			if (GUILayout.Button ("Show Ship List")) {
+				isGUIShipListOn = true;
+			}
+
 			GUILayout.EndVertical ();
 
+			GUI.DragWindow ();
+		}
+
+		private void WindowTrackingStationShipList (int id)
+		{
+			// Close Button
+			if (GUI.Button (new Rect (windowShipRect.size.x - 22, 2, 20, 20), "X")) {
+				isGUIShipListOn = false;
+			}
+
+			GUILayout.BeginVertical ();
+			foreach (KeyValuePair<string, Dictionary <string, string>> vesselPairInfo in shipList) {
+				if (GUILayout.Button (vesselPairInfo.Value ["name"] + "  (" + AHUtil.TruePower (Double.Parse (vesselPairInfo.Value ["powerTotal"])).ToString () + ")")) {
+					ShowPreFlightCircles (vesselPairInfo.Key);
+				}
+			}
+			GUILayout.EndVertical ();
 			GUI.DragWindow ();
 		}
 		#endregion
@@ -337,6 +478,7 @@ namespace AntennaHelper
 		{
 			if (aHIsReady) {
 				isGUIOn = false;
+				isGUIShipListOn = false;
 				HideCircles ();
 				// Change the button texture :
 				toolbarButton.SetTexture (AHUtil.toolbarButtonTexOff);

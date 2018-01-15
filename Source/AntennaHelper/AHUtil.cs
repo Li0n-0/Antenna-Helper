@@ -152,7 +152,7 @@ namespace AntennaHelper
 			return signal;
 		}
 
-		public static double GetActualVesselPower (Vessel v, bool onlyRelay = false, bool checkIfExtended = true)
+		public static double GetActualVesselPower (Vessel v, bool onlyRelay = false, bool checkIfExtended = true, bool applyMod = true)
 		{
 			// This function should be more generic and also used in the editor
 			// will see later...
@@ -226,8 +226,15 @@ namespace AntennaHelper
 				}
 			}
 
-			biggest = TruePower (biggest);
-			double comb = GetVesselPower (combList);
+			double comb;
+			if (applyMod) {
+				biggest = TruePower (biggest);
+				comb = GetVesselPower (combList);
+			} else {
+				comb = GetVesselPower (combList, false);
+			}
+
+
 			if (comb > biggest) {
 				return comb;
 			} else {
