@@ -57,8 +57,8 @@ namespace AntennaHelper
 				listEditorVessel [vesselPid].Add ("powerTotal", vesselNode.GetValue ("powerTotal"));
 				listEditorVessel [vesselPid].Add ("powerRelay", vesselNode.GetValue ("powerRelay"));
 				listEditorVessel [vesselPid].Add ("saveDate", vesselNode.GetValue ("saveDate"));
-
-
+				listEditorVessel [vesselPid].Add ("connectedTo", "");
+				listEditorVessel [vesselPid].Add ("realSignal", "");
 			}
 			return true;
 		}
@@ -114,6 +114,8 @@ namespace AntennaHelper
 					listFlyingVessel [pid].Add ("powerRelay", vesselRelayPower.ToString ());
 					listFlyingVessel [pid].Add ("saveDate", "");
 					listFlyingVessel [pid].Add ("realSignal", "0");
+					listFlyingVessel [pid].Add ("connectedTo", "");
+
 				}
 			}
 		}
@@ -123,8 +125,12 @@ namespace AntennaHelper
 //			Debug.Log ("[AH] Computing real signal for vessel : " + v.GetName ());
 			if (listFlyingVessel [v.id.ToString ()] != null) {
 //				Debug.Log ("[AH] " + v.GetName () + " is in the list");
+				listFlyingVessel [v.id.ToString ()] ["connectedTo"] = "";
 				if (v.Connection.IsConnected) {
 					listFlyingVessel [v.id.ToString ()] ["realSignal"] = AHUtil.GetRealSignal (v.Connection.ControlPath).ToString ();
+					if (!v.Connection.ControlPath[0].b.isHome) {
+						listFlyingVessel [v.id.ToString ()] ["connectedTo"] = v.Connection.ControlPath[0].b.transform.GetComponent<Vessel> ().id.ToString ();
+					}
 				} else {
 					listFlyingVessel [v.id.ToString ()] ["realSignal"] = "0";
 				}
@@ -133,42 +139,43 @@ namespace AntennaHelper
 			} else {
 //				Debug.Log ("[AH] " + v.GetName () + " is not in the list");
 			}
+//			Debug.Log ("[AH] (Re-)Computing signal for vessel : " + v.GetName () + " : " + listFlyingVessel [v.id.ToString ()] ["realSignal"]);
 		}
 
-		public static void ParseCraftFiles ()
-		{
-			// This run per save
-			// Overwrite the existing data for this save
-			listEditorVessel = new Dictionary<string, Dictionary<string, string>> ();
-			Debug.Log ("[AH] Starting to parse .craft files for save : " + loadedGame);
-
-			string loadedGameStr = loadedGame;
-			if (loadedGame.Contains (" (SANDBOX)")) {
-				loadedGameStr.Remove (loadedGame.IndexOf (" (SANDBOX)"));
-			} else if (loadedGame.Contains (" (CAREER)")) {
-				loadedGameStr.Remove (loadedGame.IndexOf (" (CAREER)"));
-			} else if (loadedGame.Contains (" (SCIENCE)")) {
-				loadedGameStr.Remove (loadedGame.IndexOf (" (SCIENCE)"));
-			} else {
-				Debug.Log ("[AH] the name of the save can't be parsed");
-			}
-
-			DirectoryInfo shipsDir = new DirectoryInfo (KSPUtil.ApplicationRootPath + "saves/" + loadedGameStr + "/Ships");
-			FileInfo[] craftFiles = shipsDir.GetFiles ();
-
-			foreach (FileInfo craft in craftFiles) {
-				if (craft.Extension != "craft") {
-					continue;
-				}
-
-				ConfigNode craftConf = ConfigNode.Load (craft.FullName);
-				string craftName = craftConf.GetValue ("ship");
-				listEditorVessel.Add (craftName, new Dictionary<string, string> ());
-				listEditorVessel [craftName].Add ("type", craftConf.GetValue ("type"));
-
-
-			}
-		}
+//		public static void ParseCraftFiles ()
+//		{
+//			// This run per save
+//			// Overwrite the existing data for this save
+//			listEditorVessel = new Dictionary<string, Dictionary<string, string>> ();
+//			Debug.Log ("[AH] Starting to parse .craft files for save : " + loadedGame);
+//
+//			string loadedGameStr = loadedGame;
+//			if (loadedGame.Contains (" (SANDBOX)")) {
+//				loadedGameStr.Remove (loadedGame.IndexOf (" (SANDBOX)"));
+//			} else if (loadedGame.Contains (" (CAREER)")) {
+//				loadedGameStr.Remove (loadedGame.IndexOf (" (CAREER)"));
+//			} else if (loadedGame.Contains (" (SCIENCE)")) {
+//				loadedGameStr.Remove (loadedGame.IndexOf (" (SCIENCE)"));
+//			} else {
+//				Debug.Log ("[AH] the name of the save can't be parsed");
+//			}
+//
+//			DirectoryInfo shipsDir = new DirectoryInfo (KSPUtil.ApplicationRootPath + "saves/" + loadedGameStr + "/Ships");
+//			FileInfo[] craftFiles = shipsDir.GetFiles ();
+//
+//			foreach (FileInfo craft in craftFiles) {
+//				if (craft.Extension != "craft") {
+//					continue;
+//				}
+//
+//				ConfigNode craftConf = ConfigNode.Load (craft.FullName);
+//				string craftName = craftConf.GetValue ("ship");
+//				listEditorVessel.Add (craftName, new Dictionary<string, string> ());
+//				listEditorVessel [craftName].Add ("type", craftConf.GetValue ("type"));
+//
+//
+//			}
+//		}
 
 		public static void UpdateLoadedGame ()
 		{
@@ -195,26 +202,24 @@ namespace AntennaHelper
 			listEditorVessel [pid].Add ("powerTotal", totalPower);
 			listEditorVessel [pid].Add ("powerRelay", relayPower);
 			listEditorVessel [pid].Add ("saveDate", System.DateTime.Now.ToString ());
-
+			listEditorVessel [pid].Add ("connectedTo", "");
+			listEditorVessel [pid].Add ("realSignal", "");
 
 			SaveToFile ();
 		}
 
-		public static Dictionary<string, Dictionary <string, string>> GetShipList (bool editorShip = true, bool onlyRelay = false)
+		public static Dictionary<string, Dictionary <string, string>> GetShipList (bool editorShip, bool flyingShip)
 		{
-			Dictionary<string, Dictionary <string, string>> returnList;
+			Dictionary<string, Dictionary <string, string>> returnList = new Dictionary<string, Dictionary<string, string>> ();
 
 			if (editorShip) {
-				returnList = new Dictionary<string, Dictionary<string, string>> (listEditorVessel);
-			} else {
-				returnList = new Dictionary<string, Dictionary<string, string>> (listFlyingVessel);
+				foreach (KeyValuePair<string, Dictionary<string, string>> kvp in listEditorVessel) {
+					returnList.Add (kvp.Key, kvp.Value);
+				}
 			}
-
-			if (onlyRelay) {
-				foreach (KeyValuePair<string, Dictionary <string, string>> kvp in listEditorVessel) {
-					if (kvp.Value["powerRelay"] == "0") {
-						returnList.Remove (kvp.Key);
-					}
+			if (flyingShip) {
+				foreach (KeyValuePair<string, Dictionary<string, string>> kvp in listFlyingVessel) {
+					returnList.Add (kvp.Key, kvp.Value);
 				}
 			}
 
@@ -243,13 +248,14 @@ namespace AntennaHelper
 		{
 			// create the vessel list now but wait for the real signal
 
-//			Debug.Log ("[AH] Commnet is initialized");
+//			Debug.Log ("[AH][ShipListener] Commnet is initialized");
 			AHShipList.ParseFlyingVessel ();
 		}
 
 		private void CommNetChange (Vessel v, bool b)
 		{
 			// add the real signal now
+//			Debug.Log ("[AH][ShipListener] CommNet (SpaceCenter) change for vessel : " + v.GetName ());
 			if (v.Connection.ControlPath.Count > 0) {
 				AHShipList.ComputeRealSignal (v);
 			}
@@ -273,7 +279,7 @@ namespace AntennaHelper
 
 		private void CommNetChange (Vessel v, bool b)
 		{
-//			Debug.Log ("[AH] CommNet change for vessel : " + v.GetName ());
+//			Debug.Log ("[AH][ShipListener] CommNet (TrackingStation) change for vessel : " + v.GetName ());
 			AHShipList.ComputeRealSignal (v);
 		}
 	}

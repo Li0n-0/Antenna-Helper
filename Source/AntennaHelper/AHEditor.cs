@@ -448,8 +448,8 @@ namespace AntennaHelper
 
 		private void GetShipList ()
 		{
-			externListShipEditor = AHShipList.GetShipList ();
-			externListShipFlight = AHShipList.GetShipList (false);
+			externListShipEditor = AHShipList.GetShipList (true, false);
+			externListShipFlight = AHShipList.GetShipList (false, true);
 			Debug.Log ("[AH] there is " + externListShipEditor.Count + " ships in the ship list");
 		}
 		#endregion
