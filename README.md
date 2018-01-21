@@ -108,6 +108,8 @@ To check the range of a vessel saved in the Editor click the "Editor Ship List" 
 Now you can see the range and the signal strength of your future vessel for the different connection type.
 The number between parenthesis is the *total* antenna power of your vessel, as opposed to the Ship List in the Editor that show the *relay* power.
 
+![tracking station editor ship](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/tracking_station_editor_ship.png?raw=true)
+
 
 
 
