@@ -364,19 +364,19 @@ namespace AntennaHelper
 			KSP.UI.Screens.ApplicationLauncher.Instance.RemoveModApplication (toolbarButton);
 		}
 
-		public void Update ()
-		{
-			if (Input.GetKeyDown (KeyCode.Keypad5)) {
-				Debug.Log ("[AH] parsing ship list :");
-				foreach (KeyValuePair<string, Dictionary<string, string>> kvp in listShipTransmitter) {
-					Debug.Log ("[AH] info on ship : " + kvp.Key);
-					foreach (KeyValuePair<string, string> infos in kvp.Value) {
-						Debug.Log ("[AH] " + infos.Key + " : " + infos.Value);
-					}
-				}
-				return;
-			}
-		}
+//		public void Update ()
+//		{
+//			if (Input.GetKeyDown (KeyCode.Keypad5)) {
+//				Debug.Log ("[AH] parsing ship list :");
+//				foreach (KeyValuePair<string, Dictionary<string, string>> kvp in listShipTransmitter) {
+//					Debug.Log ("[AH] info on ship : " + kvp.Key);
+//					foreach (KeyValuePair<string, string> infos in kvp.Value) {
+//						Debug.Log ("[AH] " + infos.Key + " : " + infos.Value);
+//					}
+//				}
+//				return;
+//			}
+//		}
 
 		private void ToolbarButtonOnTrue ()
 		{
