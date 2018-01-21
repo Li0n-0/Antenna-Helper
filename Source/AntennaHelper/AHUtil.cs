@@ -140,14 +140,29 @@ namespace AntennaHelper
 		public static double GetRealSignal (CommNet.CommPath path, Vessel v = null)
 		{
 			// return the signal strength between a vessel and the dsn when there are relays between them
+//			Debug.Log ("[AH] getting real signal for " + path[0].a.name);
 			if (v == null) {
 				v = FlightGlobals.ActiveVessel;
 			}
 			double signal = 1d;
 			foreach (CommNet.CommLink link in path) {
+//				Debug.Log ("[AH] link : " + link.ToString ());
 				if (link.a.transform.GetComponent<Vessel> () != v) {
 					signal *= link.signalStrength;
 				}
+			}
+			return signal;
+		}
+
+		public static double GetRealSignalForTrackingStation (CommNet.CommPath path)
+		{
+			// return the signal strength between a vessel and the dsn when there are relays between them
+//			Debug.Log ("[AH] getting real signal for " + path[0].a.name);
+
+			double signal = 1d;
+			foreach (CommNet.CommLink link in path) {
+//				Debug.Log ("[AH] link : " + link.ToString ());
+				signal *= link.signalStrength;
 			}
 			return signal;
 		}

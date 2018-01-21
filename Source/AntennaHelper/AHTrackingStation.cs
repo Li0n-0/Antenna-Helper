@@ -34,17 +34,22 @@ namespace AntennaHelper
 			GameEvents.OnMapFocusChange.Add (NewTarget);
 			GameEvents.CommNet.OnCommStatusChange.Add (CommNetUpdate);
 
-			GetListsShip ();
-			CreateMarkers ();
+//			if (AHShipList.visitFlightOnce) {
+//				GetListsShip ();
+//				CreateMarkers ();
+//			}
+
 
 			// GUI
 			rectMainWindow = new Rect (0, 0, 150, 250);
 			rectMainWindow.position = new Vector2 (Screen.width - rectMainWindow.width, Screen.height - rectMainWindow.height - 40);
-			rectEditorShipWindow = new Rect (0, 0, 150, 200);
-			rectEditorShipWindow.position = new Vector2 (rectMainWindow.position.x - rectEditorShipWindow.width, rectMainWindow.position.y);
-			circleTypeSelected = GUICircleSelection.ACTIVE;
 			mainWindowOn = false;
+
+			rectEditorShipWindow = new Rect (0, 0, 350, 200);
+			rectEditorShipWindow.position = new Vector2 (rectMainWindow.position.x - rectEditorShipWindow.width, rectMainWindow.position.y);
 			editorShipWindowOn = false;
+
+			circleTypeSelected = GUICircleSelection.ACTIVE;
 
 			GameEvents.onGUIApplicationLauncherReady.Add (AddToolbarButton);
 			GameEvents.onGUIApplicationLauncherDestroyed.Add (RemoveToolbarButton);
@@ -52,7 +57,10 @@ namespace AntennaHelper
 
 		public void OnDestroy ()
 		{
-			DestroyMarkers ();
+			if (listMarkers != null) {
+				DestroyMarkers ();
+			}
+
 
 			GameEvents.onPlanetariumTargetChanged.Remove (NewTarget);
 			GameEvents.OnMapFocusChange.Remove (NewTarget);
@@ -77,14 +85,24 @@ namespace AntennaHelper
 
 		private void CommNetUpdate (Vessel v, bool b)
 		{
-			DestroyMarkers ();
-			GetListsShip ();
-			CreateMarkers ();
+			StartCoroutine ("CommNetUpdateCoroutine");
+		}
+
+		private IEnumerator CommNetUpdateCoroutine ()
+		{
+			yield return new WaitForSeconds (.5f);
+			if (AHShipList.shipListReady) {
+				if (listMarkers != null) {
+					DestroyMarkers ();
+				}
+				GetListsShip ();
+				CreateMarkers ();
+			}
 		}
 
 		private void GetListShipTransmitter ()
 		{
-			listShipTransmitter = AHShipList.GetShipList (true, true);
+			listShipTransmitter = new Dictionary<string, Dictionary<string, string>> (AHShipList.GetShipList (true, true));
 		}
 
 		private void GetListShipRelay ()
@@ -101,6 +119,7 @@ namespace AntennaHelper
 
 		private void GetListsShip ()
 		{
+			
 			GetListShipTransmitter ();
 			GetListShipRelay ();
 		}
@@ -361,25 +380,31 @@ namespace AntennaHelper
 
 		private void ToolbarButtonOnTrue ()
 		{
-			
-			mainWindowOn = true;
-			ShowCircles ();
+			if (listMarkers != null) {
+				mainWindowOn = true;
+				ShowCircles ();
 
-			// Change the button texture :
-			if (UnityEngine.Random.Range (0, 2) == 1) {
-				toolbarButton.SetTexture (AHUtil.toolbarButtonTexSatOn);
+				// Change the button texture :
+				if (UnityEngine.Random.Range (0, 2) == 1) {
+					toolbarButton.SetTexture (AHUtil.toolbarButtonTexSatOn);
+				} else {
+					toolbarButton.SetTexture (AHUtil.toolbarButtonTexDishOn);
+				}
 			} else {
-				toolbarButton.SetTexture (AHUtil.toolbarButtonTexDishOn);
+//				notVisitFlightWindowOn = true;
 			}
 		}
 
 		private void ToolbarButtonOnFalse ()
 		{
-			mainWindowOn = false;
-			editorShipWindowOn = false;
-			HideCircles ();
-			// Change the button texture :
-			toolbarButton.SetTexture (AHUtil.toolbarButtonTexOff);
+			if (listMarkers != null) {
+				mainWindowOn = false;
+				editorShipWindowOn = false;
+				HideCircles ();
+				// Change the button texture :
+				toolbarButton.SetTexture (AHUtil.toolbarButtonTexOff);
+			}
+
 		}
 		#endregion
 	}
