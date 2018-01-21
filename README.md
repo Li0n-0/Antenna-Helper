@@ -43,7 +43,7 @@ The four button will show you your range, and signal strength, from different so
 ![map view dsn connect](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_dsn.png?raw=true)
 
 
-* **RELAY** show the maximum range between your vessel and all the in-flight relay/DSN
+* **RELAY** show the maximum range between your vessel and all the in-flight relay
 
 ![map view relay connect](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_relay.png?raw=true)
 
