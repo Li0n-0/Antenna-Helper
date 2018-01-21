@@ -19,27 +19,39 @@ It will show you the antenna capability of your active vessel in flight, in the 
 
 Only in the *Map View* (for now). Click the Antenna Helper icon on the app launcher : ![Antenna Helper icon](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/icon_off.png?raw=true)
 And you should see someting close to that :
+
 ![map view active connect](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_active.png?raw=true)
+
 
 Those color circles represent the maximun range between your vessel and its relay/DSN, it also indicate how much signal strength you get. While your ship is in the green circle its signal strength will be clamped between 100 and 75%, in the yellow circle between 75 and 50%, in the orange circle between 50 and 25%, in the red circle between 25 and 0%. And if you're outside the red circle you don't have any connection.
 
 
 Apart from the color circles, you'll see a small window next to Antenna Helper icon on the app launcher : 
+
 ![map view window](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_window.png?raw=true)
+
 
 The four button will show you your range, and signal strength, from different sources (relay or DSN).
 
 * "ACTIVE" (by default) show your range for the active connection, which can be from a relay or DSN.
+
 ![map view active connect](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_active.png?raw=true)
 
+
 * "DSN" show the maximum range between your vessel and the DSN
+
 ![map view dsn connect](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_dsn.png?raw=true)
 
+
 * "RELAY" show the maximum range between your vessel and all the in-flight relay/DSN
+
 ![map view relay connect](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_relay.png?raw=true)
 
+
 * "DSN and RELAY" combine the two above, showing you *all* the possible connection, with their range
+
 ![map view relay and dsn connect](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_dsn_and_relay.png?raw=true)
+
 
 
 ## You mentioned the editor ?
@@ -48,7 +60,9 @@ Yep. That's nice to see "on live" where you can go with your space probe but it'
 
 In the VAB (or SPH) click the Antenna Helper icon on the app launcher : ![Antenna Helper icon](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/icon_off.png?raw=true)
 It brings this window :
+
 ![editor main window direct](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/editor_main_window_direct.png?raw=true)
+
 
 Lots of infos here, let's go through them from top to bottom :
 * "Selected type : " which antennas are taking into account to compute the vessel antenna power. "Direct" (by default) will use all antennas, "Relay" will use only the antenna with relay capability.
@@ -68,15 +82,21 @@ Two type of target :
 * relay(s) : those are vessels you build yourself, two condition need to be meet : having at least one antenna with relay capability and setting the vessel type to "Relay".
 
 You can simulate all those connection directly from the editor : Click the "Pick A Target" button : 
+
 ![editor target dsn window](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/editor_target_dsn_window.png?raw=true)
 
+
 From here you can select a different DSN level, your current level is in *bold* and is selected by default. For simulating against in-flight relay hit the "In-Flight Ships" button :
+
 ![editor target flight window](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/editor_target_flight_window.png?raw=true)
+
 
 In this window you should see one button per flying vessel with its name and its antenna *relay* power, important distinction, when your connection is going through a relay only the relay antenna of this relay will be used. Sound obvious but... So if your building a relay make sure your selected type, in the main window, is set to "RELAY".
 
 Speaking of building relays, you may want to simulate the antenna range of a relay before you launch it. To do so you need to add your ship/relay to the "Antenna Helper Editor Ship List". Just open your vessel in the editor and click on "Add Ship to the Target List" in the main window. After which you can click on "Editor Ships" in the "Pick A Target" window : 
+
 ![editor target editor window](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/editor_target_editor_window.png?raw=true)
+
 
 It works the same way as the in-flight relay list, the number between parenthesis is still the antenna *relay* power.
 
@@ -86,7 +106,9 @@ It works the same way as the in-flight relay list, the number between parenthesi
 
 They are, mostly, just distance. At a solar system scale. So big distance, like space-travel distance (we're playing a space program game, are we not ?).
 Anyway, to help figuring out what does numbers represent you'll find this window, by clicking on "Signal Strength / Distance" in the main window :
+
 ![editor signal per distance window](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/editor_signal_distance_window.png?raw=true)
+
 
 In it you'll see what signal strength to expect for a distance equal to the minimum and maximum distance between the home body (Kerbin), its moon(s) and all the others planet on the solar system. Keep in mind that those distance are approximative, specially for celestial body with an higly inclined orbit. 
 You can check the distance used by hovering your mouse on the celestial body name.
@@ -104,7 +126,9 @@ Yes it's good. Fire Antenna Helper : ![Antenna Helper icon](https://github.com/L
 
 From there if you select a vessel in the Tracking Station list you'll see its range circles just like in flight. You can check the range for the active connection, the DSN connection and for all relay in flight by selecting it in the GUI.
 To check the range of a vessel saved in the Editor click the "Editor Ship List" button.
+
 ![tracking station editor ship list window](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/tracking_station_editor_ship_list_window.png?raw=true)
+
 
 Now you can see the range and the signal strength of your future vessel for the different connection type.
 The number between parenthesis is the *total* antenna power of your vessel, as opposed to the Ship List in the Editor that show the *relay* power.
