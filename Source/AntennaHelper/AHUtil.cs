@@ -140,11 +140,13 @@ namespace AntennaHelper
 		public static double GetRealSignal (CommNet.CommPath path, Vessel v = null)
 		{
 			// return the signal strength between a vessel and the dsn when there are relays between them
+//			Debug.Log ("[AH] getting real signal for " + path[0].a.name);
 			if (v == null) {
 				v = FlightGlobals.ActiveVessel;
 			}
 			double signal = 1d;
 			foreach (CommNet.CommLink link in path) {
+//				Debug.Log ("[AH] link : " + link.ToString ());
 				if (link.a.transform.GetComponent<Vessel> () != v) {
 					signal *= link.signalStrength;
 				}
@@ -152,7 +154,20 @@ namespace AntennaHelper
 			return signal;
 		}
 
-		public static double GetActualVesselPower (Vessel v, bool onlyRelay = false, bool checkIfExtended = true)
+		public static double GetRealSignalForTrackingStation (CommNet.CommPath path)
+		{
+			// return the signal strength between a vessel and the dsn when there are relays between them
+//			Debug.Log ("[AH] getting real signal for " + path[0].a.name);
+
+			double signal = 1d;
+			foreach (CommNet.CommLink link in path) {
+//				Debug.Log ("[AH] link : " + link.ToString ());
+				signal *= link.signalStrength;
+			}
+			return signal;
+		}
+
+		public static double GetActualVesselPower (Vessel v, bool onlyRelay = false, bool checkIfExtended = true, bool applyMod = true)
 		{
 			// This function should be more generic and also used in the editor
 			// will see later...
@@ -226,8 +241,15 @@ namespace AntennaHelper
 				}
 			}
 
-			biggest = TruePower (biggest);
-			double comb = GetVesselPower (combList);
+			double comb;
+			if (applyMod) {
+				biggest = TruePower (biggest);
+				comb = GetVesselPower (combList);
+			} else {
+				comb = GetVesselPower (combList, false);
+			}
+
+
 			if (comb > biggest) {
 				return comb;
 			} else {

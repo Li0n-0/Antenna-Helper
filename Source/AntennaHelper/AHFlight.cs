@@ -184,12 +184,11 @@ namespace AntennaHelper
 			/// if internal + direct (extended) + relay = good
 			/// if internal + direct (retract) + relay = only the internal is taking into account, the relay
 			///   should also, I guess it is because the internal can't be combine so if left out of the 
-			///   calcul it would show a relult without any transmitter antenna, does that even make sense ?
+			///   calcul it would show a result without any transmitter antenna, does that even make sense ?
 			/// Anyway, best will be to manually do the math with info directly from the part
 			/// 
 
 			antennaPower = GetActualVesselPower (vessel);
-
 			// list of all the relay in-flight :
 			allRelay = new List<GameObject> ();
 			int i = 0;
@@ -226,7 +225,7 @@ namespace AntennaHelper
 			Transform relay;
 			double activeSignal;
 			bool isHome;
-			if (!vessel.Connection.IsConnected || vessel.Connection.ControlPath [0].b.isHome) {
+			if (vessel.Connection == null || !vessel.Connection.IsConnected || vessel.Connection.ControlPath [0].b.isHome) {
 				rangeAC =  AHUtil.GetRange (antennaPower, GameVariables.Instance.GetDSNRange (ScenarioUpgradeableFacilities.GetFacilityLevel (SpaceCenterFacility.TrackingStation)));
 				relay = FlightGlobals.GetHomeBody ().MapObject.trf;
 				activeSignal = 1d;

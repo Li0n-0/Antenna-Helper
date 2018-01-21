@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace AntennaHelper
@@ -94,6 +95,10 @@ namespace AntennaHelper
 				}
 			}
 
+			if (GUILayout.Button ("Add Ship to the Target List")) {
+				AHEditor.AddShipToShipList ();
+			}
+
 			GUILayout.EndVertical ();
 			GUI.DragWindow ();
 		}
@@ -122,8 +127,74 @@ namespace AntennaHelper
 				}
 			}
 
+			GUILayout.BeginHorizontal ();
+			if (GUILayout.Button ("In-Flight Ships")) {
+				AHEditor.CloseTargetShipEditorWindow ();
+				AHEditor.showTargetShipFlightWindow = true;
+			}
+			if (GUILayout.Button ("Editor Ships")) {
+				AHEditor.CloseTargetShipFlightWindow ();
+				AHEditor.showTargetShipEditorWindow = true;
+			}
+			GUILayout.EndHorizontal ();
+
 			GUILayout.EndVertical ();
 			GUI.DragWindow ();
+		}
+
+		private static bool vab = true;
+		private static Vector2 scrollVectorEditor;
+		public static void TargetWindowShipEditor (int id)
+		{
+			// Close Button
+			if (GUI.Button (new Rect (AHEditor.rectTargetShipEditorWindow.size.x - 20, 2, 18, 18), "X")) {
+				AHEditor.CloseTargetShipEditorWindow ();
+			}
+
+			GUILayout.BeginVertical ();
+
+			GUILayout.BeginHorizontal ();
+			if (GUILayout.Button ("VAB")) {
+				vab = true;
+			}
+			if (GUILayout.Button ("SPH")) {
+				vab = false;
+			}
+			GUILayout.EndHorizontal ();
+
+			scrollVectorEditor = GUILayout.BeginScrollView (scrollVectorEditor/*, GUILayout.Width (AHEditor.rectTargetWindow.width), GUILayout.Height (AHEditor.rectTargetWindow.height)*/);
+			foreach (KeyValuePair<string, Dictionary <string, string>> vesselPairInfo in AHEditor.externListShipEditor) {
+				if ((vab && (vesselPairInfo.Value ["type"] != "VAB")) || (!vab && (vesselPairInfo.Value ["type"] != "SPH"))) {
+					continue;
+				}
+				if (GUILayout.Button (vesselPairInfo.Value ["name"] + "  (" + AHUtil.TruePower (Double.Parse (vesselPairInfo.Value ["powerRelay"])).ToString () + ")")) {
+					AHEditor.SetTarget (vesselPairInfo);
+				}
+			}
+			GUILayout.EndScrollView ();
+
+			GUILayout.EndVertical ();
+		}
+
+		private static Vector2 scrollVectorFlight;
+		public static void TargetWindowShipFlight (int id)
+		{
+			// Close Button
+			if (GUI.Button (new Rect (AHEditor.rectTargetShipFlightWindow.size.x - 20, 2, 18, 18), "X")) {
+				AHEditor.CloseTargetShipFlightWindow ();
+			}
+
+			GUILayout.BeginVertical ();
+
+			scrollVectorFlight = GUILayout.BeginScrollView (scrollVectorFlight/*, GUILayout.Width (AHEditor.rectTargetWindow.width), GUILayout.Height (AHEditor.rectTargetWindow.height)*/);
+			foreach (KeyValuePair<string, Dictionary <string, string>> vesselPairInfo in AHEditor.externListShipFlight) {
+				if (GUILayout.Button (vesselPairInfo.Value["name"] + "  (" + vesselPairInfo.Value["powerRelay"] + ")")) {
+					AHEditor.SetTarget (vesselPairInfo);
+				}
+			}
+			GUILayout.EndScrollView ();
+
+			GUILayout.EndVertical ();
 		}
 
 		public static void PlanetWindow (int id)
