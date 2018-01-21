@@ -10,68 +10,104 @@ You could use Antenna Helper to do all that, and more, for you.
 
 
 
-## How it works ?
+## Ok, but what does it do ?
 
-For the example we'll use this craft :
-
-![example craft in editor](https://i.imgur.com/mpTWdHv.png)
-
-There is three antennas on it : 
-* the MK1 Command Pod has an INTERNAL antenna built-in, with a power of 5k
-* a Communotron DSM-M1, a DIRECT antenna with a power of 2G
-* an HG-5 High Gain Antenna, a RELAY antenna with a power of 5M
+It will show you the antenna capability of your active vessel in flight, in the editor and of *all* vessels in the tracking station.
 
 
-### In the editor : 
+## In flight ?
 
-Click on the Antenna Helper icon on the app launcher : ![Antenna Helper icon](https://i.imgur.com/BXuEy3o.png)
+Only in the *Map View* (for now). Click the Antenna Helper icon on the app launcher : ![Antenna Helper icon](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/icon_off.png?raw=true)
+And you should see someting close to that :
+![map view active connect](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_window.png?raw=true)
 
-It will bring this window : 
-
-![Antenna Helper main editor window](https://i.imgur.com/Rk2JQu4.png)
-
-1. The type of antenna you want info about. Direct, by default, will take into account all the antennas, DIRECT, RELAY and INTERNAL. Select Relay if you plan to build a relay, hmm, as only the relay antenna will be used by connection going through.
-2. Your target and its power, your current DSN level is automatically selected. Click "Pick a Target" will bring this window :
-![Antenna Helper select a target window](https://i.imgur.com/APtsurH.png)
-With the available DSN level and their power, the one in bold is your current DSN level.
-3. The status of the antennas on the craft, showing how many antennas are combined.
-4. The total power of the vessel.
-5. The maximum range, a.K.a the distance from the target after which you won't get any signal.
-6. The distance from the target where your signal will start to decay.
-7. The value in front of each black bars are the distance from the target at which the signal strength will "change color", 75%, 50%, 25%. The value at the extreme left is 0m from the target, the value at the extreme right is the "Max Range".
-8. Open this window :
-
-![Antenna Helper signal strength per distance window](https://i.imgur.com/XgaNVCd.png)
-        1. Show the signal strength at the distance between the target (the home body) and its moons and the planet of the solar system. Hovering over the planet/moon name will show the distance used for the calcul. Those distance are approximate, specially for planet with high inclination.
-        2. Enter any distance in the input box on the left, click "Math !" on the right, the signal strength to expect will show on the middle.
+Those color circles represent the maximun range between your vessel and its relay/DSN, it also indicate how much signal strength you get. While your ship is in the green circle its signal strength will be clamped between 100 and 75%, in the yellow circle between 75 and 50%, in the orange circle between 50 and 25%, in the red circle between 25 and 0%. And if you're outside the red circle you don't have any connection.
 
 
-### In flight :
+Apart from the color circles, you'll see a small window next to Antenna Helper icon on the app launcher : ![map view window]()
 
-Go to the Map View, click the Antenna Helper icon on the app launcher : ![Antenna Helper icon](https://i.imgur.com/BXuEy3o.png)
+The four button will show you your range, and signal strength, from different sources (relay or DSN).
 
-(Zoom out)
+* "ACTIVE" (by default) show your range for the active connection, which can be from a relay or DSN.
+![map view active connect](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_active.png?raw=true)
 
-![Antenna Helper map view dsn connection](https://i.imgur.com/N1uJ103.png)
+* "DSN" show the maximum range between your vessel and the DSN
+![map view dsn connect](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_dsn.png?raw=true)
 
-The red circle is the maximum range, fly beyond it and you wont have any signal.
-In the orange one the signal strength will vary from 50% to 25%.
-In the yellow circle the signal strength will vary from 75% to 50%.
-In the green circle the signal strength will vary from 100% to 75%.
-Those circle match the value on the color bar of the editor window (item 7. above).
+* "RELAY" show the maximum range between your vessel and all the in-flight relay/DSN
+![map view relay connect](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_relay.png?raw=true)
 
-After clicking on the Antenna Helper icon you'll see a window right next to it : 
+* "DSN and RELAY" combine the two above, showing you *all* the possible connection, with their range
+![map view relay and dsn connect](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_dsn_and_relay.png?raw=true)
 
-![Antenna Helper map view window](https://i.imgur.com/AQMotEv.png)
 
-1. The current selection.
-2. Four buttons :
-    * Active Connection : will draw one set of range circle around the current target of the connection, DSN or relay.
-	* DSN : will draw one set of circle around the DSN.
-	* Relay : will draw one set of circle around each relay with an active connection.
-	* DSN + Relay : the two above combined.
+## You mentioned the editor ?
 
-![Antenna Helper map view dsn and relay connection](https://i.imgur.com/NPIFmOD.png)
+Yep. That's nice to see "on live" where you can go with your space probe but it's even better to know before launch how far you can travel.
+
+In the VAB (or SPH) click the Antenna Helper icon on the app launcher : ![Antenna Helper icon](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/icon_off.png?raw=true)
+It brings this window :
+![editor main window direct](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/editor_main_window_direct.png?raw=true)
+
+Lots of infos here, let's go through them from top to bottom :
+* "Selected type : " which antennas are taking into account to compute the vessel antenna power. "Direct" (by default) will use all antennas, "Relay" will use only the antenna with relay capability.
+* "Current target : " the range of your ship's antenna is determined by the antenna power of its target, which can be the DSN or a relay. By default the selected target is the DSN. You can change the target by clicking on "Pick A Target". (more about it below)
+* "Status : " a quick explanation about which antenna on your craft will actually be used in flight.
+* "Power : " the antenna power of your vessel.
+* "Max Range : " the maximum distance between your vessel and the target after which you'll lose the connection. Depend on the power of your vessel *and* the power of the target.
+* "Max Distance At 100% : " the distance between your vessel and the target after which your signal strength will start to decay.
+* Color bar : it works with the "Max Distance At 100%" and the "Max Range" distance. The number aligned with the black bars separating the colors indicate the distance at which the signal decay. Example from the pic above : between 2 050 205 945m and 51 662 800 363m, your signal strengt will vary from 100% to 75%.
+
+
+## So the target is important ?
+
+Of course, one antenna on its own don't do anything. It must be connected to another antenna, can't compute maximum range or signal strength with only one antenna.
+Two type of target :
+* the DSN (Deep Space Network) : it's the (very) big antenna on Kerbin. It has three levels with different power, you upgrade from one to another by upgrading the Tracking Station.
+* relay(s) : those are vessels you build yourself, two condition need to be meet : having at least one antenna with relay capability and setting the vessel type to "Relay".
+
+You can simulate all those connection directly from the editor : Click the "Pick A Target" button : 
+![editor target dsn window](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/editor_target_dsn_window.png?raw=true)
+
+From here you can select a different DSN level, your current level is in *bold* and is selected by default. For simulating against in-flight relay hit the "In-Flight Ships" button :
+![editor target flight window](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/editor_target_flight_window.png?raw=true)
+
+In this window you should see one button per flying vessel with its name and its antenna *relay* power, important distinction, when your connection is going through a relay only the relay antenna of this relay will be used. Sound obvious but... So if your building a relay make sure your selected type, in the main window, is set to "RELAY".
+
+Speaking of building relays, you may want to simulate the antenna range of a relay before you launch it. To do so you need to add your ship/relay to the "Antenna Helper Editor Ship List". Just open your vessel in the editor and click on "Add Ship to the Target List" in the main window. After which you can click on "Editor Ships" in the "Pick A Target" window : 
+![editor target editor window](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/editor_target_editor_window.png?raw=true)
+
+It works the same way as the in-flight relay list, the number between parenthesis is still the antenna *relay* power.
+
+
+
+## But what all those numbers really mean ?
+
+They are, mostly, just distance. At a solar system scale. So big distance, like space-travel distance (we're playing a space program game, are we not ?).
+Anyway, to help figuring out what does numbers represent you'll find this window, by clicking on "Signal Strength / Distance" in the main window :
+![editor signal per distance window](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/editor_signal_distance_window.png?raw=true)
+
+In it you'll see what signal strength to expect for a distance equal to the minimum and maximum distance between the home body (Kerbin), its moon(s) and all the others planet on the solar system. Keep in mind that those distance are approximative, specially for celestial body with an higly inclined orbit. 
+You can check the distance used by hovering your mouse on the celestial body name.
+In the same window you can check the signal strength to expect at any given distance, write it in the input box at the bottom of the window and click the "Math !" button.
+
+
+Still don't get a clear representation of what those space-travel distance mean ?
+Save your ship in the "Antenna Helper Editor Ship List", click the "Add Ship to the Target List" button in the main window. Quit the editor and open up the Tracking Station.
+
+
+
+## Tracking Station ? Yummy !
+
+Yes it's good. Fire Antenna Helper : ![Antenna Helper icon](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/icon_off.png?raw=true)
+
+From there if you select a vessel in the Tracking Station list you'll see its range circles just like in flight. You can check the range for the active connection, the DSN connection and for all relay in flight by selecting it in the GUI.
+To check the range of a vessel saved in the Editor click the "Editor Ship List" button.
+![tracking station editor ship list window](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/tracking_station_editor_ship_list_window.png?raw=true)
+
+Now you can see the range and the signal strength of your future vessel for the different connection type.
+The number between parenthesis is the *total* antenna power of your vessel, as opposed to the Ship List in the Editor that show the *relay* power.
+
 
 
 
@@ -93,10 +129,10 @@ This is still a work in progress, you can use it safely, it won't break any thin
 ### Future plans :
 
 * ~~showing the range circle in the tracking station.~~ **Done** (readme needs to be updated with pics/description etc...)
-* + show range circle for ship not already launched.
+* ~~+ show range circle for ship not already launched.~~ **Done**
 * Window with NUMBERS in flight.
 * in the editor, a window showing a list of antenna with their caracteristics.
-* in the editor, add all the in-flight relay to the list of target.
+* ~~in the editor, add all the in-flight relay to the list of target.~~ **Done**
 * in the editor, add relay antennas (part) to the list of target.
 * re-work the GUI, possibly with the new GUI system instead of on OnGUI.
 * ~~map view window should be clamped to the toolbar button.~~ **Done**
