@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ToolbarControl_NS;
 
 namespace AntennaHelper
 {
@@ -17,7 +18,7 @@ namespace AntennaHelper
 		private double dsnPower;
 
 		// GUI
-		private KSP.UI.Screens.ApplicationLauncherButton toolbarButton;
+		private ToolbarControl toolbarControl;
 		private Rect rectMainWindow, rectEditorShipWindow;
 		private Vector2 scrollerEditorShipWindow;
 		private GUICircleSelection circleTypeSelected;
@@ -348,20 +349,27 @@ namespace AntennaHelper
 
 		private void AddToolbarButton ()
 		{
-			toolbarButton = KSP.UI.Screens.ApplicationLauncher.Instance.AddModApplication (
-				ToolbarButtonOnTrue, 
-				ToolbarButtonOnFalse, 
-				null, 
-				null, 
-				null, 
-				null,
+			toolbarControl = gameObject.AddComponent<ToolbarControl> ();
+
+			toolbarControl.AddToAllToolbars (
+				ToolbarButtonOnTrue,
+				ToolbarButtonOnFalse,
 				KSP.UI.Screens.ApplicationLauncher.AppScenes.TRACKSTATION,
-				AHUtil.toolbarButtonTexOff);
+				"AntennaHelper",
+				"421980",
+				"AntennaHelper/Textures/icon_dish_on",
+				"AntennaHelper/Textures/icon_off",
+				"AntennaHelper/Textures/icon_dish_on_small",
+				"AntennaHelper/Textures/icon_dish_off_small",
+				"Antenna Helper");
+
+			toolbarControl.UseBlizzy (AHSettings.useBlizzyToolbar);
 		}
 
 		private void RemoveToolbarButton ()
 		{
-			KSP.UI.Screens.ApplicationLauncher.Instance.RemoveModApplication (toolbarButton);
+			toolbarControl.OnDestroy ();
+			Destroy (toolbarControl);
 		}
 
 //		public void Update ()
@@ -382,16 +390,8 @@ namespace AntennaHelper
 		{
 			if (listMarkers != null) {
 				mainWindowOn = true;
+				editorShipWindowOn = false;
 				ShowCircles ();
-
-				// Change the button texture :
-				if (UnityEngine.Random.Range (0, 2) == 1) {
-					toolbarButton.SetTexture (AHUtil.toolbarButtonTexSatOn);
-				} else {
-					toolbarButton.SetTexture (AHUtil.toolbarButtonTexDishOn);
-				}
-			} else {
-//				notVisitFlightWindowOn = true;
 			}
 		}
 
@@ -401,8 +401,6 @@ namespace AntennaHelper
 				mainWindowOn = false;
 				editorShipWindowOn = false;
 				HideCircles ();
-				// Change the button texture :
-				toolbarButton.SetTexture (AHUtil.toolbarButtonTexOff);
 			}
 
 		}

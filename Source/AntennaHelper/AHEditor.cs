@@ -558,7 +558,6 @@ namespace AntennaHelper
 		#endregion
 
 		#region ToolbarButton
-//		private KSP.UI.Screens.ApplicationLauncherButton toolbarButton;
 		private ToolbarControl toolbarControl;
 
 		private void AddToolbarButton ()
@@ -578,16 +577,6 @@ namespace AntennaHelper
 				"Antenna Helper");
 			
 			toolbarControl.UseBlizzy (AHSettings.useBlizzyToolbar);
-
-//			toolbarButton = KSP.UI.Screens.ApplicationLauncher.Instance.AddModApplication (
-//				ToolbarButtonOnTrue, 
-//				ToolbarButtonOnFalse, 
-//				AHUtil.DummyVoid, 
-//				AHUtil.DummyVoid, 
-//				AHUtil.DummyVoid, 
-//				AHUtil.DummyVoid,
-//				KSP.UI.Screens.ApplicationLauncher.AppScenes.VAB | KSP.UI.Screens.ApplicationLauncher.AppScenes.SPH,
-//				AHUtil.toolbarButtonTexOff);
 		}
 
 		private void RemoveToolbarButton ()
@@ -600,28 +589,25 @@ namespace AntennaHelper
 
 			toolbarControl.OnDestroy ();
 			Destroy (toolbarControl);
-
-//			KSP.UI.Screens.ApplicationLauncher.Instance.RemoveModApplication (toolbarButton);
 		}
 
 		private void ToolbarButtonOnTrue ()
 		{
-			ToggleWindows ();
+			showMainWindow = true;
 
-			// Change the button texture :
-//			if (UnityEngine.Random.Range (0, 2) == 1) {
-//				toolbarButton.SetTexture (AHUtil.toolbarButtonTexSatOn);
-//			} else {
-//				toolbarButton.SetTexture (AHUtil.toolbarButtonTexDishOn);
-//			}
+			CloseTargetWindow ();
+			ClosePlanetWindow ();
+			CloseTargetShipEditorWindow ();
+			CloseTargetShipFlightWindow ();
 		}
 
 		private void ToolbarButtonOnFalse ()
 		{
-			ToggleWindows ();
-
-			// Change the button texture :
-//			toolbarButton.SetTexture (AHUtil.toolbarButtonTexOff);
+			CloseMainWindow ();
+			CloseTargetWindow ();
+			ClosePlanetWindow ();
+			CloseTargetShipEditorWindow ();
+			CloseTargetShipFlightWindow ();
 		}
 
 		private void ToggleWindows ()
