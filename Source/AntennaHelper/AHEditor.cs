@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using ToolbarControl_NS;
 
 namespace AntennaHelper
 {
@@ -557,19 +558,36 @@ namespace AntennaHelper
 		#endregion
 
 		#region ToolbarButton
-		private KSP.UI.Screens.ApplicationLauncherButton toolbarButton;
+//		private KSP.UI.Screens.ApplicationLauncherButton toolbarButton;
+		private ToolbarControl toolbarControl;
 
 		private void AddToolbarButton ()
 		{
-			toolbarButton = KSP.UI.Screens.ApplicationLauncher.Instance.AddModApplication (
-				ToolbarButtonOnTrue, 
-				ToolbarButtonOnFalse, 
-				AHUtil.DummyVoid, 
-				AHUtil.DummyVoid, 
-				AHUtil.DummyVoid, 
-				AHUtil.DummyVoid,
+			toolbarControl = gameObject.AddComponent<ToolbarControl> ();
+
+			toolbarControl.AddToAllToolbars (
+				ToolbarButtonOnTrue,
+				ToolbarButtonOnFalse,
 				KSP.UI.Screens.ApplicationLauncher.AppScenes.VAB | KSP.UI.Screens.ApplicationLauncher.AppScenes.SPH,
-				AHUtil.toolbarButtonTexOff);
+				"AntennaHelper",
+				"823779",
+				"AntennaHelper/Textures/icon_dish_on",
+				"AntennaHelper/Textures/icon_off",
+				"AntennaHelper/Textures/icon_dish_on_small",
+				"AntennaHelper/Textures/icon_dish_off_small",
+				"Antenna Helper");
+			
+			toolbarControl.UseBlizzy (AHSettings.useBlizzyToolbar);
+
+//			toolbarButton = KSP.UI.Screens.ApplicationLauncher.Instance.AddModApplication (
+//				ToolbarButtonOnTrue, 
+//				ToolbarButtonOnFalse, 
+//				AHUtil.DummyVoid, 
+//				AHUtil.DummyVoid, 
+//				AHUtil.DummyVoid, 
+//				AHUtil.DummyVoid,
+//				KSP.UI.Screens.ApplicationLauncher.AppScenes.VAB | KSP.UI.Screens.ApplicationLauncher.AppScenes.SPH,
+//				AHUtil.toolbarButtonTexOff);
 		}
 
 		private void RemoveToolbarButton ()
@@ -579,7 +597,11 @@ namespace AntennaHelper
 			ClosePlanetWindow ();
 			CloseTargetShipEditorWindow ();
 			CloseTargetShipFlightWindow ();
-			KSP.UI.Screens.ApplicationLauncher.Instance.RemoveModApplication (toolbarButton);
+
+			toolbarControl.OnDestroy ();
+			Destroy (toolbarControl);
+
+//			KSP.UI.Screens.ApplicationLauncher.Instance.RemoveModApplication (toolbarButton);
 		}
 
 		private void ToolbarButtonOnTrue ()
@@ -587,11 +609,11 @@ namespace AntennaHelper
 			ToggleWindows ();
 
 			// Change the button texture :
-			if (UnityEngine.Random.Range (0, 2) == 1) {
-				toolbarButton.SetTexture (AHUtil.toolbarButtonTexSatOn);
-			} else {
-				toolbarButton.SetTexture (AHUtil.toolbarButtonTexDishOn);
-			}
+//			if (UnityEngine.Random.Range (0, 2) == 1) {
+//				toolbarButton.SetTexture (AHUtil.toolbarButtonTexSatOn);
+//			} else {
+//				toolbarButton.SetTexture (AHUtil.toolbarButtonTexDishOn);
+//			}
 		}
 
 		private void ToolbarButtonOnFalse ()
@@ -599,7 +621,7 @@ namespace AntennaHelper
 			ToggleWindows ();
 
 			// Change the button texture :
-			toolbarButton.SetTexture (AHUtil.toolbarButtonTexOff);
+//			toolbarButton.SetTexture (AHUtil.toolbarButtonTexOff);
 		}
 
 		private void ToggleWindows ()
