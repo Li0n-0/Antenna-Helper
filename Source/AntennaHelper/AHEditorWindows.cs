@@ -174,9 +174,15 @@ namespace AntennaHelper
 				if ((vab && (vesselPairInfo.Value ["type"] != "VAB")) || (!vab && (vesselPairInfo.Value ["type"] != "SPH"))) {
 					continue;
 				}
+
+				GUILayout.BeginHorizontal ();
 				if (GUILayout.Button (vesselPairInfo.Value ["name"] + "  (" + AHUtil.TruePower (Double.Parse (vesselPairInfo.Value ["powerRelay"])).ToString () + ")")) {
 					AHEditor.SetTarget (vesselPairInfo);
 				}
+				if (GUILayout.Button ("X", GUILayout.Width (22f))) {
+					AHEditor.RemoveShipFromShipList (vesselPairInfo.Key);
+				}
+				GUILayout.EndHorizontal ();
 			}
 			GUILayout.EndScrollView ();
 

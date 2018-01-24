@@ -487,6 +487,13 @@ namespace AntennaHelper
 
 		}
 
+		public static void RemoveShipFromShipList (string pid)
+		{
+			AHShipList.RemoveShip (pid);
+
+			instance.GetShipList ();
+		}
+
 		private void GetShipList ()
 		{
 			externListShipEditor = AHShipList.GetShipList (true, false);

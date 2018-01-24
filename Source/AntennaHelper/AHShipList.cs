@@ -153,6 +153,13 @@ namespace AntennaHelper
 				}
 			}
 
+			// Delete un-wanted vessel
+			foreach (ConfigNode vNode in saveNode.GetNodes ("VESSEL")) {
+				if (!listEditorVessel.ContainsKey (vNode.GetValue ("pid"))) {
+					saveNode.RemoveNode (vNode);
+				}
+			}
+
 			mainNode.Save (savePath);
 		}
 
@@ -295,6 +302,15 @@ namespace AntennaHelper
 			listEditorVessel [pid].Add ("saveDate", System.DateTime.Now.ToString ());
 			listEditorVessel [pid].Add ("connectedTo", "");
 			listEditorVessel [pid].Add ("realSignal", "0");
+
+			SaveToFile ();
+		}
+
+		public static void RemoveShip (string shipPid)
+		{
+			if (listEditorVessel.ContainsKey (shipPid)) {
+				listEditorVessel.Remove (shipPid);
+			}
 
 			SaveToFile ();
 		}
