@@ -130,11 +130,18 @@ namespace AntennaHelper
 			GUILayout.BeginHorizontal ();
 			if (GUILayout.Button ("In-Flight Ships")) {
 				AHEditor.CloseTargetShipEditorWindow ();
+				AHEditor.CloseTargetPartWindow ();
 				AHEditor.showTargetShipFlightWindow = true;
 			}
 			if (GUILayout.Button ("Editor Ships")) {
 				AHEditor.CloseTargetShipFlightWindow ();
+				AHEditor.CloseTargetPartWindow ();
 				AHEditor.showTargetShipEditorWindow = true;
+			}
+			if (GUILayout.Button ("Antenna Parts")) {
+				AHEditor.CloseTargetShipEditorWindow ();
+				AHEditor.CloseTargetShipFlightWindow ();
+				AHEditor.showTargetPartWindow = true;
 			}
 			GUILayout.EndHorizontal ();
 
@@ -193,6 +200,53 @@ namespace AntennaHelper
 				}
 			}
 			GUILayout.EndScrollView ();
+
+			GUILayout.EndVertical ();
+		}
+
+		public static void TargetWindowPart (int id)
+		{
+			// Close Button
+			if (GUI.Button (new Rect (AHEditor.rectTargetPartWindow.size.x - 20, 2, 18, 18), "X")) {
+				AHEditor.CloseTargetPartWindow ();
+			}
+
+			GUILayout.BeginVertical ();
+
+			foreach (ModuleDataTransmitter antenna in AHShipList.listAntennaPart) {
+				
+				if (antenna.antennaType != AntennaType.RELAY) {
+					continue;
+				}
+
+				GUILayout.BeginHorizontal ();
+
+				GUILayout.Label (AHEditor.listAntennaPart [antenna].ToString (), GUILayout.Width (15f));
+
+				if (GUILayout.Button ("+", GUILayout.Width (15f))) {
+					AHEditor.listAntennaPart [antenna]++;
+					AHEditor.UpdateTargetPartPower ();
+				}
+				if (GUILayout.Button ("-", GUILayout.Width (15f))) {
+					AHEditor.listAntennaPart [antenna]--;
+					AHEditor.UpdateTargetPartPower ();
+				}
+
+				GUILayout.Label (
+					"(" + AHUtil.TruePower (antenna.antennaPower).ToString () + ")  " 
+					+ antenna.part.partInfo.title);
+
+				GUILayout.EndHorizontal ();
+			}
+
+			GUILayout.Space (10f);
+
+			GUILayout.BeginHorizontal ();
+			GUILayout.Label ("Power : " + AHEditor.targetPartPower.ToString ());
+			if (GUILayout.Button ("Set As Target")) {
+				AHEditor.SetTargetAsPart ();
+			}
+			GUILayout.EndHorizontal ();
 
 			GUILayout.EndVertical ();
 		}

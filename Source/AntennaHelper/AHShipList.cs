@@ -15,11 +15,16 @@ namespace AntennaHelper
 		private static bool loadedOnce;
 		public static bool shipListReady;
 
+		// Part list
+		public static List<ModuleDataTransmitter> listAntennaPart;
+
 		static AHShipList ()
 		{
 			savePath = KSPUtil.ApplicationRootPath + "GameData/AntennaHelper/PluginData/VesselList.cfg";
 			loadedOnce = false;
 			shipListReady = false;
+
+
 		}
 
 		private static void DoStart ()
@@ -28,7 +33,63 @@ namespace AntennaHelper
 			if (!LoadFromFile (loadedGame)) {
 				SaveToFile ();
 			}
+
+			GetPartList ();
+
 			loadedOnce = true;
+		}
+
+		private static void GetPartList ()
+		{
+			listAntennaPart = new List<ModuleDataTransmitter> ();
+
+			foreach (AvailablePart aPart in PartLoader.LoadedPartsList) {
+				if (aPart.partPrefab.Modules.Contains<ModuleDataTransmitter> ()) {
+					ModuleDataTransmitter antenna = aPart.partPrefab.Modules.GetModule<ModuleDataTransmitter> ();
+					if (antenna.antennaType != AntennaType.INTERNAL) {
+						listAntennaPart.Add (antenna);
+					}
+				}
+			}
+			listAntennaPart.Sort (CompareAntenna);
+		}
+
+		private static int CompareAntenna (ModuleDataTransmitter a, ModuleDataTransmitter b)
+		{
+			if (a == null) {
+				if (b == null) {
+					return 0;
+				} else {
+					return 1;
+				}
+			}
+			if (b == null) {
+				if (a == null) {
+					return 0;
+				} else {
+					return -1;
+				}
+			}
+
+			if (a.antennaType == b.antennaType) {
+				if (a.antennaPower == b.antennaPower) {
+					return 0;
+				}
+				if (a.antennaPower > b.antennaPower) {
+					return -1;
+				} else {
+					return 1;
+				}
+			}
+
+			if (a.antennaType == AntennaType.INTERNAL) {
+				return 1;
+			}
+			if (a.antennaType == AntennaType.DIRECT) {
+				return 1;
+			} else {
+				return -1;
+			}
 		}
 
 		private static bool LoadFromFile (string saveTitle)

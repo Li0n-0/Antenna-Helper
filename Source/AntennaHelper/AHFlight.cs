@@ -427,8 +427,7 @@ namespace AntennaHelper
 				GUISelectCircle ();
 
 				// Reset window position each time it is clicked, I can't predict where the button will be
-				windowRect.position = GetWindowPosNextToButton (windowRect, Mouse.screenPos, AHSettings.useBlizzyToolbar);
-
+				windowRect.position = GetWindowPosNextToButton (windowRect, toolbarControl.buttonClickedMousePos, AHSettings.useBlizzyToolbar);
 				isToolbarOn = true;
 			}
 		}
