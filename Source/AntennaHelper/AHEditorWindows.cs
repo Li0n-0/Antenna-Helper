@@ -199,8 +199,11 @@ namespace AntennaHelper
 
 			GUILayout.BeginVertical ();
 
-			scrollVectorFlight = GUILayout.BeginScrollView (scrollVectorFlight/*, GUILayout.Width (AHEditor.rectTargetWindow.width), GUILayout.Height (AHEditor.rectTargetWindow.height)*/);
+			scrollVectorFlight = GUILayout.BeginScrollView (scrollVectorFlight);
 			foreach (KeyValuePair<string, Dictionary <string, string>> vesselPairInfo in AHEditor.externListShipFlight) {
+				if (vesselPairInfo.Value ["type"] != "Relay") {
+					continue;
+				}
 				if (GUILayout.Button (vesselPairInfo.Value["name"] + "  (" + vesselPairInfo.Value["powerRelay"] + ")")) {
 					AHEditor.SetTarget (vesselPairInfo);
 				}
