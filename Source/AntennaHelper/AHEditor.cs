@@ -117,27 +117,27 @@ namespace AntennaHelper
 		{
 			if (showMainWindow && rectMainWindow.Contains (Mouse.screenPos)) {
 				InputLockManager.SetControlLock (
-					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE, 
+					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE | ControlTypes.CAMERACONTROLS, 
 					"AntennaHelper_inputLock");
 			} else if (showPlanetWindow && rectPlanetWindow.Contains (Mouse.screenPos)) {
 				InputLockManager.SetControlLock (
-					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE, 
+					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE | ControlTypes.CAMERACONTROLS, 
 					"AntennaHelper_inputLock");
 			} else if (showTargetWindow && rectTargetWindow.Contains (Mouse.screenPos)) {
 				InputLockManager.SetControlLock (
-					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE, 
+					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE | ControlTypes.CAMERACONTROLS, 
 					"AntennaHelper_inputLock");
 			} else if (showTargetShipFlightWindow && rectTargetShipFlightWindow.Contains (Mouse.screenPos)) {
 				InputLockManager.SetControlLock (
-					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE, 
+					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE | ControlTypes.CAMERACONTROLS, 
 					"AntennaHelper_inputLock");
 			} else if (showTargetShipEditorWindow && rectTargetShipEditorWindow.Contains (Mouse.screenPos)) {
 				InputLockManager.SetControlLock (
-					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE, 
+					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE | ControlTypes.CAMERACONTROLS, 
 					"AntennaHelper_inputLock");
 			} else if (showTargetPartWindow && rectTargetPartWindow.Contains (Mouse.screenPos)) {
 				InputLockManager.SetControlLock (
-					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE, 
+					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE | ControlTypes.CAMERACONTROLS, 
 					"AntennaHelper_inputLock");
 			} else {
 				InputLockManager.RemoveControlLock ("AntennaHelper_inputLock");
