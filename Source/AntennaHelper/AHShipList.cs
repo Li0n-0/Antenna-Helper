@@ -332,6 +332,97 @@ namespace AntennaHelper
 
 			return returnList;
 		}
+
+		public static List<Dictionary<string, string>> GetShipListAsList (bool editorShip, bool relay = false, string type = "")
+		{
+			List<Dictionary<string, string>> newList;
+
+			if (editorShip) {
+				newList = ShipListAsList (listEditorVessel);
+			} else {
+				newList = ShipListAsList (listFlyingVessel);
+			}
+
+			if (type != "") {
+				newList = newList.FindAll (ls => ls ["type"] == type);
+			}
+
+			if (relay) {
+				newList = newList.FindAll (ls => Double.Parse (ls ["powerRelay"]) > 0);
+			}
+
+			newList.Sort (CompareShip);
+			return newList;
+		}
+
+		private static List<Dictionary<string, string>> ShipListAsList (Dictionary<string, Dictionary <string, string>> dict)
+		{
+			List<Dictionary<string, string>> newList = new List<Dictionary<string, string>> ();
+
+			foreach (KeyValuePair<string, Dictionary<string, string>> kvp in dict) {
+
+				Dictionary<string, string> newDict = new Dictionary<string, string> (kvp.Value);
+				newDict.Add ("pid", kvp.Key);
+
+				newList.Add (newDict);
+			}
+			return newList;
+		}
+
+		private static int CompareShip (Dictionary<string, string> a, Dictionary<string, string> b)
+		{
+			if (a == null) {
+				if (b == null) {
+					return 0;
+				} else {
+					return 1;
+				}
+			}
+
+			if (b == null) {
+				return -1;
+			}
+
+			// Move up flight relay
+			if (a ["type"] != b ["type"]) {
+				if (a ["type"] == "Relay") {
+					return -1;
+				} else if (b ["type"] == "Relay") {
+					return 1;
+				}
+			}
+
+			// Move up editor relay
+			double aPowerRelay = Double.Parse (a ["powerRelay"]);
+			double bPowerRelay = Double.Parse (b ["powerRelay"]);
+
+			if (aPowerRelay != 0) {
+				if (bPowerRelay == 0) {
+					return -1;
+				}
+			} else if (bPowerRelay != 0) {
+				return 1;
+			}
+
+			// Compare power
+			if (aPowerRelay == bPowerRelay) {
+
+				double aPowerTotal = Double.Parse (a ["powerTotal"]);
+				double bPowerTotal = Double.Parse (b ["powerTotal"]);
+
+				if (aPowerTotal == bPowerTotal) {
+					return 0;
+				} else if (aPowerTotal > bPowerTotal) {
+					return 1;
+				} else {
+					return -1;
+				}
+			} else if (aPowerRelay > bPowerRelay) {
+				return 1;
+			} else {
+				return -1;
+			}
+		}
 	}
 
 	[KSPAddon (KSPAddon.Startup.SpaceCentre, false)]

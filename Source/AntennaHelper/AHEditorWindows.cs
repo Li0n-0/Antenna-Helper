@@ -336,6 +336,7 @@ namespace AntennaHelper
 			GUILayout.EndVertical ();
 		}
 
+		private static Vector2 scrollVectorPart;
 		public static void TargetWindowPart (int id)
 		{
 			GUIStyle guiStyleLabel;
@@ -343,8 +344,6 @@ namespace AntennaHelper
 			GUIStyle guiStyleLabelBold = new GUIStyle (GUI.skin.GetStyle ("Label"));
 			guiStyleLabelBold.fontStyle = FontStyle.Bold;
 
-			GUIStyle guiStyleButton;
-			GUIStyle guiStyleButtonNorm = new GUIStyle (GUI.skin.GetStyle ("Button"));
 			GUIStyle guiStyleButtonBold = new GUIStyle (GUI.skin.GetStyle ("Button"));
 			guiStyleButtonBold.fontStyle = FontStyle.Bold;
 
@@ -354,6 +353,7 @@ namespace AntennaHelper
 			}
 
 			GUILayout.BeginVertical ();
+			scrollVectorPart = GUILayout.BeginScrollView (scrollVectorPart);
 
 			foreach (ModuleDataTransmitter antenna in AHShipList.listAntennaPart) {
 				
@@ -386,6 +386,7 @@ namespace AntennaHelper
 
 				GUILayout.EndHorizontal ();
 			}
+			GUILayout.EndScrollView ();
 
 			GUILayout.Space (10f);
 
