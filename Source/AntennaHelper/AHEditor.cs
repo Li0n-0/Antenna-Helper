@@ -377,11 +377,15 @@ namespace AntennaHelper
 
 		public static double targetPower = 0;
 		public static string targetName = "";
+		public static AHEditorTargetType targetType = AHEditorTargetType.DSN;
+		public static string targetPid = "";
 
 		public static void SetTarget (float dsnL)
 		{
 			targetPower = GameVariables.Instance.GetDSNRange (dsnL);
 			targetName = "DSN Level " + (int)((dsnL * 2) + 1);
+			targetType = AHEditorTargetType.DSN;
+			targetPid = "";
 			instance.DoTheMath ();
 		}
 
@@ -390,12 +394,15 @@ namespace AntennaHelper
 			Dictionary<string, string> targetDict;
 			if (externListShipEditor.ContainsKey (pid)) {
 				targetDict = externListShipEditor [pid];
+				targetType = AHEditorTargetType.EDITOR;
 			} else {
 				targetDict = externListShipFlight [pid];
+				targetType = AHEditorTargetType.FLIGHT;
 			}
 
 			targetPower = AHUtil.TruePower (Double.Parse (targetDict ["powerRelay"]));
 			targetName = "Vessel : " + targetDict ["name"];
+			targetPid = pid;
 			instance.DoTheMath ();
 		}
 
@@ -403,6 +410,8 @@ namespace AntennaHelper
 		{
 			targetPower = targetPartPower;
 			targetName = "Set of user defined parts";
+			targetType = AHEditorTargetType.PART;
+			targetPid = "";
 			instance.DoTheMath ();
 		}
 
@@ -506,16 +515,29 @@ namespace AntennaHelper
 			externListShipEditor = AHShipList.GetShipList (true, false);
 			externListShipFlight = AHShipList.GetShipList (false, true);
 			GetGUIShipList ();
-			guiExternListShipEditor.Sort (CompareShip);
-			guiExternListShipFlight.Sort (CompareShip);
 		}
 
-		public static List<Dictionary<string, string>> guiExternListShipEditor;
+		public static List<Dictionary<string, string>> guiExternListShipEditorVabAll;
+		public static List<Dictionary<string, string>> guiExternListShipEditorSphAll;
+		public static List<Dictionary<string, string>> guiExternListShipEditorVabRelay;
+		public static List<Dictionary<string, string>> guiExternListShipEditorSphRelay;
 		public static List<Dictionary<string, string>> guiExternListShipFlight;
 		private void GetGUIShipList ()
 		{
-			guiExternListShipEditor = ShipListAsList (externListShipEditor);
+			List<Dictionary<string, string>> guiExternListShipEditor = ShipListAsList (externListShipEditor);
+			guiExternListShipEditor.Sort (CompareShip);
+
+			guiExternListShipEditorVabAll = guiExternListShipEditor.FindAll (ls => ls ["type"] == "VAB");
+			guiExternListShipEditorVabRelay = guiExternListShipEditor.FindAll (
+				ls => ls ["type"] == "VAB" 
+				&& Double.Parse (ls ["powerRelay"]) != 0);
+			guiExternListShipEditorSphAll = guiExternListShipEditor.FindAll (ls => ls ["type"] == "SPH");
+			guiExternListShipEditorSphRelay = guiExternListShipEditor.FindAll (
+				ls => ls ["type"] == "SPH" 
+				&& Double.Parse (ls ["powerRelay"]) != 0);
+
 			guiExternListShipFlight = ShipListAsList (externListShipFlight);
+			guiExternListShipFlight.Sort (CompareShip);
 		}
 
 		private List<Dictionary<string, string>> ShipListAsList (Dictionary<string, Dictionary <string, string>> dict)
@@ -545,9 +567,6 @@ namespace AntennaHelper
 			if (b == null) {
 				return -1;
 			}
-
-
-
 
 			// Move up flight relay
 			if (a ["type"] != b ["type"]) {
@@ -672,7 +691,7 @@ namespace AntennaHelper
 		public static bool showTargetShipEditorWindow = false;
 		public static Rect rectTargetShipEditorWindow = 
 			new Rect (new Vector2 (rectTargetWindow.position.x, rectTargetWindow.position.y + rectTargetWindow.height)
-				, new Vector2 (400, 80));
+				, new Vector2 (400, 150));
 		public static void CloseTargetShipEditorWindow ()
 		{
 			showTargetShipEditorWindow = false;
@@ -834,6 +853,14 @@ namespace AntennaHelper
 			}
 		}
 		#endregion
+	}
+
+	public enum AHEditorTargetType
+	{
+		DSN,
+		FLIGHT,
+		EDITOR,
+		PART
 	}
 }
 
