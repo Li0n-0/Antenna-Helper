@@ -113,6 +113,37 @@ namespace AntennaHelper
 			DoTheMath ();
 		}
 
+		public void Update ()
+		{
+			if (showMainWindow && rectMainWindow.Contains (Mouse.screenPos)) {
+				InputLockManager.SetControlLock (
+					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE, 
+					"AntennaHelper_inputLock");
+			} else if (showPlanetWindow && rectPlanetWindow.Contains (Mouse.screenPos)) {
+				InputLockManager.SetControlLock (
+					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE, 
+					"AntennaHelper_inputLock");
+			} else if (showTargetWindow && rectTargetWindow.Contains (Mouse.screenPos)) {
+				InputLockManager.SetControlLock (
+					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE, 
+					"AntennaHelper_inputLock");
+			} else if (showTargetShipFlightWindow && rectTargetShipFlightWindow.Contains (Mouse.screenPos)) {
+				InputLockManager.SetControlLock (
+					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE, 
+					"AntennaHelper_inputLock");
+			} else if (showTargetShipEditorWindow && rectTargetShipEditorWindow.Contains (Mouse.screenPos)) {
+				InputLockManager.SetControlLock (
+					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE, 
+					"AntennaHelper_inputLock");
+			} else if (showTargetPartWindow && rectTargetPartWindow.Contains (Mouse.screenPos)) {
+				InputLockManager.SetControlLock (
+					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE, 
+					"AntennaHelper_inputLock");
+			} else {
+				InputLockManager.RemoveControlLock ("AntennaHelper_inputLock");
+			}
+		}
+
 		#region Logic
 		public List<ModuleDataTransmitter> directAntennaList = new List<ModuleDataTransmitter> ();// Main list
 		public List<ModuleDataTransmitter> relayAntennaList = new List<ModuleDataTransmitter> ();
