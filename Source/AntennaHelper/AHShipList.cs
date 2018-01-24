@@ -76,9 +76,9 @@ namespace AntennaHelper
 					return 0;
 				}
 				if (a.antennaPower > b.antennaPower) {
-					return -1;
-				} else {
 					return 1;
+				} else {
+					return -1;
 				}
 			}
 

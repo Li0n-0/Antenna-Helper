@@ -169,18 +169,18 @@ namespace AntennaHelper
 			}
 			GUILayout.EndHorizontal ();
 
-			scrollVectorEditor = GUILayout.BeginScrollView (scrollVectorEditor/*, GUILayout.Width (AHEditor.rectTargetWindow.width), GUILayout.Height (AHEditor.rectTargetWindow.height)*/);
-			foreach (KeyValuePair<string, Dictionary <string, string>> vesselPairInfo in AHEditor.externListShipEditor) {
-				if ((vab && (vesselPairInfo.Value ["type"] != "VAB")) || (!vab && (vesselPairInfo.Value ["type"] != "SPH"))) {
+			scrollVectorEditor = GUILayout.BeginScrollView (scrollVectorEditor);
+			foreach (Dictionary <string, string> vesselInfo in AHEditor.guiExternListShipEditor) {
+				if ((vab && (vesselInfo ["type"] != "VAB")) || (!vab && (vesselInfo ["type"] != "SPH"))) {
 					continue;
 				}
 
 				GUILayout.BeginHorizontal ();
-				if (GUILayout.Button (vesselPairInfo.Value ["name"] + "  (" + AHUtil.TruePower (Double.Parse (vesselPairInfo.Value ["powerRelay"])).ToString () + ")")) {
-					AHEditor.SetTarget (vesselPairInfo);
+				if (GUILayout.Button (vesselInfo ["name"] + "  (" + AHUtil.TruePower (Double.Parse (vesselInfo ["powerRelay"])).ToString () + ")")) {
+					AHEditor.SetTarget (vesselInfo ["pid"]);
 				}
 				if (GUILayout.Button ("X", GUILayout.Width (22f))) {
-					AHEditor.RemoveShipFromShipList (vesselPairInfo.Key);
+					AHEditor.RemoveShipFromShipList (vesselInfo ["pid"]);
 				}
 				GUILayout.EndHorizontal ();
 			}
@@ -200,12 +200,13 @@ namespace AntennaHelper
 			GUILayout.BeginVertical ();
 
 			scrollVectorFlight = GUILayout.BeginScrollView (scrollVectorFlight);
-			foreach (KeyValuePair<string, Dictionary <string, string>> vesselPairInfo in AHEditor.externListShipFlight) {
-				if (vesselPairInfo.Value ["type"] != "Relay") {
+			foreach (Dictionary <string, string> vesselInfo in AHEditor.guiExternListShipFlight) {
+				if (vesselInfo ["type"] != "Relay") {
 					continue;
 				}
-				if (GUILayout.Button (vesselPairInfo.Value["name"] + "  (" + vesselPairInfo.Value["powerRelay"] + ")")) {
-					AHEditor.SetTarget (vesselPairInfo);
+
+				if (GUILayout.Button (vesselInfo ["name"] + "  (" + AHUtil.TruePower (Double.Parse (vesselInfo ["powerRelay"])).ToString () + ")")) {
+					AHEditor.SetTarget (vesselInfo ["pid"]);
 				}
 			}
 			GUILayout.EndScrollView ();
