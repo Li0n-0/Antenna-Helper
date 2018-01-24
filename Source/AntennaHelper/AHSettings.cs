@@ -8,10 +8,13 @@ namespace AntennaHelper
 		private static ConfigNode settingsNode;
 //		private static ConfigNode nodeEditor;
 		private static ConfigNode nodePositionEditor;
+		private static ConfigNode nodeBlizzyToolbar;
 
 		public static Vector2 posMainWindow = new Vector2 (Screen.width / 2f, Screen.height / 2f);
 		public static Vector2 posTargetWindow = new Vector2 (Screen.width / 2f - 400f, Screen.height / 2f);
 		public static Vector2 posPlanetWindow = new Vector2 (Screen.width / 2f + 400f, Screen.height / 2f);
+
+		public static bool useBlizzyToolbar = false;
 
 		static AHSettings ()
 		{
@@ -27,7 +30,13 @@ namespace AntennaHelper
 			}
 			nodePositionEditor = settingsNode.GetNode ("Editor_Window_Position");
 
+			if (! settingsNode.HasNode ("Blizzy_Toolbar")) {
+				settingsNode.AddNode ("Blizzy_Toolbar");
+			}
+			nodeBlizzyToolbar = settingsNode.GetNode ("Blizzy_Toolbar");
+
 			// Check for value in nodes
+				// Editor window position
 			if (nodePositionEditor.HasValue ("main_window_position")) {
 				posMainWindow = ConfigNode.ParseVector2 (nodePositionEditor.GetValue ("main_window_position"));
 			}
@@ -42,6 +51,12 @@ namespace AntennaHelper
 				posPlanetWindow = ConfigNode.ParseVector2 (nodePositionEditor.GetValue ("signal_strenght_per_planet_window_position"));
 			}
 			nodePositionEditor.SetValue ("signal_strenght_per_planet_window_position", posPlanetWindow, true);
+
+				// Blizzy toolbar
+			if (nodeBlizzyToolbar.HasValue ("use_blizzy_toolbar")) {
+				useBlizzyToolbar = bool.Parse (nodeBlizzyToolbar.GetValue ("use_blizzy_toolbar"));
+			}
+			nodeBlizzyToolbar.SetValue ("use_blizzy_toolbar", useBlizzyToolbar, true);
 
 			WriteSave ();
 		}

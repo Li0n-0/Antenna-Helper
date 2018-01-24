@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using ToolbarControl_NS;
 
 namespace AntennaHelper
 {
@@ -28,7 +29,7 @@ namespace AntennaHelper
 		// UI stuff :
 		private bool isToolbarOn = false;
 		private bool toolbarButtonAdded = false;
-		private KSP.UI.Screens.ApplicationLauncherButton toolbarButton;
+		private ToolbarControl toolbarControl;
 
 
 		public void Start ()
@@ -360,45 +361,63 @@ namespace AntennaHelper
 				break;
 			}
 		}
-		private void SetWindowPos ()
+		private Vector2 GetWindowPosNextToButton (Rect window, Vector2 clickPos, bool useBlizzy)
 		{
-			float posX = toolbarButton.transform.position.x * 2f - windowRect.width + 38f;
-			if (posX + windowRect.width > Screen.width) {
-				posX = Screen.width - windowRect.width;
-			} else if (posX < 0) {
-				posX = 0;
+			float offset, posX, posY;
+
+			if (useBlizzy) {
+				offset = 20f;
+			} else {
+				offset = 30f;
 			}
 
-			float posY = Screen.height / 2f - toolbarButton.transform.position.y - windowRect.height / 3f;
-			if (posY + windowRect.height > Screen.height) {
-				posY = Screen.height - windowRect.height;
-			} else if (posY < 0) {
-				posY = 0;
+			if (clickPos.x + offset + window.width > Screen.width) {
+				// Window on the left of the button
+				posX = clickPos.x - offset - window.width;
+			} else {
+				// Window on the right of the button
+				posX = clickPos.x + offset;
 			}
 
-			windowRect.position = new Vector2 (posX, posY);
+			if (clickPos.y + offset + window.height > Screen.height) {
+				// Window on the bottom of the button
+				posY = clickPos.y - offset - window.height;
+			} else {
+				// Window on the top of the button
+				posY = clickPos.y + offset;
+			}
 
+			return new Vector2 (posX, posY);
 		}
 		#endregion
 
 		#region ToolbarButton
 		private void AddToolbarButton ()
 		{
-			toolbarButton = KSP.UI.Screens.ApplicationLauncher.Instance.AddModApplication (
-				ToolbarButtonOnTrue, 
-				ToolbarButtonOnFalse, 
-				AHUtil.DummyVoid, 
-				AHUtil.DummyVoid, 
-				AHUtil.DummyVoid, 
-				AHUtil.DummyVoid,
+			toolbarControl = gameObject.AddComponent<ToolbarControl> ();
+
+			toolbarControl.AddToAllToolbars (
+				ToolbarButtonOnTrue,
+				ToolbarButtonOnFalse,
 				KSP.UI.Screens.ApplicationLauncher.AppScenes.MAPVIEW,
-				AHUtil.toolbarButtonTexOff);
+				"AntennaHelper",
+				"193269",
+				"AntennaHelper/Textures/icon_sat_on",
+				"AntennaHelper/Textures/icon_off",
+				"AntennaHelper/Textures/icon_dish_on_small",
+				"AntennaHelper/Textures/icon_dish_off_small",
+				"Antenna Helper");
+
+			toolbarControl.UseBlizzy (AHSettings.useBlizzyToolbar);
+
 			toolbarButtonAdded = true;
 		}
 
 		private void RemoveToolbarButton ()
 		{
-			KSP.UI.Screens.ApplicationLauncher.Instance.RemoveModApplication (toolbarButton);
+			toolbarControl.OnDestroy ();
+			Destroy (toolbarControl);
+
 			toolbarButtonAdded = false;
 		}
 
@@ -406,16 +425,12 @@ namespace AntennaHelper
 		{
 			if (activeConnect != null) {
 				GUISelectCircle ();
-				// Reset window position each time it is clicked, I can't predict where the button will be
-				SetWindowPos ();
-				isToolbarOn = true;
 
-				// Change the button texture :
-				if (UnityEngine.Random.Range (0, 2) == 1) {
-					toolbarButton.SetTexture (AHUtil.toolbarButtonTexSatOn);
-				} else {
-					toolbarButton.SetTexture (AHUtil.toolbarButtonTexDishOn);
-				}
+				// Reset window position each time it is clicked, I can't predict where the button will be
+				windowRect.position = GetWindowPosNextToButton (
+					windowRect, toolbarControl.buttonClickedMousePos, AHSettings.useBlizzyToolbar);
+				
+				isToolbarOn = true;
 			}
 		}
 
@@ -428,9 +443,6 @@ namespace AntennaHelper
 					gO.GetComponent<AHMapMarker> ().Hide ();
 				}
 				isToolbarOn = false;
-
-				// Change the button texture :
-				toolbarButton.SetTexture (AHUtil.toolbarButtonTexOff);
 			}
 		}
 		#endregion

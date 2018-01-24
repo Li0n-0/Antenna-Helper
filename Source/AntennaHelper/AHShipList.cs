@@ -15,11 +15,16 @@ namespace AntennaHelper
 		private static bool loadedOnce;
 		public static bool shipListReady;
 
+		// Part list
+		public static List<ModuleDataTransmitter> listAntennaPart;
+
 		static AHShipList ()
 		{
 			savePath = KSPUtil.ApplicationRootPath + "GameData/AntennaHelper/PluginData/VesselList.cfg";
 			loadedOnce = false;
 			shipListReady = false;
+
+
 		}
 
 		private static void DoStart ()
@@ -28,7 +33,63 @@ namespace AntennaHelper
 			if (!LoadFromFile (loadedGame)) {
 				SaveToFile ();
 			}
+
+			GetPartList ();
+
 			loadedOnce = true;
+		}
+
+		private static void GetPartList ()
+		{
+			listAntennaPart = new List<ModuleDataTransmitter> ();
+
+			foreach (AvailablePart aPart in PartLoader.LoadedPartsList) {
+				if (aPart.partPrefab.Modules.Contains<ModuleDataTransmitter> ()) {
+					ModuleDataTransmitter antenna = aPart.partPrefab.Modules.GetModule<ModuleDataTransmitter> ();
+					if (antenna.antennaType != AntennaType.INTERNAL) {
+						listAntennaPart.Add (antenna);
+					}
+				}
+			}
+			listAntennaPart.Sort (CompareAntenna);
+		}
+
+		private static int CompareAntenna (ModuleDataTransmitter a, ModuleDataTransmitter b)
+		{
+			if (a == null) {
+				if (b == null) {
+					return 0;
+				} else {
+					return 1;
+				}
+			}
+			if (b == null) {
+				if (a == null) {
+					return 0;
+				} else {
+					return -1;
+				}
+			}
+
+			if (a.antennaType == b.antennaType) {
+				if (a.antennaPower == b.antennaPower) {
+					return 0;
+				}
+				if (a.antennaPower > b.antennaPower) {
+					return 1;
+				} else {
+					return -1;
+				}
+			}
+
+			if (a.antennaType == AntennaType.INTERNAL) {
+				return 1;
+			}
+			if (a.antennaType == AntennaType.DIRECT) {
+				return 1;
+			} else {
+				return -1;
+			}
 		}
 
 		private static bool LoadFromFile (string saveTitle)
@@ -89,6 +150,13 @@ namespace AntennaHelper
 
 				foreach (KeyValuePair<string, string> kvp in vesselPairInfo.Value) {
 					vesselNode.SetValue (kvp.Key, kvp.Value, true);
+				}
+			}
+
+			// Delete un-wanted vessel
+			foreach (ConfigNode vNode in saveNode.GetNodes ("VESSEL")) {
+				if (!listEditorVessel.ContainsKey (vNode.GetValue ("pid"))) {
+					saveNode.RemoveNode (vNode);
 				}
 			}
 
@@ -238,6 +306,15 @@ namespace AntennaHelper
 			SaveToFile ();
 		}
 
+		public static void RemoveShip (string shipPid)
+		{
+			if (listEditorVessel.ContainsKey (shipPid)) {
+				listEditorVessel.Remove (shipPid);
+			}
+
+			SaveToFile ();
+		}
+
 		public static Dictionary<string, Dictionary <string, string>> GetShipList (bool editorShip, bool flyingShip)
 		{
 			Dictionary<string, Dictionary <string, string>> returnList = new Dictionary<string, Dictionary<string, string>> ();
@@ -254,6 +331,97 @@ namespace AntennaHelper
 			}
 
 			return returnList;
+		}
+
+		public static List<Dictionary<string, string>> GetShipListAsList (bool editorShip, bool relay = false, string type = "")
+		{
+			List<Dictionary<string, string>> newList;
+
+			if (editorShip) {
+				newList = ShipListAsList (listEditorVessel);
+			} else {
+				newList = ShipListAsList (listFlyingVessel);
+			}
+
+			if (type != "") {
+				newList = newList.FindAll (ls => ls ["type"] == type);
+			}
+
+			if (relay) {
+				newList = newList.FindAll (ls => Double.Parse (ls ["powerRelay"]) > 0);
+			}
+
+			newList.Sort (CompareShip);
+			return newList;
+		}
+
+		private static List<Dictionary<string, string>> ShipListAsList (Dictionary<string, Dictionary <string, string>> dict)
+		{
+			List<Dictionary<string, string>> newList = new List<Dictionary<string, string>> ();
+
+			foreach (KeyValuePair<string, Dictionary<string, string>> kvp in dict) {
+
+				Dictionary<string, string> newDict = new Dictionary<string, string> (kvp.Value);
+				newDict.Add ("pid", kvp.Key);
+
+				newList.Add (newDict);
+			}
+			return newList;
+		}
+
+		private static int CompareShip (Dictionary<string, string> a, Dictionary<string, string> b)
+		{
+			if (a == null) {
+				if (b == null) {
+					return 0;
+				} else {
+					return 1;
+				}
+			}
+
+			if (b == null) {
+				return -1;
+			}
+
+			// Move up flight relay
+			if (a ["type"] != b ["type"]) {
+				if (a ["type"] == "Relay") {
+					return -1;
+				} else if (b ["type"] == "Relay") {
+					return 1;
+				}
+			}
+
+			// Move up editor relay
+			double aPowerRelay = Double.Parse (a ["powerRelay"]);
+			double bPowerRelay = Double.Parse (b ["powerRelay"]);
+
+			if (aPowerRelay != 0) {
+				if (bPowerRelay == 0) {
+					return -1;
+				}
+			} else if (bPowerRelay != 0) {
+				return 1;
+			}
+
+			// Compare power
+			if (aPowerRelay == bPowerRelay) {
+
+				double aPowerTotal = Double.Parse (a ["powerTotal"]);
+				double bPowerTotal = Double.Parse (b ["powerTotal"]);
+
+				if (aPowerTotal == bPowerTotal) {
+					return 0;
+				} else if (aPowerTotal > bPowerTotal) {
+					return 1;
+				} else {
+					return -1;
+				}
+			} else if (aPowerRelay > bPowerRelay) {
+				return 1;
+			} else {
+				return -1;
+			}
 		}
 	}
 

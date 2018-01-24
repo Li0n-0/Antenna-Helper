@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ToolbarControl_NS;
 
 namespace AntennaHelper
 {
@@ -17,11 +18,17 @@ namespace AntennaHelper
 		private double dsnPower;
 
 		// GUI
-		private KSP.UI.Screens.ApplicationLauncherButton toolbarButton;
+		private ToolbarControl toolbarControl;
 		private Rect rectMainWindow, rectEditorShipWindow;
 		private Vector2 scrollerEditorShipWindow;
 		private GUICircleSelection circleTypeSelected;
 		private bool mainWindowOn, editorShipWindowOn;
+		private bool editorShipVab, editorShipRelay;
+		private List<Dictionary<string, string>> guiListEditorShipDisplay;
+		private List<Dictionary<string, string>> guiListEditorShipVabAll;
+		private List<Dictionary<string, string>> guiListEditorShipSphAll;
+		private List<Dictionary<string, string>> guiListEditorShipVabRelay;
+		private List<Dictionary<string, string>> guiListEditorShipSphRelay;
 
 		public void Start ()
 		{
@@ -50,6 +57,16 @@ namespace AntennaHelper
 			editorShipWindowOn = false;
 
 			circleTypeSelected = GUICircleSelection.ACTIVE;
+
+			editorShipVab = true;
+			editorShipRelay = false;
+
+			guiListEditorShipVabAll = AHShipList.GetShipListAsList (true, false, "VAB");
+			guiListEditorShipSphAll = AHShipList.GetShipListAsList (true, false, "SPH");
+			guiListEditorShipVabRelay = AHShipList.GetShipListAsList (true, true, "VAB");
+			guiListEditorShipSphRelay = AHShipList.GetShipListAsList (true, true, "SPH");
+
+			guiListEditorShipDisplay = guiListEditorShipVabAll;
 
 			GameEvents.onGUIApplicationLauncherReady.Add (AddToolbarButton);
 			GameEvents.onGUIApplicationLauncherDestroyed.Add (RemoveToolbarButton);
@@ -326,21 +343,104 @@ namespace AntennaHelper
 
 		private void EditorShipListWindow (int id)
 		{
+			GUIStyle guiStyleLabel;
+			GUIStyle guiStyleLabelNorm = new GUIStyle (GUI.skin.GetStyle ("Label"));
+			GUIStyle guiStyleLabelBold = new GUIStyle (GUI.skin.GetStyle ("Label"));
+			guiStyleLabelBold.fontStyle = FontStyle.Bold;
+
+			GUIStyle guiStyleButton;
+			GUIStyle guiStyleButtonNorm = new GUIStyle (GUI.skin.GetStyle ("Button"));
+			GUIStyle guiStyleButtonBold = new GUIStyle (GUI.skin.GetStyle ("Button"));
+			guiStyleButtonBold.fontStyle = FontStyle.Bold;
+
 			// Close Button
 			if (GUI.Button (new Rect (rectEditorShipWindow.size.x - 22, 2, 20, 20), "X")) {
 				editorShipWindowOn = false;
 			}
 
 			GUILayout.BeginVertical ();
-			scrollerEditorShipWindow = GUILayout.BeginScrollView (scrollerEditorShipWindow);
-			foreach (KeyValuePair<string, Dictionary <string, string>> vesselPairInfo in listShipTransmitter) {
-				if ((vesselPairInfo.Value ["type"] == "VAB") || (vesselPairInfo.Value ["type"] == "SPH")) {
-					if (GUILayout.Button (vesselPairInfo.Value ["name"] + "  (" + AHUtil.TruePower (Double.Parse (vesselPairInfo.Value ["powerTotal"])).ToString () + ")")) {
-						targetPid = vesselPairInfo.Key;
-						ShowCircles ();
-					}
+
+			GUILayout.BeginHorizontal ();
+			if (editorShipVab) {
+				guiStyleButton = guiStyleButtonBold;
+			} else {
+				guiStyleButton = guiStyleButtonNorm;
+			}
+			if (GUILayout.Button ("VAB", guiStyleButton)) {
+				editorShipVab = true;
+			}
+
+			if (editorShipVab) {
+				guiStyleButton = guiStyleButtonNorm;
+			} else {
+				guiStyleButton = guiStyleButtonBold;
+			}
+			if (GUILayout.Button ("SPH", guiStyleButton)) {
+				editorShipVab = false;
+			}
+			GUILayout.EndHorizontal ();
+
+			GUILayout.BeginHorizontal ();
+			GUILayout.Space (35f);
+			if (editorShipRelay) {
+				guiStyleButton = guiStyleButtonNorm;
+			} else {
+				guiStyleButton = guiStyleButtonBold;
+			}
+			if (GUILayout.Button ("All", guiStyleButton)) {
+				editorShipRelay = false;
+			}
+
+			if (editorShipRelay) {
+				guiStyleButton = guiStyleButtonBold;
+			} else {
+				guiStyleButton = guiStyleButtonNorm;
+			}
+			if (GUILayout.Button ("Relay", guiStyleButton)) {
+				editorShipRelay = true;
+			}
+			GUILayout.Space (35f);
+			GUILayout.EndHorizontal ();
+
+			if (editorShipVab) {
+				if (editorShipRelay) {
+					guiListEditorShipDisplay = guiListEditorShipVabRelay;
+				} else {
+					guiListEditorShipDisplay = guiListEditorShipVabAll;
+				}
+			} else {
+				if (editorShipRelay) {
+					guiListEditorShipDisplay = guiListEditorShipSphRelay;
+				} else {
+					guiListEditorShipDisplay = guiListEditorShipSphAll;
 				}
 			}
+
+			scrollerEditorShipWindow = GUILayout.BeginScrollView (scrollerEditorShipWindow);
+
+			foreach (Dictionary <string, string> vesselInfo in guiListEditorShipDisplay) {
+				GUILayout.BeginHorizontal ();
+				if (GUILayout.Button ("Select", GUILayout.Width (60f))) {
+					targetPid = vesselInfo ["pid"];
+					ShowCircles ();
+				}
+
+				if (targetPid == vesselInfo ["pid"]) {
+					guiStyleLabel = guiStyleLabelBold;
+				} else {
+					guiStyleLabel = guiStyleLabelNorm;
+				}
+				string power;
+				if (editorShipRelay) {
+					power = AHUtil.TruePower (Double.Parse (vesselInfo ["powerRelay"])).ToString ();
+				} else {
+					power = AHUtil.TruePower (Double.Parse (vesselInfo ["powerTotal"])).ToString ();
+				}
+				GUILayout.Label ("(" + power + ")  " + vesselInfo ["name"], guiStyleLabel);
+
+				GUILayout.EndHorizontal ();
+			}
+
 			GUILayout.EndScrollView ();
 			GUILayout.EndVertical ();
 			GUI.DragWindow ();
@@ -348,20 +448,27 @@ namespace AntennaHelper
 
 		private void AddToolbarButton ()
 		{
-			toolbarButton = KSP.UI.Screens.ApplicationLauncher.Instance.AddModApplication (
-				ToolbarButtonOnTrue, 
-				ToolbarButtonOnFalse, 
-				null, 
-				null, 
-				null, 
-				null,
+			toolbarControl = gameObject.AddComponent<ToolbarControl> ();
+
+			toolbarControl.AddToAllToolbars (
+				ToolbarButtonOnTrue,
+				ToolbarButtonOnFalse,
 				KSP.UI.Screens.ApplicationLauncher.AppScenes.TRACKSTATION,
-				AHUtil.toolbarButtonTexOff);
+				"AntennaHelper",
+				"421980",
+				"AntennaHelper/Textures/icon_dish_on",
+				"AntennaHelper/Textures/icon_off",
+				"AntennaHelper/Textures/icon_dish_on_small",
+				"AntennaHelper/Textures/icon_dish_off_small",
+				"Antenna Helper");
+
+			toolbarControl.UseBlizzy (AHSettings.useBlizzyToolbar);
 		}
 
 		private void RemoveToolbarButton ()
 		{
-			KSP.UI.Screens.ApplicationLauncher.Instance.RemoveModApplication (toolbarButton);
+			toolbarControl.OnDestroy ();
+			Destroy (toolbarControl);
 		}
 
 //		public void Update ()
@@ -382,16 +489,8 @@ namespace AntennaHelper
 		{
 			if (listMarkers != null) {
 				mainWindowOn = true;
+				editorShipWindowOn = false;
 				ShowCircles ();
-
-				// Change the button texture :
-				if (UnityEngine.Random.Range (0, 2) == 1) {
-					toolbarButton.SetTexture (AHUtil.toolbarButtonTexSatOn);
-				} else {
-					toolbarButton.SetTexture (AHUtil.toolbarButtonTexDishOn);
-				}
-			} else {
-//				notVisitFlightWindowOn = true;
 			}
 		}
 
@@ -401,8 +500,6 @@ namespace AntennaHelper
 				mainWindowOn = false;
 				editorShipWindowOn = false;
 				HideCircles ();
-				// Change the button texture :
-				toolbarButton.SetTexture (AHUtil.toolbarButtonTexOff);
 			}
 
 		}

@@ -45,6 +45,10 @@
       <HintPath>..\..\..\..\KSP_Projects\KSP_devTest\KSP_x64_Data\Managed\UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="ToolbarControl">
+      <HintPath>..\..\KSP\GameData\001_ToolbarControl\Plugins\ToolbarControl.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

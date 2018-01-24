@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using ToolbarControl_NS;
 
 namespace AntennaHelper
 {
@@ -19,6 +20,8 @@ namespace AntennaHelper
 			targetName = "DSN Level " + (int)(trackingStationLevel * 2 + 1);
 
 			GetShipList ();
+
+			GetAntennaPartList ();
 
 			GameEvents.onGUIApplicationLauncherReady.Add (AddToolbarButton);
 			GameEvents.onGUIApplicationLauncherDestroyed.Add (RemoveToolbarButton);
@@ -108,6 +111,37 @@ namespace AntennaHelper
 		{
 			CreateAntennaList ();
 			DoTheMath ();
+		}
+
+		public void Update ()
+		{
+			if (showMainWindow && rectMainWindow.Contains (Mouse.screenPos)) {
+				InputLockManager.SetControlLock (
+					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE | ControlTypes.CAMERACONTROLS, 
+					"AntennaHelper_inputLock");
+			} else if (showPlanetWindow && rectPlanetWindow.Contains (Mouse.screenPos)) {
+				InputLockManager.SetControlLock (
+					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE | ControlTypes.CAMERACONTROLS, 
+					"AntennaHelper_inputLock");
+			} else if (showTargetWindow && rectTargetWindow.Contains (Mouse.screenPos)) {
+				InputLockManager.SetControlLock (
+					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE | ControlTypes.CAMERACONTROLS, 
+					"AntennaHelper_inputLock");
+			} else if (showTargetShipFlightWindow && rectTargetShipFlightWindow.Contains (Mouse.screenPos)) {
+				InputLockManager.SetControlLock (
+					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE | ControlTypes.CAMERACONTROLS, 
+					"AntennaHelper_inputLock");
+			} else if (showTargetShipEditorWindow && rectTargetShipEditorWindow.Contains (Mouse.screenPos)) {
+				InputLockManager.SetControlLock (
+					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE | ControlTypes.CAMERACONTROLS, 
+					"AntennaHelper_inputLock");
+			} else if (showTargetPartWindow && rectTargetPartWindow.Contains (Mouse.screenPos)) {
+				InputLockManager.SetControlLock (
+					ControlTypes.UI | ControlTypes.EDITOR_PAD_PICK_PLACE | ControlTypes.CAMERACONTROLS, 
+					"AntennaHelper_inputLock");
+			} else {
+				InputLockManager.RemoveControlLock ("AntennaHelper_inputLock");
+			}
 		}
 
 		#region Logic
@@ -343,18 +377,41 @@ namespace AntennaHelper
 
 		public static double targetPower = 0;
 		public static string targetName = "";
+		public static AHEditorTargetType targetType = AHEditorTargetType.DSN;
+		public static string targetPid = "";
 
 		public static void SetTarget (float dsnL)
 		{
 			targetPower = GameVariables.Instance.GetDSNRange (dsnL);
 			targetName = "DSN Level " + (int)((dsnL * 2) + 1);
+			targetType = AHEditorTargetType.DSN;
+			targetPid = "";
 			instance.DoTheMath ();
 		}
 
-		public static void SetTarget (KeyValuePair<string, Dictionary <string, string>> relay)
+		public static void SetTarget (string pid)
 		{
-			targetPower = AHUtil.TruePower (Double.Parse (relay.Value ["powerRelay"]));
-			targetName = "Vessel : " + relay.Value ["name"];
+			Dictionary<string, string> targetDict;
+			if (externListShipEditor.ContainsKey (pid)) {
+				targetDict = externListShipEditor [pid];
+				targetType = AHEditorTargetType.EDITOR;
+			} else {
+				targetDict = externListShipFlight [pid];
+				targetType = AHEditorTargetType.FLIGHT;
+			}
+
+			targetPower = AHUtil.TruePower (Double.Parse (targetDict ["powerRelay"]));
+			targetName = "Vessel : " + targetDict ["name"];
+			targetPid = pid;
+			instance.DoTheMath ();
+		}
+
+		public static void SetTargetAsPart ()
+		{
+			targetPower = targetPartPower;
+			targetName = "Set of user defined parts";
+			targetType = AHEditorTargetType.PART;
+			targetPid = "";
 			instance.DoTheMath ();
 		}
 
@@ -446,12 +503,90 @@ namespace AntennaHelper
 
 		}
 
+		public static void RemoveShipFromShipList (string pid)
+		{
+			AHShipList.RemoveShip (pid);
+
+			instance.GetShipList ();
+		}
+
 		private void GetShipList ()
 		{
 			externListShipEditor = AHShipList.GetShipList (true, false);
 			externListShipFlight = AHShipList.GetShipList (false, true);
-			Debug.Log ("[AH] there is " + externListShipEditor.Count + " ships in the ship list");
+			GetGUIShipList ();
 		}
+
+		public static List<Dictionary<string, string>> guiExternListShipEditorVabAll;
+		public static List<Dictionary<string, string>> guiExternListShipEditorSphAll;
+		public static List<Dictionary<string, string>> guiExternListShipEditorVabRelay;
+		public static List<Dictionary<string, string>> guiExternListShipEditorSphRelay;
+		public static List<Dictionary<string, string>> guiExternListShipFlight;
+		private void GetGUIShipList ()
+		{
+			List<Dictionary<string, string>> guiExternListShipEditor = AHShipList.GetShipListAsList (true);
+
+			guiExternListShipEditorVabAll = AHShipList.GetShipListAsList (true, false, "VAB");
+			guiExternListShipEditorVabRelay = AHShipList.GetShipListAsList (true, true, "VAB");
+			guiExternListShipEditorSphAll = AHShipList.GetShipListAsList (true, false, "SPH");
+			guiExternListShipEditorSphRelay = AHShipList.GetShipListAsList (true, true, "SPH");
+
+			guiExternListShipFlight = AHShipList.GetShipListAsList (false);
+		}
+		#endregion
+
+		#region partList
+		public static Dictionary<ModuleDataTransmitter, int> listAntennaPart;
+		public static double targetPartPower = 0;
+
+		private void GetAntennaPartList ()
+		{
+			listAntennaPart = new Dictionary<ModuleDataTransmitter, int> ();
+
+			foreach (ModuleDataTransmitter antenna in AHShipList.listAntennaPart) {
+				if (antenna.antennaType == AntennaType.RELAY) {
+					listAntennaPart.Add (antenna, 0);
+				}
+			}
+		}
+
+		public static void UpdateTargetPartPower ()
+		{
+			List<ModuleDataTransmitter> antennas = new List<ModuleDataTransmitter> ();
+			double bestAntenna = 0;
+
+
+
+			foreach (ModuleDataTransmitter antenna in AHShipList.listAntennaPart) {
+				
+				if (!listAntennaPart.ContainsKey (antenna)) {
+					continue;
+				}
+
+				if (listAntennaPart [antenna] <= 0) {
+					listAntennaPart [antenna] = 0;
+					continue;
+				}
+
+				if (antenna.antennaPower > bestAntenna) {
+					bestAntenna = antenna.antennaPower;
+				}
+
+				for (int i = 0 ; i < listAntennaPart [antenna] ; i++) {
+					antennas.Add (antenna);
+				}
+			}
+			double combPower = AHUtil.GetVesselPower (antennas, true);
+			bestAntenna = AHUtil.TruePower (bestAntenna);
+			if (combPower > bestAntenna) {
+				targetPartPower = combPower;
+			} else {
+				targetPartPower = bestAntenna;
+			}
+
+			SetTargetAsPart ();
+		}
+
 		#endregion
 
 		#region GUI
@@ -475,17 +610,15 @@ namespace AntennaHelper
 			showTargetWindow = false;
 			CloseTargetShipEditorWindow ();
 			CloseTargetShipFlightWindow ();
+			CloseTargetPartWindow ();
 		}
 
 		public static bool showTargetShipEditorWindow = false;
 		public static Rect rectTargetShipEditorWindow = 
 			new Rect (new Vector2 (rectTargetWindow.position.x, rectTargetWindow.position.y + rectTargetWindow.height)
-				, new Vector2 (400, 80));
+				, new Vector2 (400, 150));
 		public static void CloseTargetShipEditorWindow ()
 		{
-//			if (showTargetWindow) {
-//				AHSettings.SavePosition ("target_window_position", rectTargetWindow.position);
-//			}
 			showTargetShipEditorWindow = false;
 		}
 
@@ -493,10 +626,14 @@ namespace AntennaHelper
 		public static Rect rectTargetShipFlightWindow = new Rect (rectTargetShipEditorWindow);
 		public static void CloseTargetShipFlightWindow ()
 		{
-//			if (showTargetWindow) {
-//				AHSettings.SavePosition ("target_window_position", rectTargetWindow.position);
-//			}
 			showTargetShipFlightWindow = false;
+		}
+
+		public static bool showTargetPartWindow = false;
+		public static Rect rectTargetPartWindow = new Rect (rectTargetShipEditorWindow);
+		public static void CloseTargetPartWindow ()
+		{
+			showTargetPartWindow = false;
 		}
 
 		public static bool showPlanetWindow = false;
@@ -548,6 +685,12 @@ namespace AntennaHelper
 				rectTargetShipFlightWindow = GUILayout.Window (892715, rectTargetShipFlightWindow, AHEditorWindows.TargetWindowShipFlight, "In-Flight Ship", GUILayout.MinHeight (rectTargetWindow.height));
 				GUILayout.EndArea ();
 			}
+			if (showTargetPartWindow) {
+				rectTargetPartWindow.position = ExtendWindowPos (rectTargetWindow);
+				GUILayout.BeginArea (rectTargetPartWindow);
+				rectTargetPartWindow = GUILayout.Window (595592, rectTargetPartWindow, AHEditorWindows.TargetWindowPart, "Antenna Parts List", GUILayout.MinHeight (rectTargetWindow.height));
+				GUILayout.EndArea ();
+			}
 			if (showPlanetWindow) {
 				GUILayout.BeginArea (rectPlanetWindow);
 				rectPlanetWindow = GUILayout.Window (332980, rectPlanetWindow, AHEditorWindows.PlanetWindow, "Signal Strength / Distance");
@@ -557,19 +700,25 @@ namespace AntennaHelper
 		#endregion
 
 		#region ToolbarButton
-		private KSP.UI.Screens.ApplicationLauncherButton toolbarButton;
+		private ToolbarControl toolbarControl;
 
 		private void AddToolbarButton ()
 		{
-			toolbarButton = KSP.UI.Screens.ApplicationLauncher.Instance.AddModApplication (
-				ToolbarButtonOnTrue, 
-				ToolbarButtonOnFalse, 
-				AHUtil.DummyVoid, 
-				AHUtil.DummyVoid, 
-				AHUtil.DummyVoid, 
-				AHUtil.DummyVoid,
+			toolbarControl = gameObject.AddComponent<ToolbarControl> ();
+
+			toolbarControl.AddToAllToolbars (
+				ToolbarButtonOnTrue,
+				ToolbarButtonOnFalse,
 				KSP.UI.Screens.ApplicationLauncher.AppScenes.VAB | KSP.UI.Screens.ApplicationLauncher.AppScenes.SPH,
-				AHUtil.toolbarButtonTexOff);
+				"AntennaHelper",
+				"823779",
+				"AntennaHelper/Textures/icon_dish_on",
+				"AntennaHelper/Textures/icon_off",
+				"AntennaHelper/Textures/icon_dish_on_small",
+				"AntennaHelper/Textures/icon_dish_off_small",
+				"Antenna Helper");
+			
+			toolbarControl.UseBlizzy (AHSettings.useBlizzyToolbar);
 		}
 
 		private void RemoveToolbarButton ()
@@ -579,27 +728,31 @@ namespace AntennaHelper
 			ClosePlanetWindow ();
 			CloseTargetShipEditorWindow ();
 			CloseTargetShipFlightWindow ();
-			KSP.UI.Screens.ApplicationLauncher.Instance.RemoveModApplication (toolbarButton);
+			CloseTargetPartWindow ();
+
+			toolbarControl.OnDestroy ();
+			Destroy (toolbarControl);
 		}
 
 		private void ToolbarButtonOnTrue ()
 		{
-			ToggleWindows ();
+			showMainWindow = true;
 
-			// Change the button texture :
-			if (UnityEngine.Random.Range (0, 2) == 1) {
-				toolbarButton.SetTexture (AHUtil.toolbarButtonTexSatOn);
-			} else {
-				toolbarButton.SetTexture (AHUtil.toolbarButtonTexDishOn);
-			}
+			CloseTargetWindow ();
+			ClosePlanetWindow ();
+			CloseTargetShipEditorWindow ();
+			CloseTargetShipFlightWindow ();
+			CloseTargetPartWindow ();
 		}
 
 		private void ToolbarButtonOnFalse ()
 		{
-			ToggleWindows ();
-
-			// Change the button texture :
-			toolbarButton.SetTexture (AHUtil.toolbarButtonTexOff);
+			CloseMainWindow ();
+			CloseTargetWindow ();
+			ClosePlanetWindow ();
+			CloseTargetShipEditorWindow ();
+			CloseTargetShipFlightWindow ();
+			CloseTargetPartWindow ();
 		}
 
 		private void ToggleWindows ()
@@ -610,18 +763,29 @@ namespace AntennaHelper
 			if (showMainWindow 
 				|| showTargetWindow 
 				|| showPlanetWindow 
-				|| showTargetShipEditorWindow || showTargetShipFlightWindow) {
+				|| showTargetShipEditorWindow 
+				|| showTargetShipFlightWindow 
+				|| showTargetPartWindow) {
 
 				CloseMainWindow ();
 				CloseTargetWindow ();
 				ClosePlanetWindow ();
 				CloseTargetShipEditorWindow ();
 				CloseTargetShipFlightWindow ();
+				CloseTargetPartWindow ();
 			} else {
 				showMainWindow = true;
 			}
 		}
 		#endregion
+	}
+
+	public enum AHEditorTargetType
+	{
+		DSN,
+		FLIGHT,
+		EDITOR,
+		PART
 	}
 }
 
