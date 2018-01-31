@@ -454,12 +454,15 @@ namespace AntennaHelper
 	[KSPAddon (KSPAddon.Startup.TrackingStation, false)]
 	public class AHShipListListenerTR : MonoBehaviour
 	{
+		private bool isReady = false;
 
 		public void Start ()
 		{
 			AHShipList.shipListReady = false;
 
 			GameEvents.CommNet.OnCommStatusChange.Add (CommNetChange);
+
+			StartCoroutine ("ParseVesselsConnection");
 		}
 
 		public void OnDestroy ()
@@ -469,41 +472,68 @@ namespace AntennaHelper
 
 		private void CommNetChange (Vessel v, bool b)
 		{
-			StartCoroutine ("CommNetChangeCoroutine", v);
+//			Debug.Log ("[AH] CommNet Update for vessel : " + v.GetName ());
+
+			if (isReady) {
+				StartCoroutine ("ParseOneVesselConnection", v);
+			}
 		}
 
-		private IEnumerator CommNetChangeCoroutine (Vessel v)
+		private IEnumerator ParseOneVesselConnection (Vessel v)
 		{
-			// add the real signal now
-			yield return new WaitForSeconds (.1f);
+			isReady = false;
+			AHShipList.shipListReady = false;
+
+			yield return new WaitForSeconds (.2f);
+
 			MapObject originalTarget = PlanetariumCamera.fetch.target;
 			float originalDistance = PlanetariumCamera.fetch.Distance;
 
 			PlanetariumCamera.fetch.SetTarget (v.mapObject);
-
 			PlanetariumCamera.fetch.SetTarget (originalTarget);
 			PlanetariumCamera.fetch.SetDistance (originalDistance);
 
+			yield return new WaitForSeconds (.2f);
+
 			AHShipList.ComputeRealSignal (v);
 
-			if (AllVesselAreUpToDate ()) {
-				yield return new WaitForSeconds (.1f);
-				AHShipList.ComputeAllSignal ();
-				AHShipList.shipListReady = true;
-			}
+			AHShipList.shipListReady = true;
+			isReady = true;
 		}
 
-		private bool AllVesselAreUpToDate ()
+		private IEnumerator ParseVesselsConnection ()
 		{
-			foreach (KeyValuePair<string, Dictionary<string, string>> kvp in AHShipList.GetShipList (false, true)) {
-				if (kvp.Value ["realSignal"] == "") {
-					return false;
-				}
+			Dictionary<string, Dictionary<string, string>> ahShipList = AHShipList.GetShipList (false, true);
+			List<Vessel> vesselList = FlightGlobals.Vessels.FindAll (v => ahShipList.ContainsKey (v.id.ToString ()));
+//			WaitForSeconds timer = new WaitForSeconds (.2f);
+
+			yield return new WaitForSeconds (.6f);
+			MapObject originalTarget = PlanetariumCamera.fetch.target;
+			float originalDistance = PlanetariumCamera.fetch.Distance;
+
+			foreach (Vessel v in vesselList) {
+				PlanetariumCamera.fetch.SetTarget (v.mapObject);
 			}
-			foreach (KeyValuePair<string, Dictionary<string, string>> kvp in AHShipList.GetShipList (false, true)) {
-				AHShipList.ComputeRealSignal (FlightGlobals.Vessels.Find (v => v.id.ToString () == kvp.Key));
+			PlanetariumCamera.fetch.SetTarget (originalTarget);
+			PlanetariumCamera.fetch.SetDistance (originalDistance);
+
+			yield return new WaitForSeconds (.2f);
+
+			foreach (Vessel v in vesselList) {
+//				Debug.Log ("[AH] Computing real signal for : " + v.GetName ());
+				AHShipList.ComputeRealSignal (v);
 			}
-			return true;
+
+			isReady = true;
+			AHShipList.shipListReady = true;
+//			Debug.Log ("[AH] shipList is now ready");
+//			foreach (KeyValuePair<string, Dictionary<string, string>> kvp in AHShipList.GetShipList (false, true)) {
+//				Debug.Log ("[AH]");
+//				foreach (KeyValuePair<string, string> kvp2 in kvp.Value) {
+//					Debug.Log ("[AH] " + kvp2.Key + " : " + kvp2.Value);
+//				}
+//				Debug.Log ("[AH]");
+//			}
 		}
 	}
 }

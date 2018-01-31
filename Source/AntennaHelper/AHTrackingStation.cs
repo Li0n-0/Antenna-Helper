@@ -17,6 +17,8 @@ namespace AntennaHelper
 		private float trackingStationLvl;
 		private double dsnPower;
 
+		private WaitForSeconds waitFor;
+
 		// GUI
 		private ToolbarControl toolbarControl;
 		private Rect rectMainWindow, rectEditorShipWindow;
@@ -36,6 +38,8 @@ namespace AntennaHelper
 
 			trackingStationLvl = ScenarioUpgradeableFacilities.GetFacilityLevel (SpaceCenterFacility.TrackingStation);
 			dsnPower = GameVariables.Instance.GetDSNRange (trackingStationLvl);
+
+			waitFor = new WaitForSeconds (.1f);
 
 			GameEvents.onPlanetariumTargetChanged.Add (NewTarget);
 			GameEvents.OnMapFocusChange.Add (NewTarget);
@@ -102,19 +106,33 @@ namespace AntennaHelper
 
 		private void CommNetUpdate (Vessel v, bool b)
 		{
-			StartCoroutine ("CommNetUpdateCoroutine");
+//			Debug.Log ("[AH] CommNet Update fired");
+			if (!inCoroutine) {
+				StartCoroutine ("CommNetUpdateCoroutine");
+			}
 		}
 
+		private bool inCoroutine = false;
 		private IEnumerator CommNetUpdateCoroutine ()
 		{
-			yield return new WaitForSeconds (.5f);
-			if (AHShipList.shipListReady) {
-				if (listMarkers != null) {
-					DestroyMarkers ();
-				}
-				GetListsShip ();
-				CreateMarkers ();
+			inCoroutine = true;
+
+			yield return waitFor;
+
+			while (!AHShipList.shipListReady) {
+				yield return waitFor;
 			}
+
+//			Debug.Log ("[AH] ship list is ready");
+
+			if (listMarkers != null) {
+				DestroyMarkers ();
+			}
+
+			GetListsShip ();
+			CreateMarkers ();
+
+			inCoroutine = false;
 		}
 
 		private void GetListShipTransmitter ()
