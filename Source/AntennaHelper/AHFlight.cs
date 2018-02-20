@@ -63,7 +63,7 @@ namespace AntennaHelper
 
 		private IEnumerator StartSecond ()
 		{
-			while (Time.time < timeAtStart + .5f) {
+			while (Time.time < timeAtStart + 1f) {
 				yield return timers [0];
 			}
 
