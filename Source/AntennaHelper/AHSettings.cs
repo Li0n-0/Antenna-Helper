@@ -6,29 +6,41 @@ namespace AntennaHelper
 	public static class AHSettings
 	{
 		private static ConfigNode settingsNode;
-//		private static ConfigNode nodeEditor;
-		private static ConfigNode nodePositionEditor;
+
+		private static ConfigNode nodePosWindows;
 		private static ConfigNode nodeBlizzyToolbar;
 
+		// Editor
 		public static Vector2 posMainWindow = new Vector2 (Screen.width / 2f, Screen.height / 2f);
 		public static Vector2 posTargetWindow = new Vector2 (Screen.width / 2f - 400f, Screen.height / 2f);
 		public static Vector2 posPlanetWindow = new Vector2 (Screen.width / 2f + 400f, Screen.height / 2f);
 
+		// Flight
+		public static Vector2 posFlightMainWindow = new Vector2 (Screen.width / 2f, Screen.height / 2f);
+		public static Vector2 posFlightMapViewWindow = new Vector2 ((Screen.width / 2f + 300f), (Screen.height / 2f));
+
 		public static bool useBlizzyToolbar = false;
 
 		static AHSettings ()
+		{
+			Load ();
+
+			WriteSave ();
+		}
+
+		public static void Load ()
 		{
 			// Check for the settings file
 			settingsNode = ConfigNode.Load (KSPUtil.ApplicationRootPath + "GameData/AntennaHelper/PluginData/Settings.cfg");
 			if (settingsNode == null) {
 				settingsNode = new ConfigNode ();
 			}
-		
+
 			// Check for nodes in settings file
-			if (! settingsNode.HasNode("Editor_Window_Position")) {
-				settingsNode.AddNode ("Editor_Window_Position");
+			if (! settingsNode.HasNode("Windows_Position")) {
+				settingsNode.AddNode ("Windows_Position");
 			}
-			nodePositionEditor = settingsNode.GetNode ("Editor_Window_Position");
+			nodePosWindows = settingsNode.GetNode ("Windows_Position");
 
 			if (! settingsNode.HasNode ("Blizzy_Toolbar")) {
 				settingsNode.AddNode ("Blizzy_Toolbar");
@@ -36,39 +48,49 @@ namespace AntennaHelper
 			nodeBlizzyToolbar = settingsNode.GetNode ("Blizzy_Toolbar");
 
 			// Check for value in nodes
-				// Editor window position
-			if (nodePositionEditor.HasValue ("main_window_position")) {
-				posMainWindow = ConfigNode.ParseVector2 (nodePositionEditor.GetValue ("main_window_position"));
+			// Editor window position
+			if (nodePosWindows.HasValue ("editor_main_window_position")) {
+				posMainWindow = ConfigNode.ParseVector2 (nodePosWindows.GetValue ("editor_main_window_position"));
 			}
-			nodePositionEditor.SetValue ("main_window_position", posMainWindow, true);
+			nodePosWindows.SetValue ("editor_main_window_position", posMainWindow, true);
 
-			if (nodePositionEditor.HasValue ("target_window_position")) {
-				posTargetWindow = ConfigNode.ParseVector2 (nodePositionEditor.GetValue ("target_window_position"));
+			if (nodePosWindows.HasValue ("editor_target_window_position")) {
+				posTargetWindow = ConfigNode.ParseVector2 (nodePosWindows.GetValue ("editor_target_window_position"));
 			}
-			nodePositionEditor.SetValue ("target_window_position", posTargetWindow, true);
+			nodePosWindows.SetValue ("editor_target_window_position", posTargetWindow, true);
 
-			if (nodePositionEditor.HasValue ("signal_strenght_per_planet_window_position")) {
-				posPlanetWindow = ConfigNode.ParseVector2 (nodePositionEditor.GetValue ("signal_strenght_per_planet_window_position"));
+			if (nodePosWindows.HasValue ("editor_signal_strenght_per_planet_window_position")) {
+				posPlanetWindow = ConfigNode.ParseVector2 (nodePosWindows.GetValue ("editor_signal_strenght_per_planet_window_position"));
 			}
-			nodePositionEditor.SetValue ("signal_strenght_per_planet_window_position", posPlanetWindow, true);
+			nodePosWindows.SetValue ("editor_signal_strenght_per_planet_window_position", posPlanetWindow, true);
 
-				// Blizzy toolbar
+			// Flight window position
+			if (nodePosWindows.HasValue ("flight_main_window_position")) {
+				posFlightMainWindow = ConfigNode.ParseVector2 (nodePosWindows.GetValue ("flight_main_window_position"));
+			}
+			nodePosWindows.SetValue ("flight_main_window_position", posFlightMainWindow, true);
+
+			if (nodePosWindows.HasValue ("flight_map_view_window_position")) {
+				posFlightMapViewWindow = ConfigNode.ParseVector2 (nodePosWindows.GetValue ("flight_map_view_window_position"));
+			}
+			nodePosWindows.SetValue ("flight_map_view_window_position", posFlightMapViewWindow, true);
+
+			// Blizzy toolbar
 			if (nodeBlizzyToolbar.HasValue ("use_blizzy_toolbar")) {
 				useBlizzyToolbar = bool.Parse (nodeBlizzyToolbar.GetValue ("use_blizzy_toolbar"));
 			}
 			nodeBlizzyToolbar.SetValue ("use_blizzy_toolbar", useBlizzyToolbar, true);
-
-			WriteSave ();
 		}
 
 		public static void SavePosition (string windowName, Vector2 position)
 		{
-			nodePositionEditor.SetValue (windowName, position, true);
+			nodePosWindows.SetValue (windowName, position, true);
 		}
 
 		public static void WriteSave ()
 		{
 			settingsNode.Save (KSPUtil.ApplicationRootPath + "GameData/AntennaHelper/PluginData/Settings.cfg");
+			Load ();
 		}
 	}
 }
