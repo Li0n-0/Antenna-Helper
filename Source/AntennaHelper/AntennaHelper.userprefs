@@ -1,17 +1,25 @@
 ﻿<Properties StartupItem="AntennaHelper.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="AHShipList.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="AHFlightDEV.cs">
     <Files>
-      <File FileName="AHEditorWindows.cs" Line="280" Column="6" />
-      <File FileName="AHShipList.cs" Line="491" Column="16" />
-      <File FileName="AHMapMarker.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="AHUtil.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="AHMapViewWindow.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="AHSettings.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="AHTrackingStation.cs" Line="105" Column="41" NotebookId="1" />
+      <File FileName="AHEditorWindows.cs" Line="174" Column="5" NotebookId="1" />
+      <File FileName="AHShipList.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="AHFlight.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="AHEditor.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="AHMapMarker.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="AHUtil.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="AHMapViewWindow.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="AHSettings.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="AHTrackingStation.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="AHEditor.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="AHFlightDEV.cs" Line="366" Column="88" NotebookId="2" />
     </Files>
+    <FloatingWindows>
+      <FloatingWindow WindowId="1" X="1920" Y="0" Width="1408" Height="1048">
+        <Files>
+          <File FileName="AHFlightWindow.cs" Line="158" Column="116" />
+        </Files>
+      </FloatingWindow>
+    </FloatingWindows>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />

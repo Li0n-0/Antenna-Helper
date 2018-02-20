@@ -15,6 +15,8 @@ namespace AntennaHelper
 		private bool forTrackingStation;
 		private double maxRange;
 
+		public double scale;
+
 		void Start ()
 		{
 			TimingManager.LateUpdateAdd (TimingManager.TimingStage.BetterLateThanNever, DoUpdate);
@@ -172,6 +174,8 @@ namespace AntennaHelper
 				scaleYellow = AHUtil.GetMapScale (AHUtil.GetDistanceFor (50, maxRange));
 				scaleOrange = AHUtil.GetMapScale (AHUtil.GetDistanceFor (25, maxRange));
 			}
+
+			scale = sS;
 		}
 
 		#region Hide/Show

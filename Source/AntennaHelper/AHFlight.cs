@@ -1,451 +1,544 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using UnityEngine;
-using ToolbarControl_NS;
 
 namespace AntennaHelper
 {
 	[KSPAddon (KSPAddon.Startup.Flight, false)]
-	public class AHFlight : MonoBehaviour
+	public partial class AHFlight : MonoBehaviour
 	{
-		// UI Stuff :
-		public static GUICircleSelection guiCircle;
-		public static Rect windowRect = new Rect (Vector2.zero, new Vector2 (138, 154));
-
-		private static AHFlight instance;
-
-		private float timeAtStart;
 		private Vessel vessel;
-		private double antennaPower;
+		private bool connectedToDSN;
+		private Vessel connectedTo;
+		private double vesselPower, vesselPowerRelay;
 		private Dictionary<ModuleDeployableAntenna, bool> deployableAntennas;
 
-		// GameObjects saves :
-		private List<GameObject> allRelay = new List<GameObject> ();
-		private GameObject activeConnect;
-		private GameObject DSNConnect;
+		private CelestialBody dsnBody;
+		private double dsnPower;
+		private double dsnRange;
 
-		// UI stuff :
-		private bool isToolbarOn = false;
-		private bool toolbarButtonAdded = false;
-		private ToolbarControl toolbarControl;
+		private double targetPower;
+		private double targetMaxRange;
+		private double targetDistance;
+		private double sSToTarget;
+		private double sSTargetToDSN;
+		private double sSToDSN;
+
+		Dictionary<Vessel, LinkPath> relays;
+
+		Dictionary<Vessel, AHMapMarker> markersRelay;
+		AHMapMarker markerDSN;
+
+		private float timeAtStart;
+		private bool hasStarted = false;
+		private List<WaitForSeconds> timers;
+		private bool inMapView = false;
+		private bool doMath = false;
 
 
-		public void Start ()
+		#region Starters
+		void Start ()
 		{
-			instance = this;
-			vessel = FlightGlobals.ActiveVessel;
-			guiCircle = GUICircleSelection.ACTIVE;
 			timeAtStart = Time.time;
+			timers = new List<WaitForSeconds> ();
+			timers.Add (new WaitForSeconds (.1f));
+			timers.Add (new WaitForSeconds (.5f));
+
+			dsnBody = FlightGlobals.GetHomeBody ();
+			dsnPower = GameVariables.Instance.GetDSNRange 
+				(ScenarioUpgradeableFacilities.GetFacilityLevel 
+					(SpaceCenterFacility.TrackingStation));
 
 			GameEvents.onGUIApplicationLauncherDestroyed.Add (RemoveToolbarButton);
 
+			GameEvents.onVesselWasModified.Add (VesselModified);
 			GameEvents.onVesselSwitching.Add (VesselSwitch);
 
-			// for the map view gui :
-			GameEvents.OnMapEntered.Add (MapEnter);
-			GameEvents.OnMapExited.Add (MapExit);
+			GameEvents.OnMapEntered.Add (EnteringMap);
+			GameEvents.OnMapExited.Add (ExitingMap);
 
-			GameEvents.onVesselWasModified.Add (VesselModified);
-
-			StartCoroutine ("WaitAtStart");
+			StartCoroutine ("StartSecond");
 		}
 
-		public void OnDestroy ()
+		private IEnumerator StartSecond ()
 		{
-			DestroyMarker ();
-			// Toolbar button
+			while (Time.time < timeAtStart + .5f) {
+				yield return timers [0];
+			}
+
+			vessel = FlightGlobals.ActiveVessel;
+			vesselPower = AHUtil.GetActualVesselPower (vessel);
+			vesselPowerRelay = AHUtil.GetActualVesselPower (vessel, true);
+			dsnRange = AHUtil.GetRange (vesselPower, dsnPower);
+			SetDeployableAntennaList ();
+
+			SetRelayList ();
+			SetActiveConnect ();
+			yield return SetMarkerList ();
+			AddToolbarButton ();
+			StartCoroutine ("UpdateCommNet");
+		}
+
+		private void SetActiveConnect ()
+		{
+			if (vessel.Connection == null || !vessel.Connection.IsConnected) {
+				connectedToDSN = false;
+				connectedTo = null;
+				targetPower = 0;
+				targetMaxRange = 0;
+				targetDistance = 0;
+				sSToTarget = 0;
+				sSTargetToDSN = 0;
+				sSToDSN = 0;
+			} else if (vessel.Connection.ControlPath [0].b.isHome) {
+				connectedToDSN = true;
+				connectedTo = null;
+				targetPower = dsnPower;
+				targetMaxRange = dsnRange;
+				targetDistance = Vector3.Distance (vessel.GetWorldPos3D (), Relay.DSN.position) - Relay.DSN.distanceOffset;
+				targetDistance = (targetDistance < 0) ? 0 : targetDistance;
+				sSToTarget = AHUtil.GetSignalStrength (targetMaxRange, targetDistance);
+				sSTargetToDSN = 0;
+				sSToDSN = sSToTarget;
+			} else {
+				connectedToDSN = false;
+				connectedTo = vessel.Connection.ControlPath [0].b.transform.GetComponent<Vessel> ();
+				targetPower = relays [connectedTo].linkList [0].relayA.relayPower;
+				targetMaxRange = AHUtil.GetRange (vesselPower, relays [connectedTo].endRelayPower);
+				targetDistance = Vector3.Distance (vessel.vesselTransform.position, connectedTo.vesselTransform.position);
+				sSToTarget = AHUtil.GetSignalStrength (targetMaxRange, targetDistance);
+				sSTargetToDSN = relays [connectedTo].endRelaySignalStrength;
+				sSToDSN = sSToTarget * sSTargetToDSN;
+			}
+		}
+
+		private void SetRelayList ()
+		{
+			relays = new Dictionary<Vessel, LinkPath> ();
+
+			foreach (Vessel relay in FlightGlobals.Vessels.FindAll 
+				(v => (v.vesselType == VesselType.Relay) && (v.Connection.IsConnected) && (v != vessel)))
+			{
+				relays.Add (relay, new LinkPath (relay));
+			}
+		}
+
+		private void SetDeployableAntennaList ()
+		{
+			deployableAntennas = new Dictionary<ModuleDeployableAntenna, bool> ();
+
+			foreach (Part part in vessel.Parts.FindAll (
+				p => (p.Modules.Contains<ModuleDataTransmitter> ()) && (p.Modules.Contains<ModuleDeployableAntenna> ())))
+			{
+				bool extended = true;
+				ModuleDeployableAntenna deployable = part.Modules.GetModule<ModuleDeployableAntenna> ();
+
+				if (deployable.deployState != ModuleDeployablePart.DeployState.EXTENDED) {
+					extended = false;
+				}
+				deployableAntennas.Add (deployable, extended);
+			}
+		}
+
+		private IEnumerator SetMarkerList ()
+		{
+			markerDSN = CreateMapMarkerDSN ();
+
+			markersRelay = new Dictionary<Vessel, AHMapMarker> ();
+
+			foreach (KeyValuePair<Vessel, LinkPath> relay in relays) {
+				yield return timers [0];
+				markersRelay.Add (relay.Key, CreateMapMarkerRelay (relay.Key));
+			}
+
+		}
+
+		private AHMapMarker CreateMapMarkerRelay (Vessel relay)
+		{
+			double realSignal = relays [relay].endRelaySignalStrength;//AHUtil.GetREALSignal (relay.Connection.ControlPath);
+			double range = AHUtil.GetDistanceAt0 
+							(AHUtil.GetRange (vesselPower, relays [relay].endRelayPower));
+			AHMapMarker marker = new GameObject ().AddComponent<AHMapMarker> ();
+			marker.SetUp (range, vessel, relay.mapObject.trf, false, realSignal);
+
+
+			return marker;
+		}
+
+		private AHMapMarker CreateMapMarkerDSN ()
+		{
+			AHMapMarker marker = new GameObject ().AddComponent<AHMapMarker> ();
+			marker.SetUp (dsnRange, vessel, dsnBody.MapObject.trf, true, 1d);
+			return marker;
+		}
+		#endregion
+
+		#region Destroyers
+		void OnDestroy ()
+		{
+			// Save windows position :
+			AHSettings.SavePosition ("flight_main_window_position", rectActiveConnectWindow.position);
+			AHSettings.SavePosition ("flight_map_view_window_position", rectSelectCircleTypeWindow.position);
+			AHSettings.WriteSave ();
+
+			DestroyMarkers ();
 			RemoveToolbarButton ();
 
 			GameEvents.onGUIApplicationLauncherDestroyed.Remove (RemoveToolbarButton);
 
+			GameEvents.onVesselWasModified.Remove (VesselModified);
 			GameEvents.onVesselSwitching.Remove (VesselSwitch);
 
-			// for the map view gui :
-			GameEvents.OnMapEntered.Remove (MapEnter);
-			GameEvents.OnMapExited.Remove (MapExit);
-
-			GameEvents.onVesselWasModified.Remove (VesselModified);
-		}
-		private bool inMapView = false;
-		private void MapEnter ()
-		{
-			inMapView = true;
+			GameEvents.OnMapEntered.Remove (EnteringMap);
+			GameEvents.OnMapExited.Remove (ExitingMap);
 		}
 
-		private void MapExit ()
+		private void DestroyMarkers ()
 		{
-			inMapView = false;
-		}
+			if (markerDSN != null) {
+				Destroy (markerDSN.gameObject);
+			}
 
-		private void DestroyMarker ()
-		{
-			StopCoroutine ("WaitAtStart");
-			StopCoroutine ("UpdateCheckExtend");
-			Destroy (activeConnect);
-			Destroy (DSNConnect);
-			foreach (GameObject gO in allRelay) {
-				Destroy (gO);
+			foreach (KeyValuePair<Vessel, AHMapMarker> marker in markersRelay) {
+				if (marker.Value != null) {
+					Destroy (marker.Value.gameObject);
+				}
+
 			}
 		}
+		#endregion
+
+		#region AntennaLookOut
 
 		private void VesselSwitch (Vessel fromVessel, Vessel toVessel)
 		{
-			StopCoroutine ("WaitAtStart");
-			StopCoroutine ("UpdateCheckExtend");
+			StopAllCoroutines ();
 			Destroy (this);
 		}
 
 		private void VesselModified (Vessel v = null)
 		{
-			double newPower = GetActualVesselPower (FlightGlobals.ActiveVessel);
-			if (newPower != antennaPower) {
-				DestroyMarker ();
-				vessel = FlightGlobals.ActiveVessel;
+			double actualPower = AHUtil.GetActualVesselPower (FlightGlobals.ActiveVessel);
+
+			if (actualPower != vesselPower) {
+				hasStarted = false;
+				StopAllCoroutines ();
+				DestroyMarkers ();
 				timeAtStart = Time.time;
-				StartCoroutine ("WaitAtStart");
+				StartCoroutine ("StartSecond");
 			}
 		}
 
-		private IEnumerator WaitAtStart ()
+		private IEnumerator UpdateCommNet ()
 		{
-			if (toolbarButtonAdded) {
-				RemoveToolbarButton ();
-			}
-			while (Time.time < timeAtStart + .5f) {
-				yield return new WaitForSeconds (.1f);
-			}
-			SetMapMarker ();
-			AddToolbarButton ();
-		}
+			List<Vessel> relayList = FlightGlobals.Vessels.FindAll (
+				                         v => ((v.vesselType == VesselType.Relay) 
+				                         && (v.Connection.IsConnected) 
+				                         && (v != vessel)));
 
-		private IEnumerator UpdateCheckExtend ()
-		{
 			while (true) {
+				// Check relay state
+				foreach (Vessel relay in relayList) 
+				{
+//					relaySS = AHUtil.GetREALSignal (relay.Connection.ControlPath);
+
+					if ((relays [relay].endRelaySignalStrength > markersRelay [relay].scale + .01d) 
+						|| (relays [relay].endRelaySignalStrength < markersRelay [relay].scale - .01d))
+					{
+						markersRelay [relay].SetScale (relays [relay].endRelaySignalStrength);
+					}
+					yield return timers [0];
+				}
+				// Check Active Connect state
+				SetActiveConnect ();
+
+				// Chech Deployable Antenna state
 				foreach(KeyValuePair<ModuleDeployableAntenna, bool> kvp in deployableAntennas) {
-					if (((kvp.Key.deployState == ModuleDeployablePart.DeployState.EXTENDED) && (kvp.Value != true)) || ((kvp.Key.deployState != ModuleDeployablePart.DeployState.EXTENDED) && (kvp.Value == true))) {
+					if (((kvp.Key.deployState == ModuleDeployablePart.DeployState.EXTENDED) 
+							&& (kvp.Value != true)) 
+						|| ((kvp.Key.deployState != ModuleDeployablePart.DeployState.EXTENDED) 
+							&& (kvp.Value == true))) {
 						VesselModified ();
 					}
 				}
-				yield return new WaitForSeconds (2f);
-			}
-		}
 
-		private void SetMapMarker ()
-		{
-//			Debug.Log ("[AH] DSN level = " + ScenarioUpgradeableFacilities.GetFacilityLevel (SpaceCenterFacility.TrackingStation));
-//			Debug.Log ("[AH] DSN level int = " + AHUtil.DSNLevel);
-//			Debug.Log ("[AH] DSN power = " + AHUtil.DSNLevelList [AHUtil.DSNLevel]);
-//			Debug.Log ("[AH] vessel transmit power = " + FlightGlobals.ActiveVessel.Connection.Comm.antennaTransmit.power);
-//			Debug.Log ("[AH] vessel relay power = " + FlightGlobals.ActiveVessel.Connection.Comm.antennaRelay.power);
-//			Debug.Log ("[AH] vessel total power = " + (FlightGlobals.ActiveVessel.Connection.Comm.antennaTransmit.power + FlightGlobals.ActiveVessel.Connection.Comm.antennaRelay.power));
-//			Debug.Log ("[AH] max range = " + AHUtil.GetRange (FlightGlobals.ActiveVessel.Connection.Comm.antennaTransmit.power, AHUtil.DSNLevelList [AHUtil.DSNLevel]));
-
-			////
-			/// New idea : 
-			/// 3 types of display : 
-			///  * only the active relay/DSN
-			///  * all the relay
-			///  * the DSN
-			/// 
-			/// for this I need 3 list of relay, only one will have more than 1 entry, but I like list
-			/// an UI in the map view with 3 checkbox, one for each type.
-			/// If the "only active" is selected the other 2 should be disabled
-			/// 
-			/// Those list should be reset at every vessel change but also when the active vessel change,
-			/// crash, (de)coupling. AND when the antennas are extend/retract, I don't think there is an
-			/// event for this, will it be better to write my own ? If not the coroutine will have to keep
-			/// the speed vs time-wrap
-			/// 
-			/// Question : should offline relay be listed as well ? Don't think one way is more intuitive
-			/// than the other. For now all will be listed. SEE BELOW :
-			/// Actually there is a limitation to this : the fact that I draw relay circle based on their
-			/// real signal strength mean I can't draw circle for a relay with 0 signal, the circle will
-			/// have no color.
-			/// So : only online relay are accounted for.
-			/// 
-			/// Question a : should vessel with relay capacity but not of the RELAY type be listed ?
-			/// for now nope, only vessel designated as RELAY will be listed.
-			/// 
-			/// Question a1 : what about an active connection through a vessel with relay capacity but not
-			/// of the relay type ?
-			/// For now the 3 lists are created separetly, so such vessel will be in the active connection
-			/// list but not in the relay list, probably not intuitive. Need to think more about it.
-			/// 
-
-			//  Get the Active vessel power
-//			double antennaPower;
-			//// 
-			/// Here is the thing when trying to get the transmit power from a vessel : 
-			/// (Vessel.Connection.Comm.antennaTransmit.power)
-			/// if only an internal antenna + relay = good
-			/// if only direct antenna + relay = guess it's good, not possible in stock, every command module 
-			///   got an internal antenna
-			/// if internal + direct (extended) + relay = good
-			/// if internal + direct (retract) + relay = only the internal is taking into account, the relay
-			///   should also, I guess it is because the internal can't be combine so if left out of the 
-			///   calcul it would show a result without any transmitter antenna, does that even make sense ?
-			/// Anyway, best will be to manually do the math with info directly from the part
-			/// 
-
-			antennaPower = GetActualVesselPower (vessel);
-			// list of all the relay in-flight :
-			allRelay = new List<GameObject> ();
-			int i = 0;
-			foreach (Vessel v in FlightGlobals.Vessels) {
-				if (v != vessel) {
-					// make sure the active vessel do not end up in the list
-					if (v.vesselType == VesselType.Relay) {
-						// check that the vesselType is Relay
-						if (v.Connection.IsConnected) {
-							// make sure the relay is online, need to double check this, it may not work 
-							//  as expected.
-
-							// need to get its real signal strength now :
-							double realSignal = GetRealSignal (v.Connection.ControlPath, vessel);
-
-							// math the max range :
-							double range = AHUtil.GetRange (antennaPower, v.Connection.Comm.antennaRelay.power);
-							// get real maxRange :
-							range = AHUtil.GetDistanceAt0 (range);
-
-							allRelay.Add (new GameObject ());
-							allRelay [i].AddComponent<AHMapMarker> ();
-							allRelay [i].GetComponent<AHMapMarker> ().SetUp (range, vessel, v.mapObject.trf, false, realSignal);
-
-							i++;
-						}
-					}
+				UpdateActiveDetails ();
+				if (showPotentialRelaysWindow || !hasStarted) {
+					UpdateRelaysDetails ();
 				}
+
+				hasStarted = true;
+				if (!doMath) {
+					yield break;
+				}
+				yield return timers[1];
 			}
-//			Debug.Log ("[AH] relay marker done");
-
-			// Active Connection :
-			double rangeAC;
-			Transform relay;
-			double activeSignal;
-			bool isHome;
-			if (vessel.Connection == null || !vessel.Connection.IsConnected || vessel.Connection.ControlPath [0].b.isHome) {
-				rangeAC =  AHUtil.GetRange (antennaPower, GameVariables.Instance.GetDSNRange (ScenarioUpgradeableFacilities.GetFacilityLevel (SpaceCenterFacility.TrackingStation)));
-				relay = FlightGlobals.GetHomeBody ().MapObject.trf;
-				activeSignal = 1d;
-				isHome = true;
-			} else {
-				rangeAC = AHUtil.GetRange (antennaPower, vessel.Connection.ControlPath[0].b.antennaRelay.power);
-				relay = vessel.Connection.ControlPath [0].b.transform.GetComponent<Vessel> ().mapObject.trf;
-				activeSignal = GetRealSignal (vessel.Connection.ControlPath, vessel);
-				isHome = false;
-			}
-			// get real maxRange :
-			rangeAC = AHUtil.GetDistanceAt0 (rangeAC);
-
-			activeConnect = new GameObject ();
-			activeConnect.AddComponent<AHMapMarker> ();
-			activeConnect.GetComponent<AHMapMarker> ().SetUp (rangeAC, vessel, relay, isHome, activeSignal);
-//			Debug.Log ("[AH] active marker done");
-
-			// DSN Connection :
-			double rangeDSN = AHUtil.GetRange (antennaPower, GameVariables.Instance.GetDSNRange (ScenarioUpgradeableFacilities.GetFacilityLevel (SpaceCenterFacility.TrackingStation)));
-			// get real maxRange
-			rangeDSN = AHUtil.GetDistanceAt0 (rangeDSN);
-			DSNConnect = new GameObject ();
-			AHMapMarker markerDSN = DSNConnect.AddComponent<AHMapMarker> ();
-			markerDSN.SetUp (rangeDSN, vessel, FlightGlobals.GetHomeBody ().MapObject.trf, true, 1d);
-
-
-			StartCoroutine ("UpdateCheckExtend");
 		}
 
-		private double GetRealSignal (CommNet.CommPath path, Vessel v = null)
+		List<Dictionary<string, string>> detailsActiveConnectLinks;
+		List<List<Dictionary<string, string>>> detailsRelaysLinks;
+
+		private void UpdateActiveDetails ()
 		{
-			if (v == null) {
-				v = FlightGlobals.ActiveVessel;
+			detailsActiveConnectLinks = new List<Dictionary<string, string>> ();
+			detailsActiveConnectLinks.Add (new Dictionary<string, string> ());
+
+			// Always the same :
+			detailsActiveConnectLinks [0].Add ("aName", vessel.GetName ());
+			detailsActiveConnectLinks [0].Add ("aPowerTotal", vesselPower.ToString ("N0"));
+			detailsActiveConnectLinks [0].Add ("aPowerRelay", vesselPowerRelay.ToString ("N0"));
+			detailsActiveConnectLinks [0].Add ("activeSignalStrength", sSToDSN.ToString ("0.00%"));
+			detailsActiveConnectLinks [0].Add ("distance", targetDistance.ToString ("N0") + "m");
+
+			if (connectedToDSN) {
+				detailsActiveConnectLinks [0].Add ("bName", "DSN");
+				detailsActiveConnectLinks [0].Add ("bPowerTotal", dsnPower.ToString ("N0"));
+				detailsActiveConnectLinks [0].Add ("bPowerRelay", dsnPower.ToString ("N0"));
+				detailsActiveConnectLinks [0].Add ("signalStrength", sSToDSN.ToString ("0.00%"));
+				detailsActiveConnectLinks [0].Add ("maxRange", dsnRange.ToString ("N0") + "m");
+			} else if (connectedTo != null){
+				detailsActiveConnectLinks [0].Add ("bName", relays [connectedTo].linkList [0].relayA.name);
+				detailsActiveConnectLinks [0].Add ("bPowerTotal", relays [connectedTo].linkList [0].relayA.directPower.ToString ("N0"));
+				detailsActiveConnectLinks [0].Add ("bPowerRelay", relays [connectedTo].linkList [0].relayA.relayPower.ToString ("N0"));
+				detailsActiveConnectLinks [0].Add ("signalStrength", sSToTarget.ToString ("0.00%"));
+				detailsActiveConnectLinks [0].Add ("maxRange", targetMaxRange.ToString ("N0") + "m");
+
+				int i = 1;
+				foreach (Link link in relays [connectedTo].linkList) {
+					detailsActiveConnectLinks.Add (new Dictionary<string, string> ());
+					detailsActiveConnectLinks [i].Add ("aName", link.relayA.name);
+					detailsActiveConnectLinks [i].Add ("bName", link.relayB.name);
+					detailsActiveConnectLinks [i].Add ("aPowerTotal", link.relayA.directPower.ToString ("N0"));
+					detailsActiveConnectLinks [i].Add ("bPowerTotal", link.relayB.directPower.ToString ("N0"));
+					detailsActiveConnectLinks [i].Add ("aPowerRelay", link.relayA.relayPower.ToString ("N0"));
+					detailsActiveConnectLinks [i].Add ("bPowerRelay", link.relayB.relayPower.ToString ("N0"));
+					detailsActiveConnectLinks [i].Add ("signalStrength", link.signalStrength.ToString ("0.00%"));
+					detailsActiveConnectLinks [i].Add ("maxRange", link.maxRange.ToString ("N0") + "m");
+					detailsActiveConnectLinks [i].Add ("distance", link.distance.ToString ("N0") + "m");
+					i++;
+				}
+			} else {
+				detailsActiveConnectLinks [0].Add ("bName", "None");
+				detailsActiveConnectLinks [0].Add ("bPowerTotal", "0");
+				detailsActiveConnectLinks [0].Add ("bPowerRelay", "0");
+				detailsActiveConnectLinks [0].Add ("signalStrength", "0");
+				detailsActiveConnectLinks [0].Add ("maxRange", "0m");
 			}
-			double signal = 1d;
-			foreach (CommNet.CommLink link in path) {
-				if (link.a.transform.GetComponent<Vessel> () != v) {
+		}
+
+		private void UpdateRelaysDetails ()
+		{
+			detailsRelaysLinks = new List<List<Dictionary<string, string>>> ();
+
+			int relayIt = 0;
+			foreach (KeyValuePair<Vessel, LinkPath> relay in relays) {
+				detailsRelaysLinks.Add (new List<Dictionary<string, string>> ());
+				int linkIt = 0;
+				foreach (Link link in relay.Value.linkList) {
+					detailsRelaysLinks [relayIt].Add (new Dictionary<string, string> ());
+					detailsRelaysLinks [relayIt] [linkIt].Add ("aName", link.relayA.name);
+					detailsRelaysLinks [relayIt] [linkIt].Add ("bName", link.relayB.name);
+					detailsRelaysLinks [relayIt] [linkIt].Add ("aPowerTotal", link.relayA.directPower.ToString ("N0"));
+					detailsRelaysLinks [relayIt] [linkIt].Add ("bPowerTotal", link.relayB.directPower.ToString ("N0"));
+					detailsRelaysLinks [relayIt] [linkIt].Add ("aPowerRelay", link.relayA.relayPower.ToString ("N0"));
+					detailsRelaysLinks [relayIt] [linkIt].Add ("bPowerRelay", link.relayB.relayPower.ToString ("N0"));
+					detailsRelaysLinks [relayIt] [linkIt].Add ("signalStrength", link.signalStrength.ToString ("0.00%"));
+					detailsRelaysLinks [relayIt] [linkIt].Add ("maxRange", link.maxRange.ToString ("N0") + "m");
+					detailsRelaysLinks [relayIt] [linkIt].Add ("endSignalStrength", relay.Value.endRelaySignalStrength.ToString ("0.00%"));
+					detailsRelaysLinks [relayIt] [linkIt].Add ("distance", link.distance.ToString ("N0") + "m");
+					linkIt++;
+				}
+				relayIt++;
+			}
+		}
+		#endregion
+
+		// nested class
+		class LinkPath
+		{
+			public List<Link> linkList;
+			public double endRelayPower;
+			public double endRelaySignalStrength { get { return _endRelaySignalStrength (); } }
+
+			private Vessel activeVessel;
+
+			public LinkPath (Vessel v)
+			{
+				activeVessel = v;
+
+				SetLinks ();
+
+				endRelayPower = linkList [0].relayA.relayPower;
+			}
+
+			private double _endRelaySignalStrength ()
+			{
+				SetLinks ();
+				double signal = 1d;
+				foreach (Link link in linkList) {
 					signal *= link.signalStrength;
 				}
+				return signal;
 			}
-			return signal;
-		}
 
-		private double GetActualVesselPower (Vessel v)
-		{
-			// This function should be more generic and also used in the editor
-			// will see later...
-			double biggest = 0;
-			List<ModuleDataTransmitter> combList = new List<ModuleDataTransmitter> ();
+			private void SetLinks ()
+			{
+				linkList = new List<Link> ();
 
-			deployableAntennas = new Dictionary<ModuleDeployableAntenna, bool> ();
-
-			foreach (Part p in v.parts) {
-				if (p.Modules.Contains<ModuleDataTransmitter> ()) {
-					if (p.Modules.Contains<ModuleDeployableAntenna>()) {
-						ModuleDeployableAntenna antDep = p.Modules.GetModule<ModuleDeployableAntenna> ();
-						bool extended = true;
-						if (antDep.deployState != ModuleDeployablePart.DeployState.EXTENDED) {
-							extended = false;
-						}
-						deployableAntennas.Add (antDep, extended);
-						if (!extended) {
-							continue;
-						}
+				foreach (CommNet.CommLink link in activeVessel.Connection.ControlPath) {
+					Relay relayB;
+					if (link.b.isHome) {
+						relayB = Relay.DSN;
+					} else {
+						relayB = Relay.GetRelayVessel (link.b.transform.GetComponent<Vessel> ());
 					}
-					ModuleDataTransmitter ant = p.Modules.GetModule<ModuleDataTransmitter> ();
-					if (ant.antennaPower > biggest) {
-						biggest = ant.antennaPower;
+					linkList.Add (new Link (new RelayVessel (link.a.transform.GetComponent<Vessel> ()), relayB));
+				}
+			}
+		}
+
+		class Link
+		{
+			public Relay relayA, relayB;
+			public double maxRange;
+			public double signalStrength { get { return _signalStrength (); } }
+			public double distance { get { return _distance (); } }
+
+			public Link (Relay transmitter, Relay relay)
+			{
+				relayA = transmitter;
+				relayB = relay;
+
+				maxRange = AHUtil.GetRange (relayA.relayPower, relayB.relayPower);
+			}
+
+			private double _signalStrength ()
+			{
+				return AHUtil.GetSignalStrength (maxRange, distance);
+			}
+
+			private double _distance ()
+			{
+				return ((Vector3d.Distance (relayA.position, relayB.position)) - relayB.distanceOffset);
+			}
+		}
+
+		class Relay
+		{
+			public string name;
+			public double relayPower, directPower;
+//			public bool isConnected;
+//			public Relay isConnectedTo;
+			public Vector3d position { get { return _position (); } }
+			public bool isDSN = false;
+			public double distanceOffset = 0;
+
+			private static CelestialBody home;
+			public static Relay DSN { get { return _dsn; } }
+			private static Relay _dsn;
+
+			static List<RelayVessel> potentialRelays;
+
+			static Relay ()
+			{
+				home = FlightGlobals.GetHomeBody ();
+				_dsn = new Relay ();
+				_dsn.relayPower = GameVariables.Instance.GetDSNRange 
+					(ScenarioUpgradeableFacilities.GetFacilityLevel 
+						(SpaceCenterFacility.TrackingStation));
+				_dsn.directPower = _dsn.relayPower;
+				_dsn.isDSN = true;
+				_dsn.distanceOffset = home.Radius;
+				_dsn.name = "DSN";
+
+				potentialRelays = new List<RelayVessel> ();
+				foreach (Vessel v in FlightGlobals.Vessels.FindAll (v => (v.Connection != null) && (v != FlightGlobals.ActiveVessel))) {
+					double relayPower = AHUtil.GetActualVesselPower (v, true);
+					if (relayPower > 0) {
+						potentialRelays.Add (new RelayVessel (v));
 					}
-					if (ant.antennaCombinable) {
-						combList.Add (ant);
+				}
+				Debug.Log ("[AH] dsn distance offset : " + _dsn.distanceOffset);
+				Debug.Log ("[AH] static dsn relay constructed");
+			}
+
+			public static RelayVessel GetRelayVessel (Vessel v)
+			{
+				return potentialRelays.Find (relay => (relay.vessel == v));
+			}
+
+
+			protected virtual Vector3d _position ()
+			{
+				return home.position;
+			}
+
+			/*
+			public static bool operator== (Relay relayA, Relay relayB)
+			{
+				if ((relayA.relayPower == relayB.relayPower) && (relayA.directPower == relayB.directPower)) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+
+			public static bool operator!= (Relay relayA, Relay relayB)
+			{
+				return !(relayA == relayB);
+			}
+
+			public override bool Equals (object obj)
+			{
+				if (obj == null) {
+					if (this == null) {
+						return true;
+					} else {
+						return false;
 					}
 				}
-			}
-			biggest = AHUtil.TruePower (biggest);
-			double comb = AHUtil.GetVesselPower (combList);
-			if (comb > biggest) {
-				return comb;
-			} else {
-				return biggest;
-			}
-		}
 
-		#region GUI
-		public void OnGUI ()
-		{
-			if (isToolbarOn && inMapView) {
-				GUILayout.BeginArea (windowRect);
-				windowRect = GUILayout.Window (806641, windowRect, AHMapViewWindow.AntennaSelectWindow, "Antenna Helper");
-				GUILayout.EndArea ();
-			}
-		}
-
-		public static void GUISelectCircle ()
-		{
-			switch (guiCircle) {
-			case GUICircleSelection.ACTIVE:
-				instance.activeConnect.GetComponent<AHMapMarker> ().Show ();
-				instance.DSNConnect.GetComponent<AHMapMarker> ().Hide ();
-				foreach (GameObject gO in instance.allRelay) {
-					gO.GetComponent<AHMapMarker> ().Hide ();
+				if (obj.GetType () == this.GetType ()) {
+					if ((Relay)obj == this) {
+						return true;
+					} else {
+						return false;
+					}
+				} else {
+					return false;
 				}
-				break;
-			case GUICircleSelection.DSN:
-				instance.activeConnect.GetComponent<AHMapMarker> ().Hide ();
-				instance.DSNConnect.GetComponent<AHMapMarker> ().Show ();
-				foreach (GameObject gO in instance.allRelay) {
-					gO.GetComponent<AHMapMarker> ().Hide ();
-				}
-				break;
-			case GUICircleSelection.RELAY:
-				instance.activeConnect.GetComponent<AHMapMarker> ().Hide ();
-				instance.DSNConnect.GetComponent<AHMapMarker> ().Hide ();
-				foreach (GameObject gO in instance.allRelay) {
-					gO.GetComponent<AHMapMarker> ().Show ();
-				}
-				break;
-			case GUICircleSelection.DSN_AND_RELAY:
-				instance.activeConnect.GetComponent<AHMapMarker> ().Hide ();
-				instance.DSNConnect.GetComponent<AHMapMarker> ().Show ();
-				foreach (GameObject gO in instance.allRelay) {
-					gO.GetComponent<AHMapMarker> ().Show ();
-				}
-				break;
-				default:
-				instance.activeConnect.GetComponent<AHMapMarker> ().Show ();
-				instance.DSNConnect.GetComponent<AHMapMarker> ().Hide ();
-				foreach (GameObject gO in instance.allRelay) {
-					gO.GetComponent<AHMapMarker> ().Hide ();
-				}
-				break;
 			}
+
+			public override int GetHashCode ()
+			{
+				int hash = relayPower.GetHashCode ();
+				hash = (hash * 7) + directPower.GetHashCode ();
+				return hash;
+			}*/
 		}
-		private Vector2 GetWindowPosNextToButton (Rect window, Vector2 clickPos, bool useBlizzy)
+
+		class RelayVessel : Relay
 		{
-			float offset, posX, posY;
+			public Vessel vessel;
 
-			if (useBlizzy) {
-				offset = 20f;
-			} else {
-				offset = 30f;
+			public RelayVessel (Vessel v)
+			{
+				vessel = v;
+				relayPower = AHUtil.GetActualVesselPower (v, true);
+				directPower = AHUtil.GetActualVesselPower (v);
+//				isConnected = vessel.Connection.IsConnected;
+				name = vessel.GetName ();
 			}
 
-			if (clickPos.x + offset + window.width > Screen.width) {
-				// Window on the left of the button
-				posX = clickPos.x - offset - window.width;
-			} else {
-				// Window on the right of the button
-				posX = clickPos.x + offset;
-			}
-
-			if (clickPos.y + offset + window.height > Screen.height) {
-				// Window on the bottom of the button
-				posY = clickPos.y - offset - window.height;
-			} else {
-				// Window on the top of the button
-				posY = clickPos.y + offset;
-			}
-
-			return new Vector2 (posX, posY);
-		}
-		#endregion
-
-		#region ToolbarButton
-		private void AddToolbarButton ()
-		{
-			toolbarControl = gameObject.AddComponent<ToolbarControl> ();
-
-			toolbarControl.AddToAllToolbars (
-				ToolbarButtonOnTrue,
-				ToolbarButtonOnFalse,
-				KSP.UI.Screens.ApplicationLauncher.AppScenes.MAPVIEW,
-				"AntennaHelper",
-				"193269",
-				"AntennaHelper/Textures/icon_sat_on",
-				"AntennaHelper/Textures/icon_off",
-				"AntennaHelper/Textures/icon_dish_on_small",
-				"AntennaHelper/Textures/icon_dish_off_small",
-				"Antenna Helper");
-
-			toolbarControl.UseBlizzy (AHSettings.useBlizzyToolbar);
-
-			toolbarButtonAdded = true;
-		}
-
-		private void RemoveToolbarButton ()
-		{
-			toolbarControl.OnDestroy ();
-			Destroy (toolbarControl);
-
-			toolbarButtonAdded = false;
-		}
-
-		private void ToolbarButtonOnTrue ()
-		{
-			if (activeConnect != null) {
-				GUISelectCircle ();
-
-				// Reset window position each time it is clicked, I can't predict where the button will be
-				windowRect.position = GetWindowPosNextToButton (
-					windowRect, toolbarControl.buttonClickedMousePos, AHSettings.useBlizzyToolbar);
-				
-				isToolbarOn = true;
+			protected override Vector3d _position ()
+			{
+				return vessel.GetTransform ().position;
 			}
 		}
 
-		private void ToolbarButtonOnFalse ()
-		{
-			if (activeConnect != null) {
-				activeConnect.GetComponent<AHMapMarker> ().Hide ();
-				DSNConnect.GetComponent<AHMapMarker> ().Hide ();
-				foreach (GameObject gO in allRelay) {
-					gO.GetComponent<AHMapMarker> ().Hide ();
-				}
-				isToolbarOn = false;
-			}
-		}
-		#endregion
+
 	}
+		
 }
 

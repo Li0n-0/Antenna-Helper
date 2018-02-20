@@ -595,7 +595,7 @@ namespace AntennaHelper
 		public static void CloseMainWindow ()
 		{
 			if (showMainWindow) {
-				AHSettings.SavePosition ("main_window_position", rectMainWindow.position);
+				AHSettings.SavePosition ("editor_main_window_position", rectMainWindow.position);
 			}
 			showMainWindow = false;
 		}
@@ -605,7 +605,7 @@ namespace AntennaHelper
 		public static void CloseTargetWindow ()
 		{
 			if (showTargetWindow) {
-				AHSettings.SavePosition ("target_window_position", rectTargetWindow.position);
+				AHSettings.SavePosition ("editor_target_window_position", rectTargetWindow.position);
 			}
 			showTargetWindow = false;
 			CloseTargetShipEditorWindow ();
@@ -641,7 +641,7 @@ namespace AntennaHelper
 		public static void ClosePlanetWindow ()
 		{
 			if (showPlanetWindow) {
-				AHSettings.SavePosition ("signal_strenght_per_planet_window_position", rectPlanetWindow.position);
+				AHSettings.SavePosition ("editor_signal_strenght_per_planet_window_position", rectPlanetWindow.position);
 			}
 			showPlanetWindow = false;
 		}

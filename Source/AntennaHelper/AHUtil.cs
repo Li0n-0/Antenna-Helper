@@ -137,6 +137,43 @@ namespace AntennaHelper
 			return strength;
 		}
 
+		public static double GetREALSignal (CommNet.CommLink link, bool aIsRelay = true)
+		{
+			Vessel vesselA = link.a.transform.GetComponent<Vessel> ();
+			double powerA = GetActualVesselPower (vesselA, aIsRelay);
+			double powerB;
+			Vector3 positionB;
+			if (link.b.isHome) {
+				positionB = link.b.position;
+				powerB = GameVariables.Instance.GetDSNRange 
+					(ScenarioUpgradeableFacilities.GetFacilityLevel 
+						(SpaceCenterFacility.TrackingStation));
+			} else {
+				Vessel vesselB = link.b.transform.GetComponent<Vessel> ();
+				powerB = GetActualVesselPower (vesselB, true);
+				positionB = vesselB.GetTransform ().position;
+			}
+
+			double maxRange = GetRange (powerA, powerB);
+
+			double distance = Vector3.Distance (vesselA.GetTransform ().position, positionB);
+
+			return GetSignalStrength (maxRange, distance);
+		}
+
+		public static double GetREALSignal (CommNet.CommPath path)
+		{
+			double signal = 1d;
+
+			bool first = true;
+
+			foreach (CommNet.CommLink link in path) {
+				signal *= GetREALSignal (link, !first);
+				first = false;
+			}
+			return signal;
+		}
+
 		public static double GetRealSignal (CommNet.CommPath path, Vessel v = null)
 		{
 			// return the signal strength between a vessel and the dsn when there are relays between them
@@ -633,7 +670,8 @@ namespace AntennaHelper
 		ACTIVE,
 		DSN,
 		RELAY,
-		DSN_AND_RELAY
+		DSN_AND_RELAY,
+		NONE
 	}
 }
 
