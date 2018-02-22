@@ -33,6 +33,7 @@ namespace AntennaHelper
 		private float timeAtStart;
 		private bool hasStarted = false;
 		private List<WaitForSeconds> timers;
+		private bool doUpdate = true;
 		private bool inMapView = false;
 		private bool doMath = false;
 
@@ -40,10 +41,38 @@ namespace AntennaHelper
 		#region Starters
 		void Start ()
 		{
+			if ((!HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().enableInFlight) 
+				&& !HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().enableInMapView) {
+				Destroy (this);
+				return;
+			}
+
 			timeAtStart = Time.time;
 			timers = new List<WaitForSeconds> ();
 			timers.Add (new WaitForSeconds (.1f));
-			timers.Add (new WaitForSeconds (.5f));
+			float delay = 0;
+			switch (HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().delayFlightUI)
+			{
+			case AHGameSettings.DelayEnum.Tenth_Second:
+				delay = .1f;
+				break;
+			case AHGameSettings.DelayEnum.Half_Second:
+				delay = .5f;
+				break;
+			case AHGameSettings.DelayEnum.One_Second:
+				delay = 1f;
+				break;
+			case AHGameSettings.DelayEnum.Two_Seconds:
+				delay = 2f;
+				break;
+			case AHGameSettings.DelayEnum.Window_Open:
+				delay = 0;
+				doUpdate = false;
+				break;
+			default:
+				break;
+			}
+			timers.Add (new WaitForSeconds (delay));
 
 			dsnBody = FlightGlobals.GetHomeBody ();
 			dsnPower = GameVariables.Instance.GetDSNRange 
@@ -269,7 +298,7 @@ namespace AntennaHelper
 				}
 
 				hasStarted = true;
-				if (!doMath) {
+				if (!doMath || !doUpdate) {
 					yield break;
 				}
 				yield return timers[1];

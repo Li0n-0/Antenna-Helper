@@ -13,6 +13,11 @@ namespace AntennaHelper
 
 		public void Start ()
 		{
+			if (!HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().enableInEditor) {
+				Destroy (this);
+				return;
+			}
+
 			instance = this;
 
 			trackingStationLevel = ScenarioUpgradeableFacilities.GetFacilityLevel (SpaceCenterFacility.TrackingStation);
@@ -696,6 +701,10 @@ namespace AntennaHelper
 				rectPlanetWindow = GUILayout.Window (332980, rectPlanetWindow, AHEditorWindows.PlanetWindow, "Signal Strength / Distance");
 				GUILayout.EndArea ();
 			}
+
+			if (toolbarControl != null) {
+				toolbarControl.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().useBlizzy);
+			}
 		}
 		#endregion
 
@@ -717,8 +726,8 @@ namespace AntennaHelper
 				"AntennaHelper/Textures/icon_dish_on_small",
 				"AntennaHelper/Textures/icon_dish_off_small",
 				"Antenna Helper");
-			
-			toolbarControl.UseBlizzy (AHSettings.useBlizzyToolbar);
+
+			toolbarControl.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().useBlizzy);
 		}
 
 		private void RemoveToolbarButton ()
@@ -730,8 +739,10 @@ namespace AntennaHelper
 			CloseTargetShipFlightWindow ();
 			CloseTargetPartWindow ();
 
-			toolbarControl.OnDestroy ();
-			Destroy (toolbarControl);
+			if (toolbarControl != null) {
+				toolbarControl.OnDestroy ();
+				Destroy (toolbarControl);
+			}
 		}
 
 		private void ToolbarButtonOnTrue ()

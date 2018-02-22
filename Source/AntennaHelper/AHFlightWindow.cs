@@ -52,13 +52,24 @@ namespace AntennaHelper
 
 		private void AddToolbarButton ()
 		{
+			KSP.UI.Screens.ApplicationLauncher.AppScenes scenes = 
+				KSP.UI.Screens.ApplicationLauncher.AppScenes.FLIGHT 
+				| KSP.UI.Screens.ApplicationLauncher.AppScenes.MAPVIEW;
+
+			if (!HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().enableInFlight) {
+				scenes = KSP.UI.Screens.ApplicationLauncher.AppScenes.MAPVIEW;
+			}
+			if (!HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().enableInMapView) {
+				scenes = KSP.UI.Screens.ApplicationLauncher.AppScenes.FLIGHT;
+			}
+
 			if (!toolbarButtonAdded) {
 				toolbarController = gameObject.AddComponent<ToolbarControl> ();
 
 				toolbarController.AddToAllToolbars (
 					ToolbarButtonOnTrue,
 					ToolbarButtonOnFalse,
-					KSP.UI.Screens.ApplicationLauncher.AppScenes.FLIGHT | KSP.UI.Screens.ApplicationLauncher.AppScenes.MAPVIEW,
+					scenes,
 					"AntennaHelper",
 					"368879",
 					"AntennaHelper/Textures/icon_sat_on",
@@ -67,7 +78,7 @@ namespace AntennaHelper
 					"AntennaHelper/Textures/icon_dish_off_small",
 					"Antenna Helper");
 
-				toolbarController.UseBlizzy (AHSettings.useBlizzyToolbar);
+				toolbarController.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().useBlizzy);
 
 				toolbarButtonAdded = true;
 			}
@@ -141,6 +152,10 @@ namespace AntennaHelper
 
 		void OnGUI ()
 		{
+			if (toolbarController != null) {
+				toolbarController.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().useBlizzy);
+			}
+
 			if (!guiHasStarted) {
 				OnGUIStarter ();
 			}

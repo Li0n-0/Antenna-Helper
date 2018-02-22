@@ -34,6 +34,11 @@ namespace AntennaHelper
 
 		public void Start ()
 		{
+			if (!HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().enableInTrackingStation) {
+				Destroy (this);
+				return;
+			}
+
 			targetPid = "";
 
 			trackingStationLvl = ScenarioUpgradeableFacilities.GetFacilityLevel (SpaceCenterFacility.TrackingStation);
@@ -318,6 +323,10 @@ namespace AntennaHelper
 			if (editorShipWindowOn) {
 				rectEditorShipWindow = GUI.Window (524258, rectEditorShipWindow, EditorShipListWindow, "Editor Ship List");
 			}
+
+			if (toolbarControl != null) {
+				toolbarControl.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().useBlizzy);
+			}
 		}
 
 		private void MainWindow (int id)
@@ -480,13 +489,15 @@ namespace AntennaHelper
 				"AntennaHelper/Textures/icon_dish_off_small",
 				"Antenna Helper");
 
-			toolbarControl.UseBlizzy (AHSettings.useBlizzyToolbar);
+			toolbarControl.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().useBlizzy);
 		}
 
 		private void RemoveToolbarButton ()
 		{
-			toolbarControl.OnDestroy ();
-			Destroy (toolbarControl);
+			if (toolbarControl != null) {
+				toolbarControl.OnDestroy ();
+				Destroy (toolbarControl);
+			}
 		}
 
 //		public void Update ()
