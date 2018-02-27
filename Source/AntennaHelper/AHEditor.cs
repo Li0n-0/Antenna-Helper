@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using KSP.Localization;
 using ToolbarControl_NS;
 
 namespace AntennaHelper
@@ -13,7 +14,7 @@ namespace AntennaHelper
 
 		public void Start ()
 		{
-			if (!HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().enableInEditor) {
+			if (!HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().enableInEditor) {
 				Destroy (this);
 				return;
 			}
@@ -22,7 +23,7 @@ namespace AntennaHelper
 
 			trackingStationLevel = ScenarioUpgradeableFacilities.GetFacilityLevel (SpaceCenterFacility.TrackingStation);
 			targetPower = GameVariables.Instance.GetDSNRange (trackingStationLevel);
-			targetName = "DSN Level " + (int)(trackingStationLevel * 2 + 1);
+			targetName = Localizer.Format ("#autoLOC_AH_0015") + " " + (int)(trackingStationLevel * 2 + 1);
 
 			GetShipList ();
 
@@ -320,31 +321,31 @@ namespace AntennaHelper
 		{
 			// DIRECT
 			if (nbDirectAntenna == 0) {
-				statusStringDirect = "No antenna";
+				statusStringDirect = Localizer.Format ("#autoLOC_AH_0033");
 			} else if (nbDirectAntenna == 1) {
-				statusStringDirect = "One antenna : " + directAntennaName;
+				statusStringDirect = Localizer.Format ("#autoLOC_AH_0040", new string[] {directAntennaName});
 			} else {
 				if (nbDirectCombAntenna < 2) {
-					statusStringDirect = nbDirectAntenna + " antennas, not combinable, "
-					+ directAntennaName + " is the most powerfull";
+					statusStringDirect = Localizer.Format ("#autoLOC_AH_0041", new string[] {nbDirectAntenna.ToString (), directAntennaName});
 				} else {
-					statusStringDirect = nbDirectCombAntenna + " of " + nbDirectAntenna 
-					+ " antennas are combinable";
+					statusStringDirect = nbDirectCombAntenna + " " + Localizer.Format ("#autoLOC_AH_0037") + " " + nbDirectAntenna 
+						+ " " + Localizer.Format ("#autoLOC_AH_0038");
+					statusStringDirect = Localizer.Format ("#autoLOC_AH_0042", new string[] { nbDirectCombAntenna.ToString (), nbDirectAntenna.ToString () });
 				}
 			}
 
 			// RELAY
 			if (nbRelayAntenna == 0) {
-				statusStringRelay = "No antenna";
+				statusStringRelay = Localizer.Format ("#autoLOC_AH_0033");
 			} else if (nbRelayAntenna == 1) {
-				statusStringRelay = "One antenna : " + relayAntennaName;
+				statusStringRelay = Localizer.Format ("#autoLOC_AH_0034") + " : " + relayAntennaName;
 			} else {
 				if (nbRelayCombAntenna < 2) {
-					statusStringRelay = nbRelayAntenna + " antennas, not combinable, "
-						+ relayAntennaName + " is the most powerfull";
+					statusStringRelay = nbRelayAntenna + " " + Localizer.Format ("#autoLOC_AH_0035") + ", "
+						+ relayAntennaName + " " + Localizer.Format ("#autoLOC_AH_0036");
 				} else {
-					statusStringRelay = nbRelayCombAntenna + " of " + nbRelayAntenna 
-					+ " antennas are combinable";
+					statusStringRelay = nbRelayCombAntenna + " " + Localizer.Format ("#autoLOC_AH_0037") + " " + nbRelayAntenna 
+						+ " " + Localizer.Format ("#autoLOC_AH_0038");
 				}
 			}
 		}
@@ -388,7 +389,7 @@ namespace AntennaHelper
 		public static void SetTarget (float dsnL)
 		{
 			targetPower = GameVariables.Instance.GetDSNRange (dsnL);
-			targetName = "DSN Level " + (int)((dsnL * 2) + 1);
+			targetName = Localizer.Format ("#autoLOC_AH_0015") + " " + (int)((dsnL * 2) + 1);
 			targetType = AHEditorTargetType.DSN;
 			targetPid = "";
 			instance.DoTheMath ();
@@ -406,7 +407,7 @@ namespace AntennaHelper
 			}
 
 			targetPower = AHUtil.TruePower (Double.Parse (targetDict ["powerRelay"]));
-			targetName = "Vessel : " + targetDict ["name"];
+			targetName = Localizer.Format ("#autoLOC_AH_0039") + " : " + targetDict ["name"];
 			targetPid = pid;
 			instance.DoTheMath ();
 		}
@@ -414,7 +415,7 @@ namespace AntennaHelper
 		public static void SetTargetAsPart ()
 		{
 			targetPower = targetPartPower;
-			targetName = "Set of user defined parts";
+			targetName = Localizer.Format ("#autoLOC_AH_0043");
 			targetType = AHEditorTargetType.PART;
 			targetPid = "";
 			instance.DoTheMath ();
@@ -666,12 +667,12 @@ namespace AntennaHelper
 		{
 			if (showMainWindow) {
 				GUILayout.BeginArea (rectMainWindow);
-				rectMainWindow = GUILayout.Window (835298, rectMainWindow, AHEditorWindows.MainWindow, "Antenna Helper");
+				rectMainWindow = GUILayout.Window (835298, rectMainWindow, AHEditorWindows.MainWindow, Localizer.Format ("#autoLOC_AH_0001"));
 				GUILayout.EndArea ();
 			}
 			if (showTargetWindow) {
 				GUILayout.BeginArea (rectTargetWindow);
-				rectTargetWindow = GUILayout.Window (419256, rectTargetWindow, AHEditorWindows.TargetWindow, "Pick A Target");
+				rectTargetWindow = GUILayout.Window (419256, rectTargetWindow, AHEditorWindows.TargetWindow, Localizer.Format ("#autoLOC_AH_0007"));
 				GUILayout.EndArea ();
 			}
 			if (showTargetShipEditorWindow) {
@@ -679,7 +680,7 @@ namespace AntennaHelper
 //				CloseTargetShipFlightWindow ();
 				rectTargetShipEditorWindow.position = ExtendWindowPos (rectTargetWindow);
 				GUILayout.BeginArea (rectTargetShipEditorWindow);
-				rectTargetShipEditorWindow = GUILayout.Window (415014, rectTargetShipEditorWindow, AHEditorWindows.TargetWindowShipEditor, "Editor Ship", GUILayout.MinHeight (rectTargetWindow.height));
+				rectTargetShipEditorWindow = GUILayout.Window (415014, rectTargetShipEditorWindow, AHEditorWindows.TargetWindowShipEditor, Localizer.Format ("#autoLOC_AH_0017"), GUILayout.MinHeight (rectTargetWindow.height));
 				GUILayout.EndArea ();
 			}
 			if (showTargetShipFlightWindow) {
@@ -687,23 +688,23 @@ namespace AntennaHelper
 //				CloseTargetShipEditorWindow ();
 				rectTargetShipFlightWindow.position = ExtendWindowPos (rectTargetWindow);
 				GUILayout.BeginArea (rectTargetShipFlightWindow);
-				rectTargetShipFlightWindow = GUILayout.Window (892715, rectTargetShipFlightWindow, AHEditorWindows.TargetWindowShipFlight, "In-Flight Ship", GUILayout.MinHeight (rectTargetWindow.height));
+				rectTargetShipFlightWindow = GUILayout.Window (892715, rectTargetShipFlightWindow, AHEditorWindows.TargetWindowShipFlight, Localizer.Format ("#autoLOC_AH_0016"), GUILayout.MinHeight (rectTargetWindow.height));
 				GUILayout.EndArea ();
 			}
 			if (showTargetPartWindow) {
 				rectTargetPartWindow.position = ExtendWindowPos (rectTargetWindow);
 				GUILayout.BeginArea (rectTargetPartWindow);
-				rectTargetPartWindow = GUILayout.Window (595592, rectTargetPartWindow, AHEditorWindows.TargetWindowPart, "Antenna Parts List", GUILayout.MinHeight (rectTargetWindow.height));
+				rectTargetPartWindow = GUILayout.Window (595592, rectTargetPartWindow, AHEditorWindows.TargetWindowPart, Localizer.Format ("#autoLOC_AH_0031"), GUILayout.MinHeight (rectTargetWindow.height));
 				GUILayout.EndArea ();
 			}
 			if (showPlanetWindow) {
 				GUILayout.BeginArea (rectPlanetWindow);
-				rectPlanetWindow = GUILayout.Window (332980, rectPlanetWindow, AHEditorWindows.PlanetWindow, "Signal Strength / Distance");
+				rectPlanetWindow = GUILayout.Window (332980, rectPlanetWindow, AHEditorWindows.PlanetWindow, Localizer.Format ("#autoLOC_AH_0012"));
 				GUILayout.EndArea ();
 			}
 
 			if (toolbarControl != null) {
-				toolbarControl.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().useBlizzy);
+				toolbarControl.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().useBlizzy);
 			}
 		}
 		#endregion
@@ -719,15 +720,15 @@ namespace AntennaHelper
 				ToolbarButtonOnTrue,
 				ToolbarButtonOnFalse,
 				KSP.UI.Screens.ApplicationLauncher.AppScenes.VAB | KSP.UI.Screens.ApplicationLauncher.AppScenes.SPH,
-				"AntennaHelper",
+				Localizer.Format ("#autoLOC_AH_0032"),
 				"823779",
 				"AntennaHelper/Textures/icon_dish_on",
 				"AntennaHelper/Textures/icon_off",
 				"AntennaHelper/Textures/icon_dish_on_small",
 				"AntennaHelper/Textures/icon_dish_off_small",
-				"Antenna Helper");
+				Localizer.Format ("#autoLOC_AH_0001"));
 
-			toolbarControl.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().useBlizzy);
+			toolbarControl.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().useBlizzy);
 		}
 
 		private void RemoveToolbarButton ()

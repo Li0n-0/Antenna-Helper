@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using KSP.Localization;
 using ToolbarControl_NS;
 
 namespace AntennaHelper
@@ -56,10 +57,10 @@ namespace AntennaHelper
 				KSP.UI.Screens.ApplicationLauncher.AppScenes.FLIGHT 
 				| KSP.UI.Screens.ApplicationLauncher.AppScenes.MAPVIEW;
 
-			if (!HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().enableInFlight) {
+			if (!HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().enableInFlight) {
 				scenes = KSP.UI.Screens.ApplicationLauncher.AppScenes.MAPVIEW;
 			}
-			if (!HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().enableInMapView) {
+			if (!HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().enableInMapView) {
 				scenes = KSP.UI.Screens.ApplicationLauncher.AppScenes.FLIGHT;
 			}
 
@@ -70,15 +71,15 @@ namespace AntennaHelper
 					ToolbarButtonOnTrue,
 					ToolbarButtonOnFalse,
 					scenes,
-					"AntennaHelper",
+					Localizer.Format ("#autoLOC_AH_0032"),
 					"368879",
 					"AntennaHelper/Textures/icon_sat_on",
 					"AntennaHelper/Textures/icon_off",
 					"AntennaHelper/Textures/icon_dish_on_small",
 					"AntennaHelper/Textures/icon_dish_off_small",
-					"Antenna Helper");
+					Localizer.Format ("#autoLOC_AH_0001"));
 
-				toolbarController.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().useBlizzy);
+				toolbarController.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().useBlizzy);
 
 				toolbarButtonAdded = true;
 			}
@@ -125,10 +126,6 @@ namespace AntennaHelper
 		#region OnGUIWindow
 		private void OnGUIStarter ()
 		{
-			Debug.Log ("[AH] on OnGUIStarter");
-
-
-
 			guiStyleButtonNorm = new GUIStyle (GUI.skin.GetStyle ("Button"));
 			guiStyleButtonBold = new GUIStyle (GUI.skin.GetStyle ("Button"));
 			guiStyleButtonBold.fontStyle = FontStyle.Bold;
@@ -147,38 +144,37 @@ namespace AntennaHelper
 			rectSelectCircleTypeWindow.position = AHSettings.posFlightMapViewWindow;
 
 			guiHasStarted = true;
-			Debug.Log ("[AH] OnGUIStarter finish");
 		}
 
 		void OnGUI ()
 		{
 			if (toolbarController != null) {
-				toolbarController.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().useBlizzy);
+				toolbarController.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().useBlizzy);
 			}
 
 			if (!guiHasStarted) {
 				OnGUIStarter ();
 			}
 			if (!hasStarted && (showActiveConnectWindow || showSelectCircleTypeWindow)) {
-				rectNotStartedWindow = GUILayout.Window (485768, rectNotStartedWindow, NotStartedWindow, "Antenna Helper");
+				rectNotStartedWindow = GUILayout.Window (485768, rectNotStartedWindow, NotStartedWindow, Localizer.Format ("#autoLOC_AH_0001"));
 				return;
 			}
 			if (showActiveConnectWindow) {
-				rectActiveConnectWindow = GUILayout.Window (434324, rectActiveConnectWindow, ActiveConnectWindow, "Antenne Helper");
+				rectActiveConnectWindow = GUILayout.Window (434324, rectActiveConnectWindow, ActiveConnectWindow, Localizer.Format ("#autoLOC_AH_0001"));
 			}
 			if (showSelectCircleTypeWindow) {
-				rectSelectCircleTypeWindow = GUILayout.Window (647886, rectSelectCircleTypeWindow, SelectCircleTypeWindow, "Circle Type");
+				rectSelectCircleTypeWindow = GUILayout.Window (647886, rectSelectCircleTypeWindow, SelectCircleTypeWindow, Localizer.Format ("#autoLOC_AH_0052"));
 			}
 			if (showPotentialRelaysWindow) {
 				rectPotentialRelaysWindow.position = new Vector2 (
 					rectActiveConnectWindow.position.x, 
 					rectActiveConnectWindow.position.y + rectActiveConnectWindow.size.y);
 				
-				rectPotentialRelaysWindow = GUILayout.Window (307428, rectPotentialRelaysWindow, PotentialRelaysWindow, "Relays");
+				rectPotentialRelaysWindow = GUILayout.Window (307428, rectPotentialRelaysWindow, PotentialRelaysWindow, Localizer.Format ("#autoLOC_AH_0053"));
 			}
 			if (showLinkDetailWindow) {
 				rectLinkDetailWindow.position = rectActiveConnectWindow.position - linkDetailPosOffset;
-				rectLinkDetailWindow = GUILayout.Window (675752, rectLinkDetailWindow, LinkDetailWindow, (selectedLink ["aName"] + " TO " + selectedLink ["bName"]));
+				rectLinkDetailWindow = GUILayout.Window (675752, rectLinkDetailWindow, LinkDetailWindow, Localizer.Format ("#autoLOC_AH_0054", new string[] { selectedLink ["aName"], selectedLink ["bName"] } ));
 			}
 		}
 
@@ -209,8 +205,8 @@ namespace AntennaHelper
 
 			GUILayout.BeginHorizontal ();
 			GUILayout.Label (detailsActiveConnectLinks [0] ["aName"], guiStyleLabelBold);
-			GUILayout.Label (" TO ", guiStyleLabelBold);
-			GUILayout.Label ("DSN", guiStyleLabelBold);
+			GUILayout.Label ((" " + Localizer.Format ("#autoLOC_AH_0055") + " "), guiStyleLabelBold);
+			GUILayout.Label (Localizer.Format ("#autoLOC_AH_0014"), guiStyleLabelBold);
 			GUILayout.Label (" : ", guiStyleLabelBold);
 			GUILayout.Label (detailsActiveConnectLinks [0] ["activeSignalStrength"], guiStyleLabelBold);
 			GUILayout.EndHorizontal ();
@@ -220,7 +216,7 @@ namespace AntennaHelper
 				GUILayout.Space (10f);
 				if (GUILayout.Button (
 					activeLink ["aName"] 
-					+ " TO " 
+					+ (" " + Localizer.Format ("#autoLOC_AH_0055") + " ") 
 					+ activeLink ["bName"] 
 					+ " : " 
 					+ activeLink ["signalStrength"]))
@@ -241,7 +237,7 @@ namespace AntennaHelper
 
 			GUILayout.Label ("", guiStyleSpace, GUILayout.Height (3f));
 
-			if (GUILayout.Button ("Potential Relays")) {
+			if (GUILayout.Button (Localizer.Format ("#autoLOC_AH_0056"))) {
 				showPotentialRelaysWindow = !showPotentialRelaysWindow;
 			}
 
@@ -256,8 +252,8 @@ namespace AntennaHelper
 			foreach (List<Dictionary<string, string>> relay in detailsRelaysLinks) {
 				GUILayout.BeginHorizontal ();
 				GUILayout.Label (relay [0] ["aName"], guiStyleLabelBold);
-				GUILayout.Label (" TO ", guiStyleLabelBold);
-				GUILayout.Label ("DSN", guiStyleLabelBold);
+				GUILayout.Label ((" " + Localizer.Format ("#autoLOC_AH_0055") + " "), guiStyleLabelBold);
+				GUILayout.Label (Localizer.Format ("#autoLOC_AH_0014"), guiStyleLabelBold);
 				GUILayout.Label (" : ", guiStyleLabelBold);
 				GUILayout.Label (relay [0] ["endSignalStrength"], guiStyleLabelBold, GUILayout.ExpandWidth (false));
 				GUILayout.EndHorizontal ();
@@ -267,7 +263,7 @@ namespace AntennaHelper
 					GUILayout.Space (10f);
 					if (GUILayout.Button (
 						activeLink ["aName"] 
-						+ " TO " 
+						+ (" " + Localizer.Format ("#autoLOC_AH_0055") + " ") 
 						+ activeLink ["bName"] 
 						+ " : " 
 						+ activeLink ["signalStrength"]))
@@ -304,40 +300,40 @@ namespace AntennaHelper
 
 			GUILayout.BeginHorizontal ();
 			GUILayout.Label (selectedLink ["aName"]);
-			GUILayout.Label (" Relay Power : ");
+			GUILayout.Label (" " + Localizer.Format ("#autoLOC_AH_0057") + " : ");
 			GUILayout.Label (selectedLink ["aPowerRelay"], GUILayout.ExpandWidth (false));
 			GUILayout.EndHorizontal ();
 
 			GUILayout.BeginHorizontal ();
 			GUILayout.Label (selectedLink ["aName"]);
-			GUILayout.Label (" Total Power : ");
+			GUILayout.Label (" " + Localizer.Format ("#autoLOC_AH_0058") + " : ");
 			GUILayout.Label (selectedLink ["aPowerTotal"], GUILayout.ExpandWidth (false));
 			GUILayout.EndHorizontal ();
 
 			GUILayout.BeginHorizontal ();
 			GUILayout.Label (selectedLink ["bName"]);
-			GUILayout.Label (" Relay Power : ");
+			GUILayout.Label (" " + Localizer.Format ("#autoLOC_AH_0057") + " : ");
 			GUILayout.Label (selectedLink ["bPowerRelay"], GUILayout.ExpandWidth (false));
 			GUILayout.EndHorizontal ();
 
 			GUILayout.BeginHorizontal ();
 			GUILayout.Label (selectedLink ["bName"]);
-			GUILayout.Label (" Total Power : ");
+			GUILayout.Label (" " + Localizer.Format ("#autoLOC_AH_0058") + " : ");
 			GUILayout.Label (selectedLink ["bPowerTotal"], GUILayout.ExpandWidth (false));
 			GUILayout.EndHorizontal ();
 
 			GUILayout.BeginHorizontal ();
-			GUILayout.Label ("Max Range : ");
+			GUILayout.Label (Localizer.Format ("#autoLOC_AH_0010") + " : ");
 			GUILayout.Label (selectedLink ["maxRange"], GUILayout.ExpandWidth (false));
 			GUILayout.EndHorizontal ();
 
 			GUILayout.BeginHorizontal ();
-			GUILayout.Label ("Distance : ");
+			GUILayout.Label (Localizer.Format ("#autoLOC_AH_0059") + " : ");
 			GUILayout.Label (selectedLink ["distance"], GUILayout.ExpandWidth (false));
 			GUILayout.EndHorizontal ();
 
 			GUILayout.BeginHorizontal ();
-			GUILayout.Label ("Signal Strength : ");
+			GUILayout.Label (/*Signal Strength*/Localizer.Format ("#autoLOC_AH_0060") + " : ");
 			GUILayout.Label (selectedLink ["signalStrength"], GUILayout.ExpandWidth (false));
 			GUILayout.EndHorizontal ();
 
@@ -348,23 +344,23 @@ namespace AntennaHelper
 		{
 			GUILayout.BeginVertical ();
 
-			if (GUILayout.Button ("Active", guiStyleSelectActive)) {
+			if (GUILayout.Button (/*"Active"*/Localizer.Format ("#autoLOC_AH_0045"), guiStyleSelectActive)) {
 				currentCircleType = GUICircleSelection.ACTIVE;
 				SelectCircleType ();
 			}
-			if (GUILayout.Button ("DSN", guiStyleSelectDSN)) {
+			if (GUILayout.Button (/*"DSN"*/Localizer.Format ("#autoLOC_AH_0046"), guiStyleSelectDSN)) {
 				currentCircleType = GUICircleSelection.DSN;
 				SelectCircleType ();
 			}
-			if (GUILayout.Button ("Relay(s)", guiStyleSelectRelay)) {
+			if (GUILayout.Button (/*"Relay(s)"*/Localizer.Format ("#autoLOC_AH_0048"), guiStyleSelectRelay)) {
 				currentCircleType = GUICircleSelection.RELAY;
 				SelectCircleType ();
 			}
-			if (GUILayout.Button ("DSN and Relay(s)", guiStyleSelectRelayAndDSN)) {
+			if (GUILayout.Button (/*"DSN and Relay(s)"*/Localizer.Format ("#autoLOC_AH_0047"), guiStyleSelectRelayAndDSN)) {
 				currentCircleType = GUICircleSelection.DSN_AND_RELAY;
 				SelectCircleType ();
 			}
-			if (GUILayout.Button ("None", guiStyleSelectNone)) {
+			if (GUILayout.Button (/*"None"*/Localizer.Format ("#autoLOC_AH_0049"), guiStyleSelectNone)) {
 				currentCircleType = GUICircleSelection.NONE;
 				SelectCircleType ();
 			}
@@ -377,8 +373,8 @@ namespace AntennaHelper
 		private void NotStartedWindow (int id)
 		{
 			GUILayout.BeginVertical ();
-			GUILayout.Label ("Antenna Helper isn't ready just yet");
-			GUILayout.Label ("Wait...");
+			GUILayout.Label (/*"Antenna Helper isn't ready just yet"*/Localizer.Format ("#autoLOC_AH_0061"));
+			GUILayout.Label (/*"Wait..."*/Localizer.Format ("#autoLOC_AH_0062"));
 			GUILayout.EndVertical ();
 
 			GUI.DragWindow ();

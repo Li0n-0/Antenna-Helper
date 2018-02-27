@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using KSP.Localization;
 
 namespace AntennaHelper
 {
@@ -41,8 +42,8 @@ namespace AntennaHelper
 		#region Starters
 		void Start ()
 		{
-			if ((!HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().enableInFlight) 
-				&& !HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().enableInMapView) {
+			if ((!HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().enableInFlight) 
+				&& !HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().enableInMapView) {
 				Destroy (this);
 				return;
 			}
@@ -50,29 +51,11 @@ namespace AntennaHelper
 			timeAtStart = Time.time;
 			timers = new List<WaitForSeconds> ();
 			timers.Add (new WaitForSeconds (.1f));
-			float delay = 0;
-			switch (HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().delayFlightUI)
-			{
-			case AHGameSettings.DelayEnum.Tenth_Second:
-				delay = .1f;
-				break;
-			case AHGameSettings.DelayEnum.Half_Second:
-				delay = .5f;
-				break;
-			case AHGameSettings.DelayEnum.One_Second:
-				delay = 1f;
-				break;
-			case AHGameSettings.DelayEnum.Two_Seconds:
-				delay = 2f;
-				break;
-			case AHGameSettings.DelayEnum.Window_Open:
-				delay = 0;
+			double delay = HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().delayFlightUI;
+			if (delay == 0) {
 				doUpdate = false;
-				break;
-			default:
-				break;
 			}
-			timers.Add (new WaitForSeconds (delay));
+			timers.Add (new WaitForSeconds ((float)delay));
 
 			dsnBody = FlightGlobals.GetHomeBody ();
 			dsnPower = GameVariables.Instance.GetDSNRange 
@@ -321,7 +304,7 @@ namespace AntennaHelper
 			detailsActiveConnectLinks [0].Add ("distance", targetDistance.ToString ("N0") + "m");
 
 			if (connectedToDSN) {
-				detailsActiveConnectLinks [0].Add ("bName", "DSN");
+				detailsActiveConnectLinks [0].Add ("bName", /*"DSN"*/Localizer.Format ("#autoLOC_AH_0014"));
 				detailsActiveConnectLinks [0].Add ("bPowerTotal", dsnPower.ToString ("N0"));
 				detailsActiveConnectLinks [0].Add ("bPowerRelay", dsnPower.ToString ("N0"));
 				detailsActiveConnectLinks [0].Add ("signalStrength", sSToDSN.ToString ("0.00%"));
@@ -348,7 +331,7 @@ namespace AntennaHelper
 					i++;
 				}
 			} else {
-				detailsActiveConnectLinks [0].Add ("bName", "None");
+				detailsActiveConnectLinks [0].Add ("bName", /*"None"*/Localizer.Format ("#autoLOC_AH_0063"));
 				detailsActiveConnectLinks [0].Add ("bPowerTotal", "0");
 				detailsActiveConnectLinks [0].Add ("bPowerRelay", "0");
 				detailsActiveConnectLinks [0].Add ("signalStrength", "0");
@@ -479,7 +462,7 @@ namespace AntennaHelper
 				_dsn.directPower = _dsn.relayPower;
 				_dsn.isDSN = true;
 				_dsn.distanceOffset = home.Radius;
-				_dsn.name = "DSN";
+				_dsn.name = /*"DSN"*/Localizer.Format ("#autoLOC_AH_0014");
 
 				potentialRelays = new List<RelayVessel> ();
 				foreach (Vessel v in FlightGlobals.Vessels.FindAll (v => (v.Connection != null) && (v != FlightGlobals.ActiveVessel))) {
@@ -488,8 +471,8 @@ namespace AntennaHelper
 						potentialRelays.Add (new RelayVessel (v));
 					}
 				}
-				Debug.Log ("[AH] dsn distance offset : " + _dsn.distanceOffset);
-				Debug.Log ("[AH] static dsn relay constructed");
+//				Debug.Log ("[AH] dsn distance offset : " + _dsn.distanceOffset);
+//				Debug.Log ("[AH] static dsn relay constructed");
 			}
 
 			public static RelayVessel GetRelayVessel (Vessel v)

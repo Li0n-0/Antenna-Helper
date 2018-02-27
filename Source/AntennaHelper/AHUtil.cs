@@ -642,6 +642,30 @@ namespace AntennaHelper
 		{
 			return (float)distance / 2949.852507374631f;
 		}
+
+		public static string FormatCircleSelect (GUICircleSelection circleSelect)
+		{
+			string circleSelectClean;
+			switch (circleSelect) {
+			case GUICircleSelection.ACTIVE:
+				circleSelectClean = "#autoLOC_AH_0045";
+				break;
+			case GUICircleSelection.DSN:
+				circleSelectClean = "#autoLOC_AH_0046";
+				break;
+			case GUICircleSelection.DSN_AND_RELAY:
+				circleSelectClean = "#autoLOC_AH_0047";
+				break;
+			case GUICircleSelection.RELAY:
+				circleSelectClean = "#autoLOC_AH_0048";
+				break;
+			case GUICircleSelection.NONE:
+			default:
+				circleSelectClean = "#autoLOC_AH_0049";
+				break;
+			}
+			return circleSelectClean;
+		}
 		#endregion
 	}
 

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using KSP.Localization;
 using ToolbarControl_NS;
 
 namespace AntennaHelper
@@ -34,7 +35,7 @@ namespace AntennaHelper
 
 		public void Start ()
 		{
-			if (!HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().enableInTrackingStation) {
+			if (!HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().enableInTrackingStation) {
 				Destroy (this);
 				return;
 			}
@@ -57,7 +58,7 @@ namespace AntennaHelper
 
 
 			// GUI
-			rectMainWindow = new Rect (0, 0, 150, 250);
+			rectMainWindow = new Rect (0, 0, 150, 245);
 			rectMainWindow.position = new Vector2 (Screen.width - rectMainWindow.width, Screen.height - rectMainWindow.height - 40);
 			mainWindowOn = false;
 
@@ -317,15 +318,15 @@ namespace AntennaHelper
 		public void OnGUI ()
 		{
 			if (mainWindowOn) {
-				rectMainWindow = GUI.Window (889204, rectMainWindow, MainWindow, "Antenna Helper");
+				rectMainWindow = GUI.Window (889204, rectMainWindow, MainWindow, Localizer.Format ("#autoLOC_AH_0001"));
 			}
 
 			if (editorShipWindowOn) {
-				rectEditorShipWindow = GUI.Window (524258, rectEditorShipWindow, EditorShipListWindow, "Editor Ship List");
+				rectEditorShipWindow = GUI.Window (524258, rectEditorShipWindow, EditorShipListWindow, Localizer.Format ("#autoLOC_AH_0044"));
 			}
 
 			if (toolbarControl != null) {
-				toolbarControl.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().useBlizzy);
+				toolbarControl.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().useBlizzy);
 			}
 		}
 
@@ -338,28 +339,28 @@ namespace AntennaHelper
 				transmitterName = listShipTransmitter [targetPid] ["name"];
 			}
 
-			GUILayout.Label ("Transmitter : " + transmitterName);
-			GUILayout.Label ("Display Type : " + circleTypeSelected.ToString ());
+			GUILayout.Label (Localizer.Format ("#autoLOC_AH_0050", new string[] { transmitterName } ));
+			GUILayout.Label (Localizer.Format ("#autoLOC_AH_0051", new string[] { AHUtil.FormatCircleSelect (circleTypeSelected) } ));
 			GUILayout.Space (3f);
-			if (GUILayout.Button ("Active Connection")) {
+			if (GUILayout.Button (Localizer.Format ("#autoLOC_AH_0045"))) {
 				circleTypeSelected = GUICircleSelection.ACTIVE;
 				ShowCircles ();
 			}
-			if (GUILayout.Button ("DSN")) {
+			if (GUILayout.Button (Localizer.Format ("#autoLOC_AH_0046"))) {
 				circleTypeSelected = GUICircleSelection.DSN;
 				ShowCircles ();
 			}
-			if (GUILayout.Button ("Relay")) {
+			if (GUILayout.Button (Localizer.Format ("#autoLOC_AH_0048"))) {
 				circleTypeSelected = GUICircleSelection.RELAY;
 				ShowCircles ();
 			}
-			if (GUILayout.Button ("DSN + Relay")) {
+			if (GUILayout.Button (Localizer.Format ("#autoLOC_AH_0047"))) {
 				circleTypeSelected = GUICircleSelection.DSN_AND_RELAY;
 				ShowCircles ();
 			}
 
 			GUILayout.Space (10f);
-			if (GUILayout.Button ("Editor Ship List")) {
+			if (GUILayout.Button (Localizer.Format ("#autoLOC_AH_0044"))) {
 				editorShipWindowOn = !editorShipWindowOn;
 			}
 
@@ -393,7 +394,7 @@ namespace AntennaHelper
 			} else {
 				guiStyleButton = guiStyleButtonNorm;
 			}
-			if (GUILayout.Button ("VAB", guiStyleButton)) {
+			if (GUILayout.Button (Localizer.Format ("#autoLOC_AH_0019"), guiStyleButton)) {
 				editorShipVab = true;
 			}
 
@@ -402,7 +403,7 @@ namespace AntennaHelper
 			} else {
 				guiStyleButton = guiStyleButtonBold;
 			}
-			if (GUILayout.Button ("SPH", guiStyleButton)) {
+			if (GUILayout.Button (Localizer.Format ("#autoLOC_AH_0020"), guiStyleButton)) {
 				editorShipVab = false;
 			}
 			GUILayout.EndHorizontal ();
@@ -414,7 +415,7 @@ namespace AntennaHelper
 			} else {
 				guiStyleButton = guiStyleButtonBold;
 			}
-			if (GUILayout.Button ("All", guiStyleButton)) {
+			if (GUILayout.Button (Localizer.Format ("#autoLOC_AH_0021"), guiStyleButton)) {
 				editorShipRelay = false;
 			}
 
@@ -423,7 +424,7 @@ namespace AntennaHelper
 			} else {
 				guiStyleButton = guiStyleButtonNorm;
 			}
-			if (GUILayout.Button ("Relay", guiStyleButton)) {
+			if (GUILayout.Button (Localizer.Format ("#autoLOC_AH_0003"), guiStyleButton)) {
 				editorShipRelay = true;
 			}
 			GUILayout.Space (35f);
@@ -447,7 +448,7 @@ namespace AntennaHelper
 
 			foreach (Dictionary <string, string> vesselInfo in guiListEditorShipDisplay) {
 				GUILayout.BeginHorizontal ();
-				if (GUILayout.Button ("Select", GUILayout.Width (60f))) {
+				if (GUILayout.Button (Localizer.Format ("#autoLOC_AH_0022"), GUILayout.Width (60f))) {
 					targetPid = vesselInfo ["pid"];
 					ShowCircles ();
 				}
@@ -481,15 +482,15 @@ namespace AntennaHelper
 				ToolbarButtonOnTrue,
 				ToolbarButtonOnFalse,
 				KSP.UI.Screens.ApplicationLauncher.AppScenes.TRACKSTATION,
-				"AntennaHelper",
+				Localizer.Format ("#autoLOC_AH_0032"),
 				"421980",
 				"AntennaHelper/Textures/icon_dish_on",
 				"AntennaHelper/Textures/icon_off",
 				"AntennaHelper/Textures/icon_dish_on_small",
 				"AntennaHelper/Textures/icon_dish_off_small",
-				"Antenna Helper");
+				Localizer.Format ("#autoLOC_AH_0001"));
 
-			toolbarControl.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AHGameSettings> ().useBlizzy);
+			toolbarControl.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().useBlizzy);
 		}
 
 		private void RemoveToolbarButton ()

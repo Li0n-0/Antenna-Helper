@@ -57,7 +57,7 @@
     <Compile Include="AHShipList.cs" />
     <Compile Include="AHFlightWindow.cs" />
     <Compile Include="AHFlight.cs" />
-    <Compile Include="AHGameSettings.cs" />
+    <Compile Include="AntennaHelperSettings.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

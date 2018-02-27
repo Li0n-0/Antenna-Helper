@@ -2,16 +2,16 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
   <MonoDevelop.Ide.Workbench ActiveDocument="AHGameSettings.cs">
     <Files>
-      <File FileName="AHEditorWindows.cs" Line="327" Column="22" />
+      <File FileName="AHEditorWindows.cs" Line="1" Column="1" />
       <File FileName="AHShipList.cs" Line="1" Column="1" />
-      <File FileName="AHSettings.cs" Line="68" Column="94" />
-      <File FileName="AHEditor.cs" Line="730" Column="106" />
-      <File FileName="AHFlightWindow.cs" Line="81" Column="22" />
-      <File FileName="AHGameSettings.cs" Line="62" Column="58" />
+      <File FileName="AHSettings.cs" Line="1" Column="1" />
+      <File FileName="AHFlightWindow.cs" Line="1" Column="1" />
+      <File FileName="AHGameSettings.cs" Line="60" Column="110" />
       <File FileName="AHMapMarker.cs" Line="6" Column="29" NotebookId="1" />
       <File FileName="AHUtil.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="AHTrackingStation.cs" Line="492" Column="106" NotebookId="1" />
-      <File FileName="AHFlight.cs" Line="47" Column="5" NotebookId="1" />
+      <File FileName="AHTrackingStation.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="AHFlight.cs" Line="15" Column="31" NotebookId="1" />
+      <File FileName="AHEditor.cs" Line="1" Column="1" NotebookId="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
