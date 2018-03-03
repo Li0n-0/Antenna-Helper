@@ -299,26 +299,26 @@ namespace AntennaHelper
 			GUILayout.BeginVertical ();
 
 			GUILayout.BeginHorizontal ();
-			GUILayout.Label (selectedLink ["aName"]);
-			GUILayout.Label (" " + Localizer.Format ("#autoLOC_AH_0057") + " : ");
+			GUILayout.Label (selectedLink ["aName"] + "  " + Localizer.Format ("#autoLOC_AH_0057") + " : ");
+//			GUILayout.Label (" " + Localizer.Format ("#autoLOC_AH_0057") + " : ");
 			GUILayout.Label (selectedLink ["aPowerRelay"], GUILayout.ExpandWidth (false));
 			GUILayout.EndHorizontal ();
 
 			GUILayout.BeginHorizontal ();
-			GUILayout.Label (selectedLink ["aName"]);
-			GUILayout.Label (" " + Localizer.Format ("#autoLOC_AH_0058") + " : ");
+			GUILayout.Label (selectedLink ["aName"] + "  " + Localizer.Format ("#autoLOC_AH_0058") + " : ");
+//			GUILayout.Label (" " + Localizer.Format ("#autoLOC_AH_0058") + " : ");
 			GUILayout.Label (selectedLink ["aPowerTotal"], GUILayout.ExpandWidth (false));
 			GUILayout.EndHorizontal ();
 
 			GUILayout.BeginHorizontal ();
-			GUILayout.Label (selectedLink ["bName"]);
-			GUILayout.Label (" " + Localizer.Format ("#autoLOC_AH_0057") + " : ");
+			GUILayout.Label (selectedLink ["bName"] + "  " + Localizer.Format ("#autoLOC_AH_0057") + " : ");
+//			GUILayout.Label (" " + Localizer.Format ("#autoLOC_AH_0057") + " : ");
 			GUILayout.Label (selectedLink ["bPowerRelay"], GUILayout.ExpandWidth (false));
 			GUILayout.EndHorizontal ();
 
 			GUILayout.BeginHorizontal ();
-			GUILayout.Label (selectedLink ["bName"]);
-			GUILayout.Label (" " + Localizer.Format ("#autoLOC_AH_0058") + " : ");
+			GUILayout.Label (selectedLink ["bName"] + "  " + Localizer.Format ("#autoLOC_AH_0058") + " : ");
+//			GUILayout.Label (" " + Localizer.Format ("#autoLOC_AH_0058") + " : ");
 			GUILayout.Label (selectedLink ["bPowerTotal"], GUILayout.ExpandWidth (false));
 			GUILayout.EndHorizontal ();
 
