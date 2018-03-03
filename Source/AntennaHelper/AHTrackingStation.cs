@@ -59,11 +59,11 @@ namespace AntennaHelper
 
 			// GUI
 			rectMainWindow = new Rect (0, 0, 150, 245);
-			rectMainWindow.position = new Vector2 (Screen.width - rectMainWindow.width, Screen.height - rectMainWindow.height - 40);
+			rectMainWindow.position = AHSettings.posTrackingStationMainWindow;
 			mainWindowOn = false;
 
 			rectEditorShipWindow = new Rect (0, 0, 350, 200);
-			rectEditorShipWindow.position = new Vector2 (rectMainWindow.position.x - rectEditorShipWindow.width, rectMainWindow.position.y);
+			rectEditorShipWindow.position = AHSettings.posTrackingStationShipWindow;
 			editorShipWindowOn = false;
 
 			circleTypeSelected = GUICircleSelection.ACTIVE;
@@ -84,6 +84,10 @@ namespace AntennaHelper
 
 		public void OnDestroy ()
 		{
+			AHSettings.SavePosition ("tracking_station_main_window_position", rectMainWindow.position);
+			AHSettings.SavePosition ("tracking_station_ship_window_position", rectEditorShipWindow.position);
+			AHSettings.WriteSave ();
+
 			if (listMarkers != null) {
 				DestroyMarkers ();
 			}
