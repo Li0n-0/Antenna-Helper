@@ -61,7 +61,7 @@ It brings this window :
 ![editor main window direct](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/editor_main_window_direct.png?raw=true)
 
 
-Lots of infos here, let's go through them from top to bottom :
+Lots of info here, let's go through them from top to bottom :
 * **Selected type :** which antennas are taking into account to compute the vessel antenna power. **Direct** (by default) will use all antennas, **Relay** will use only the antenna with relay capability.
 * **Current target :** the range of your ship's antenna is determined by the antenna power of its target, which can be the DSN or a relay. By default the selected target is the DSN. You can change the target by clicking on **Pick A Target**. (more about it below)
 * **Status :** a quick explanation about which antenna on your craft will actually be used in flight.
@@ -136,7 +136,7 @@ The number between parenthesis is the **total** antenna power of your vessel, as
 
 ## Sounds awesome but I don't want/need X feature ?
 
-In the **Advanced Settings** menu you'll find a tab for Antenna Helper. Here you can disable the mod per scene, choose to use Blizzy/LinuxGuruGamer toolbar instead of stock, and, set the refreshing speed for the flight UI, in case it slow your game.
+In the **Advanced Settings** menu you'll find a tab for Antenna Helper. Here you can disable the mod per scene, choose to use [Blizzy/LinuxGuruGamer toolbar](https://forum.kerbalspaceprogram.com/index.php?/topic/161857-131-toolbar-continued-common-api-for-draggableresizable-buttons-toolbar/) instead of stock, and, set the refreshing speed for the flight UI, in case it slow your game.
 
 ![settings screen](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/settings_screen.png?raw=true)
 
@@ -146,24 +146,26 @@ In the **Advanced Settings** menu you'll find a tab for Antenna Helper. Here you
 
 **DOWNLOADS :**
 * Get it with CKAN (soon)
-* [GitHub](https://github.com/Li0n-0/Antenna-Helper/releases)
 * [SpaceDock]() (soon)
+* [GitHub](https://github.com/Li0n-0/Antenna-Helper/releases)
 
 **DEPENDENCY :**
 * [Toolbar Controller](https://github.com/linuxgurugamer/ToolbarControl/releases)
 
-[**Know issues and *maybe* future plans**](https://github.com/Li0n-0/Antenna-Helper/issues)
+It is localized in Japanese, Simplified Chinese and Spanish.
 
 It *should* be compatible with every mods, except RemoteTech.
 
 If you find any bugs please report it, either on [GitHub](https://github.com/Li0n-0/Antenna-Helper/issues) or on this [KSP forum's thread]().
+
+[Know issues and *maybe* future plans](https://github.com/Li0n-0/Antenna-Helper/issues)
 
 
 ## Credits
 
 The idea for an in-game calculator is from [this thread](https://forum.kerbalspaceprogram.com/index.php?/topic/153155-mod-idea-in-game-antenna-strength-calculater/) by [Tyko](https://forum.kerbalspaceprogram.com/index.php?/profile/164179-tyko/).
 
-Thanks to [Poodmund](https://forum.kerbalspaceprogram.com/index.php?/profile/128643-poodmund/) for his [google docs's calculator](https://docs.google.com/spreadsheets/d/1qIgFB8OXnlgpPCGsxv7JYUYQq5O671IcZXpumVaStek/edit?usp=sharing), and for the help he provide to this mod.
+Thanks to [Poodmund](https://forum.kerbalspaceprogram.com/index.php?/profile/128643-poodmund/) for his [google doc's calculator](https://docs.google.com/spreadsheets/d/1qIgFB8OXnlgpPCGsxv7JYUYQq5O671IcZXpumVaStek/edit?usp=sharing), and for the help he provide to this mod.
 
 Thanks to [Skalou](https://forum.kerbalspaceprogram.com/index.php?/profile/133496-skalou/) for his help with the math :wink:
 
@@ -176,4 +178,4 @@ Thanks to the translators :
 
 Antenna Helper icon/logo made by myself with assets from [FlatIcon](https://www.flaticon.com) by [Freepik](https://www.flaticon.com/authors/freepik).
 
-## [Thread on offical KSP forum](https://forum.kerbalspaceprogram.com/index.php?/topic/156122-wip131-antenna-helper-in-game-antennas-range-calculation-v08-17-nov-2017/)
+## [Thread on official KSP forum]()
