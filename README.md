@@ -146,7 +146,7 @@ In the **Advanced Settings** menu you'll find a tab for Antenna Helper. Here you
 
 **DOWNLOADS :**
 * Get it with CKAN (soon)
-* [SpaceDock]() (soon)
+* [SpaceDock](https://spacedock.info/mod/1730/Antenna%20Helper)
 * [GitHub](https://github.com/Li0n-0/Antenna-Helper/releases)
 
 **DEPENDENCY :**
@@ -156,7 +156,7 @@ It is localized in Japanese, Simplified Chinese and Spanish.
 
 It *should* be compatible with every mods, except RemoteTech.
 
-If you find any bugs please report it, either on [GitHub](https://github.com/Li0n-0/Antenna-Helper/issues) or on this [KSP forum's thread]().
+If you find any bugs please report it, either on [GitHub](https://github.com/Li0n-0/Antenna-Helper/issues) or on this [KSP forum's thread](https://forum.kerbalspaceprogram.com/index.php?/topic/171900-131-antenna-helper-math-your-antenna-range-and-signal-strength-v100-9-mar-2018/).
 
 [Know issues and *maybe* future plans](https://github.com/Li0n-0/Antenna-Helper/issues)
 
@@ -180,4 +180,4 @@ Thanks to the translators :
 
 Antenna Helper icon/logo made by myself with assets from [FlatIcon](https://www.flaticon.com) by [Freepik](https://www.flaticon.com/authors/freepik).
 
-## [Thread on official KSP forum]()
+## [Thread on official KSP forum](https://forum.kerbalspaceprogram.com/index.php?/topic/171900-131-antenna-helper-math-your-antenna-range-and-signal-strength-v100-9-mar-2018/)
