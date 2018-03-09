@@ -1,17 +1,17 @@
 ﻿<Properties StartupItem="AntennaHelper.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="AHGameSettings.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="AHTrackingStation.cs">
     <Files>
-      <File FileName="AHEditorWindows.cs" Line="1" Column="1" />
+      <File FileName="AHEditorWindows.cs" Line="98" Column="54" />
       <File FileName="AHShipList.cs" Line="1" Column="1" />
-      <File FileName="AHSettings.cs" Line="1" Column="1" />
-      <File FileName="AHFlightWindow.cs" Line="1" Column="1" />
-      <File FileName="AHGameSettings.cs" Line="60" Column="110" />
-      <File FileName="AHMapMarker.cs" Line="6" Column="29" NotebookId="1" />
+      <File FileName="AHSettings.cs" Line="83" Column="67" />
+      <File FileName="AntennaHelperSettings.cs" Line="1" Column="1" />
+      <File FileName="AHMapMarker.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="AHUtil.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="AHTrackingStation.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="AHFlight.cs" Line="15" Column="31" NotebookId="1" />
+      <File FileName="AHTrackingStation.cs" Line="90" Column="4" NotebookId="1" />
+      <File FileName="AHFlight.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="AHEditor.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="AHFlightWindow.cs" Line="323" Column="102" NotebookId="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

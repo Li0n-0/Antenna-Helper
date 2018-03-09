@@ -321,31 +321,37 @@ namespace AntennaHelper
 		{
 			// DIRECT
 			if (nbDirectAntenna == 0) {
-				statusStringDirect = Localizer.Format ("#autoLOC_AH_0033");
+				statusStringDirect = /*No antenna*/Localizer.Format ("#autoLOC_AH_0033");
 			} else if (nbDirectAntenna == 1) {
-				statusStringDirect = Localizer.Format ("#autoLOC_AH_0040", new string[] {directAntennaName});
+				statusStringDirect = /*One antenna : <<1>>*/Localizer.Format ("#autoLOC_AH_0040", new string[] { directAntennaName });
 			} else {
 				if (nbDirectCombAntenna < 2) {
-					statusStringDirect = Localizer.Format ("#autoLOC_AH_0041", new string[] {nbDirectAntenna.ToString (), directAntennaName});
+					statusStringDirect = /*<<1>> antennas, not combinable, <<2>> is the most powerfull*/
+						Localizer.Format ("#autoLOC_AH_0041", new string[] {nbDirectAntenna.ToString (), directAntennaName});
 				} else {
-					statusStringDirect = nbDirectCombAntenna + " " + Localizer.Format ("#autoLOC_AH_0037") + " " + nbDirectAntenna 
-						+ " " + Localizer.Format ("#autoLOC_AH_0038");
-					statusStringDirect = Localizer.Format ("#autoLOC_AH_0042", new string[] { nbDirectCombAntenna.ToString (), nbDirectAntenna.ToString () });
+					statusStringDirect = /*<<1>> of <<2>> antennas are combinable*/
+						Localizer.Format ("#autoLOC_AH_0042", new string[] {
+						nbDirectCombAntenna.ToString (),
+						nbDirectAntenna.ToString ()
+					});
 				}
 			}
 
 			// RELAY
 			if (nbRelayAntenna == 0) {
-				statusStringRelay = Localizer.Format ("#autoLOC_AH_0033");
+				statusStringRelay = /*No antenna*/Localizer.Format ("#autoLOC_AH_0033");
 			} else if (nbRelayAntenna == 1) {
-				statusStringRelay = Localizer.Format ("#autoLOC_AH_0034") + " : " + relayAntennaName;
+				statusStringRelay = /*One antenna : <<1>>*/Localizer.Format ("#autoLOC_AH_0040", new string[] { relayAntennaName });
 			} else {
 				if (nbRelayCombAntenna < 2) {
-					statusStringRelay = nbRelayAntenna + " " + Localizer.Format ("#autoLOC_AH_0035") + ", "
-						+ relayAntennaName + " " + Localizer.Format ("#autoLOC_AH_0036");
+					statusStringRelay = /*<<1>> antennas, not combinable, <<2>> is the most powerfull*/
+						Localizer.Format ("#autoLOC_AH_0041", new string[] {nbRelayAntenna.ToString (), relayAntennaName});
 				} else {
-					statusStringRelay = nbRelayCombAntenna + " " + Localizer.Format ("#autoLOC_AH_0037") + " " + nbRelayAntenna 
-						+ " " + Localizer.Format ("#autoLOC_AH_0038");
+					statusStringRelay = /*<<1>> of <<2>> antennas are combinable*/
+						Localizer.Format ("#autoLOC_AH_0042", new string[] {
+							nbRelayCombAntenna.ToString (),
+							nbRelayAntenna.ToString ()
+						});
 				}
 			}
 		}
@@ -699,7 +705,9 @@ namespace AntennaHelper
 			}
 			if (showPlanetWindow) {
 				GUILayout.BeginArea (rectPlanetWindow);
-				rectPlanetWindow = GUILayout.Window (332980, rectPlanetWindow, AHEditorWindows.PlanetWindow, Localizer.Format ("#autoLOC_AH_0012"));
+				rectPlanetWindow = GUILayout.Window (332980, rectPlanetWindow, AHEditorWindows.PlanetWindow, 
+					(/*Signal Strength / Distance*/Localizer.Format ("#autoLOC_AH_0060")
+					+ " / " + Localizer.Format ("#autoLOC_AH_0059")));
 				GUILayout.EndArea ();
 			}
 

@@ -17,41 +17,38 @@ It will show you the antenna capability of your active vessel in flight, in the 
 
 ## In flight ?
 
-Only in the **Map View** (for now). Click the Antenna Helper icon on the app launcher : ![Antenna Helper icon](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/icon_off.png?raw=true)
+Click the Antenna Helper icon on the toolbar : ![Antenna Helper icon](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/icon_off.png?raw=true)
 And you should see something close to that :
+
+![flight main window](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/flight_main_window.png?raw=true)
+
+The top line, in bold, show the signal strength of the whole CommNet path between your vessel and the DSN. Each button beneath it is a link in this path.
+
+Clicking on the **Potential Relays** button will expand the window to show all the in-flight relays : 
+
+![flight potential relays window](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/flight_potential_relays_window.png?raw=true)
+
+You can click on every link to display some info about both vessel (or DSN) and about the link it-self : 
+
+![flight link info window](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/flight_link_info_window.png?raw=true)
+
+Now take a look at : 
+
+
+## The Map-View
 
 ![map view active connect](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_active.png?raw=true)
 
+A big circle has appeared ! Centered on the vessel or DSN your directly connected to (the first link of the main window), it helps visualize the range and signal decay of your active connection.
+While your ship is in the green circle its signal strength will be clamped between 100 and 75%, in the yellow circle between 75 and 50%, in the orange circle between 50 and 25%, in the red circle between 25 and 0%. And if you're outside the red circle you don't have any connection.
 
-Those color circles represent the maximum range between your vessel and its relay/DSN, it also indicate how much signal strength you get. While your ship is in the green circle its signal strength will be clamped between 100 and 75%, in the yellow circle between 75 and 50%, in the orange circle between 50 and 25%, in the red circle between 25 and 0%. And if you're outside the red circle you don't have any connection.
-
-
-Apart from the color circles, you'll see a small window next to Antenna Helper icon on the app launcher : 
+With this new window (show it-self only in the map-view) :
 
 ![map view window](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_window.png?raw=true)
 
+You can choose between different sources to show your potential range and signal strength : 
 
-The four button will show you your range, and signal strength, from different sources (relay or DSN).
-
-* **ACTIVE** (by default) show your range for the active connection, which can be from a relay or DSN.
-
-![map view active connect](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_active.png?raw=true)
-
-
-* **DSN** show the maximum range between your vessel and the DSN
-
-![map view dsn connect](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_dsn.png?raw=true)
-
-
-* **RELAY** show the maximum range between your vessel and all the in-flight relay
-
-![map view relay connect](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_relay.png?raw=true)
-
-
-* **DSN and RELAY** combine the two above, showing you **all** the possible connection, with their range
-
-![map view relay and dsn connect](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_dsn_and_relay.png?raw=true)
-
+![map view patchwork](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_patchwork.png?raw=true)
 
 
 ## You mentioned the editor ?
@@ -64,7 +61,7 @@ It brings this window :
 ![editor main window direct](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/editor_main_window_direct.png?raw=true)
 
 
-Lots of infos here, let's go through them from top to bottom :
+Lots of info here, let's go through them from top to bottom :
 * **Selected type :** which antennas are taking into account to compute the vessel antenna power. **Direct** (by default) will use all antennas, **Relay** will use only the antenna with relay capability.
 * **Current target :** the range of your ship's antenna is determined by the antenna power of its target, which can be the DSN or a relay. By default the selected target is the DSN. You can change the target by clicking on **Pick A Target**. (more about it below)
 * **Status :** a quick explanation about which antenna on your craft will actually be used in flight.
@@ -137,44 +134,50 @@ The number between parenthesis is the **total** antenna power of your vessel, as
 
 
 
+## Sounds awesome but I don't want/need X feature ?
+
+In the **Advanced Settings** menu you'll find a tab for Antenna Helper. Here you can disable the mod per scene, choose to use [Blizzy/LinuxGuruGamer toolbar](https://forum.kerbalspaceprogram.com/index.php?/topic/161857-131-toolbar-continued-common-api-for-draggableresizable-buttons-toolbar/) instead of stock, and, set the refreshing speed for the flight UI, in case it slow your game.
+
+![settings screen](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/settings_screen.png?raw=true)
+
 
 
 ## About the mod
 
-This is still a work in progress, you can use it safely, it won't break any thing in your game but the value may be off. If you find a bug or have any suggestion please post [on this thread](https://forum.kerbalspaceprogram.com/index.php?/topic/156122-wip122-to-131-antenna-helper-in-game-antennas-range-calculation-v07-7-oct-2017/) on the official KSP forum or create an issue [on GitHub](https://github.com/Li0n-0/Antenna-Helper).
+**DOWNLOADS :**
+* Get it with CKAN (soon)
+* [SpaceDock]() (soon)
+* [GitHub](https://github.com/Li0n-0/Antenna-Helper/releases)
 
-### Know issues :
+**DEPENDENCY :**
+* [Toolbar Controller](https://github.com/linuxgurugamer/ToolbarControl/releases)
 
-* ~~the circle of the map view jitter at high time-wrap. Almost fixed.~~
-* the orientation of the map view circle, relative to the camera, is, most of the time, sub-optimal. Fixed when orbiting the DSN's planet
-* transparency of the circle are not good, specially when they overlap.
-* ~~in-flight, antennas of the active ship are all considered extended.~~
-* ~~in-flight math are done only once on loading. It need to be re-done when the ship stage, dock, etc...~~
-* ~~DSN and range modifier may not be corectly set when loading a new game (after an "exit to main menu")~~
-* range modifier are off when using RSS, see [this thread](https://forum.kerbalspaceprogram.com/index.php?/topic/156122-wip131-antenna-helper-in-game-antennas-range-calculation-v09-8-dec-2017/&do=findComment&comment=3240861) should be fixed by v0.13, waiting confirmation
-* circles in the Tracking Station disappear when zoomed far away
-* Tracking Station window should be clamped to the button
+It is localized in Japanese, Simplified Chinese and Spanish.
 
-### Future plans :
+It *should* be compatible with every mods, except RemoteTech.
 
-* ~~showing the range circle in the tracking station.~~ **Done**
-* ~~+ show range circle for ship not already launched.~~ **Done**
-* Window with NUMBERS in flight.
-* in the editor, a window showing a list of antenna with their caracteristics.
-* ~~in the editor, add all the in-flight relay to the list of target.~~ **Done**
-* in the editor, add relay antennas (part) to the list of target.
-* re-work the GUI, possibly with the new GUI system instead of on OnGUI.
-* ~~map view window should be clamped to the toolbar button.~~ **Done**
+If you find any bugs please report it, either on [GitHub](https://github.com/Li0n-0/Antenna-Helper/issues) or on this [KSP forum's thread]().
+
+[Know issues and *maybe* future plans](https://github.com/Li0n-0/Antenna-Helper/issues)
+
+[Dev thread](https://forum.kerbalspaceprogram.com/index.php?/topic/156122-wip131-antenna-helper-looking-for-translators-v090-27-feb-2018/&do=findComment&comment=2947693) (closed), for posterity :wink: 
 
 
 ## Credits
 
 The idea for an in-game calculator is from [this thread](https://forum.kerbalspaceprogram.com/index.php?/topic/153155-mod-idea-in-game-antenna-strength-calculater/) by [Tyko](https://forum.kerbalspaceprogram.com/index.php?/profile/164179-tyko/).
 
-Thanks to [Poodmund](https://forum.kerbalspaceprogram.com/index.php?/profile/128643-poodmund/) for his [google docs's calculator](https://docs.google.com/spreadsheets/d/1qIgFB8OXnlgpPCGsxv7JYUYQq5O671IcZXpumVaStek/edit?usp=sharing), and for the help he provide to this mod.
+Thanks to [Poodmund](https://forum.kerbalspaceprogram.com/index.php?/profile/128643-poodmund/) for his [google doc's calculator](https://docs.google.com/spreadsheets/d/1qIgFB8OXnlgpPCGsxv7JYUYQq5O671IcZXpumVaStek/edit?usp=sharing), and for the help he provide to this mod.
 
 Thanks to [Skalou](https://forum.kerbalspaceprogram.com/index.php?/profile/133496-skalou/) for his help with the math :wink:
 
+Thanks to [wile1411](https://forum.kerbalspaceprogram.com/index.php?/profile/28891-wile1411/) for his bug report and suggestions.
+
+Thanks to the translators : 
+* Japanese version : [EBOSHI](https://forum.kerbalspaceprogram.com/index.php?/profile/165938-eboshi/), [COLOT](https://forum.kerbalspaceprogram.com/index.php?/profile/185886-colot/) and [anarog_1](https://forum.kerbalspaceprogram.com/index.php?/profile/172934-anarog_1/)
+* Simplified Chinese : [CN_Warren](https://forum.kerbalspaceprogram.com/index.php?/profile/183380-cn_warren/)
+* Spanish : [fitiales](https://forum.kerbalspaceprogram.com/index.php?/profile/66011-fitiales/)
+
 Antenna Helper icon/logo made by myself with assets from [FlatIcon](https://www.flaticon.com) by [Freepik](https://www.flaticon.com/authors/freepik).
 
-## [Thread on offical KSP forum](https://forum.kerbalspaceprogram.com/index.php?/topic/156122-wip131-antenna-helper-in-game-antennas-range-calculation-v08-17-nov-2017/)
+## [Thread on official KSP forum]()
