@@ -17,41 +17,38 @@ It will show you the antenna capability of your active vessel in flight, in the 
 
 ## In flight ?
 
-Only in the **Map View** (for now). Click the Antenna Helper icon on the app launcher : ![Antenna Helper icon](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/icon_off.png?raw=true)
+Click the Antenna Helper icon on the toolbar : ![Antenna Helper icon](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/icon_off.png?raw=true)
 And you should see something close to that :
+
+![flight main window](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/flight_main_window.png?raw=true)
+
+The top line, in bold, show the signal strength of the whole CommNet path between your vessel and the DSN. Each button beneath it is a link in this path.
+
+Clicking on the **Potential Relays** button will expand the window to show all the in-flight relays : 
+
+![flight potential relays window](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/flight_potential_relays_window.png?raw=true)
+
+You can click on every link to display some info about both vessel (or DSN) and about the link it-self : 
+
+![flight link info window](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/flight_link_info_window.png?raw=true)
+
+Now take a look at : 
+
+
+## The Map-View
 
 ![map view active connect](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_active.png?raw=true)
 
+A big circle has appeared ! Centered on the vessel or DSN your directly connected to (the first link of the main window), it helps visualize the range and signal decay of your active connection.
+While your ship is in the green circle its signal strength will be clamped between 100 and 75%, in the yellow circle between 75 and 50%, in the orange circle between 50 and 25%, in the red circle between 25 and 0%. And if you're outside the red circle you don't have any connection.
 
-Those color circles represent the maximum range between your vessel and its relay/DSN, it also indicate how much signal strength you get. While your ship is in the green circle its signal strength will be clamped between 100 and 75%, in the yellow circle between 75 and 50%, in the orange circle between 50 and 25%, in the red circle between 25 and 0%. And if you're outside the red circle you don't have any connection.
-
-
-Apart from the color circles, you'll see a small window next to Antenna Helper icon on the app launcher : 
+With this new window (show it-self only in the map-view) :
 
 ![map view window](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_window.png?raw=true)
 
+You can choose between different sources to show your potential range and signal strength : 
 
-The four button will show you your range, and signal strength, from different sources (relay or DSN).
-
-* **ACTIVE** (by default) show your range for the active connection, which can be from a relay or DSN.
-
-![map view active connect](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_active.png?raw=true)
-
-
-* **DSN** show the maximum range between your vessel and the DSN
-
-![map view dsn connect](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_dsn.png?raw=true)
-
-
-* **RELAY** show the maximum range between your vessel and all the in-flight relay
-
-![map view relay connect](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_relay.png?raw=true)
-
-
-* **DSN and RELAY** combine the two above, showing you **all** the possible connection, with their range
-
-![map view relay and dsn connect](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_dsn_and_relay.png?raw=true)
-
+![map view patchwork](https://github.com/Li0n-0/Antenna-Helper/blob/master/pics/map_view_patchwork.png?raw=true)
 
 
 ## You mentioned the editor ?
