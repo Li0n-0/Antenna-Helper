@@ -160,6 +160,8 @@ If you find any bugs please report it, either on [GitHub](https://github.com/Li0
 
 [Know issues and *maybe* future plans](https://github.com/Li0n-0/Antenna-Helper/issues)
 
+[Dev thread](https://forum.kerbalspaceprogram.com/index.php?/topic/156122-wip131-antenna-helper-looking-for-translators-v090-27-feb-2018/&do=findComment&comment=2947693) (closed), for posterity :wink: 
+
 
 ## Credits
 
