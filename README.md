@@ -145,7 +145,7 @@ In the **Advanced Settings** menu you'll find a tab for Antenna Helper. Here you
 ## About the mod
 
 **DOWNLOADS :**
-* Get it with CKAN (soon)
+* [Get it with CKAN](https://forum.kerbalspaceprogram.com/index.php?/topic/154922-ckan-the-comprehensive-kerbal-archive-network-v1240-bruce/), thanks [linuxGuruGamer](https://forum.kerbalspaceprogram.com/index.php?/profile/129964-linuxgurugamer/)
 * [SpaceDock](https://spacedock.info/mod/1730/Antenna%20Helper)
 * [GitHub](https://github.com/Li0n-0/Antenna-Helper/releases)
 
