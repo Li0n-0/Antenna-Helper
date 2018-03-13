@@ -29,6 +29,9 @@ namespace AntennaHelper
 
 			GetAntennaPartList ();
 
+			CreateAntennaList ();
+			DoTheMath ();
+
 			GameEvents.onGUIApplicationLauncherReady.Add (AddToolbarButton);
 			GameEvents.onGUIApplicationLauncherDestroyed.Add (RemoveToolbarButton);
 
