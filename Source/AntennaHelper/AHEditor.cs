@@ -29,6 +29,9 @@ namespace AntennaHelper
 
 			GetAntennaPartList ();
 
+			CreateAntennaList ();
+			DoTheMath ();
+
 			GameEvents.onGUIApplicationLauncherReady.Add (AddToolbarButton);
 			GameEvents.onGUIApplicationLauncherDestroyed.Add (RemoveToolbarButton);
 
@@ -61,10 +64,10 @@ namespace AntennaHelper
 
 		public void VesselLoad (ShipConstruct ship, KSP.UI.Screens.CraftBrowserDialog.LoadType screenType)
 		{
-			if (showMainWindow || showPlanetWindow || showTargetWindow) {
+//			if (showMainWindow || showPlanetWindow || showTargetWindow) {
 				CreateAntennaList ();
 				DoTheMath ();
-			}
+//			}
 		}
 
 		public void PartEvent (ConstructionEventType eventType, Part part)
