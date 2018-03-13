@@ -144,13 +144,17 @@ In the **Advanced Settings** menu you'll find a tab for Antenna Helper. Here you
 
 ## About the mod
 
-**DOWNLOADS :**
+**DOWNLOADS for KSP 1.4.0 :**
 * [Get it with CKAN](https://forum.kerbalspaceprogram.com/index.php?/topic/154922-ckan-the-comprehensive-kerbal-archive-network-v1240-bruce/), thanks [linuxGuruGamer](https://forum.kerbalspaceprogram.com/index.php?/profile/129964-linuxgurugamer/)
 * [SpaceDock](https://spacedock.info/mod/1730/Antenna%20Helper)
 * [GitHub](https://github.com/Li0n-0/Antenna-Helper/releases)
 
 **DEPENDENCY :**
 * [Toolbar Controller](https://github.com/linuxgurugamer/ToolbarControl/releases)
+
+
+**Previous KSP version :**
+* [Last release for KSP 1.3.1](https://github.com/Li0n-0/Antenna-Helper/releases/tag/v1.0.0)
 
 It is localized in Japanese, Simplified Chinese and Spanish.
 
