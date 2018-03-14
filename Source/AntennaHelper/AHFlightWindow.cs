@@ -90,6 +90,7 @@ namespace AntennaHelper
 			if (toolbarButtonAdded) {
 				toolbarController.OnDestroy ();
 				Destroy (toolbarController);
+				toolbarButtonAdded = false;
 			}
 		}
 

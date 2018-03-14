@@ -65,7 +65,7 @@ namespace AntennaHelper
 			GameEvents.onGUIApplicationLauncherDestroyed.Add (RemoveToolbarButton);
 
 			GameEvents.onVesselWasModified.Add (VesselModified);
-			GameEvents.onVesselSwitching.Add (VesselDestroy);
+			GameEvents.onVesselSwitching.Add (VesselSwitch);
 			GameEvents.onVesselDestroy.Add (VesselDestroy);
 
 			GameEvents.OnMapEntered.Add (EnteringMap);
@@ -201,7 +201,7 @@ namespace AntennaHelper
 			GameEvents.onGUIApplicationLauncherDestroyed.Remove (RemoveToolbarButton);
 
 			GameEvents.onVesselWasModified.Remove (VesselModified);
-			GameEvents.onVesselSwitching.Remove (VesselDestroy);
+			GameEvents.onVesselSwitching.Remove (VesselSwitch);
 			GameEvents.onVesselDestroy.Remove (VesselDestroy);
 
 			GameEvents.OnMapEntered.Remove (EnteringMap);
@@ -227,15 +227,25 @@ namespace AntennaHelper
 
 		#region AntennaLookOut
 
-		private void VesselDestroy (Vessel fromVessel, Vessel toVessel)
+		private void VesselSwitch (Vessel fromVessel, Vessel toVessel)
 		{
-			VesselDestroy (null);
+			StopAllCoroutines ();
+			Destroy (this);
 		}
 
 		private void VesselDestroy (Vessel v)
 		{
-			StopAllCoroutines ();
-			Destroy (this);
+			if (v == vessel) {
+				StopAllCoroutines ();
+				Destroy (this);
+				return;
+			}
+			if (relays.ContainsKey (v)) {
+				relays.Remove (v);
+			}
+			if (markersRelay.ContainsKey (v)) {
+				markersRelay.Remove (v);
+			}
 		}
 
 		private void VesselModified (Vessel v = null)
