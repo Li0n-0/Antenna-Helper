@@ -155,9 +155,11 @@ namespace AntennaHelper
 				guiStyle = guiStyleNorm;
 			}
 			if (GUILayout.Button (/*In-Flight Ships*/Localizer.Format ("#autoLOC_AH_0016"), guiStyle)) {
-				AHEditor.CloseTargetShipEditorWindow ();
-				AHEditor.CloseTargetPartWindow ();
-				AHEditor.showTargetShipFlightWindow = true;
+				if (HighLogic.CurrentGame.Mode != Game.Modes.MISSION_BUILDER) {
+					AHEditor.CloseTargetShipEditorWindow ();
+					AHEditor.CloseTargetPartWindow ();
+					AHEditor.showTargetShipFlightWindow = true;
+				}
 			}
 
 			if (AHEditor.targetType == AHEditorTargetType.EDITOR) {

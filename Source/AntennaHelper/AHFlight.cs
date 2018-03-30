@@ -65,7 +65,7 @@ namespace AntennaHelper
 			GameEvents.onGUIApplicationLauncherDestroyed.Add (RemoveToolbarButton);
 
 			GameEvents.onVesselWasModified.Add (VesselModified);
-			GameEvents.onVesselSwitching.Add (VesselDestroy);
+			GameEvents.onVesselSwitching.Add (VesselSwitch);
 			GameEvents.onVesselDestroy.Add (VesselDestroy);
 
 			GameEvents.OnMapEntered.Add (EnteringMap);
@@ -201,7 +201,7 @@ namespace AntennaHelper
 			GameEvents.onGUIApplicationLauncherDestroyed.Remove (RemoveToolbarButton);
 
 			GameEvents.onVesselWasModified.Remove (VesselModified);
-			GameEvents.onVesselSwitching.Remove (VesselDestroy);
+			GameEvents.onVesselSwitching.Remove (VesselSwitch);
 			GameEvents.onVesselDestroy.Remove (VesselDestroy);
 
 			GameEvents.OnMapEntered.Remove (EnteringMap);
@@ -227,15 +227,25 @@ namespace AntennaHelper
 
 		#region AntennaLookOut
 
-		private void VesselDestroy (Vessel fromVessel, Vessel toVessel)
+		private void VesselSwitch (Vessel fromVessel, Vessel toVessel)
 		{
-			VesselDestroy (null);
+			StopAllCoroutines ();
+			Destroy (this);
 		}
 
 		private void VesselDestroy (Vessel v)
 		{
-			StopAllCoroutines ();
-			Destroy (this);
+			if (v == vessel) {
+				StopAllCoroutines ();
+				Destroy (this);
+				return;
+			}
+			if (relays.ContainsKey (v)) {
+				relays.Remove (v);
+			}
+			if (markersRelay.ContainsKey (v)) {
+				markersRelay.Remove (v);
+			}
 		}
 
 		private void VesselModified (Vessel v = null)
@@ -376,189 +386,189 @@ namespace AntennaHelper
 		#endregion
 
 		// nested class
-		class LinkPath
-		{
-			public List<Link> linkList;
-			public double endRelayPower;
-			public double endRelaySignalStrength { get { return _endRelaySignalStrength (); } }
-
-			private Vessel activeVessel;
-
-			public LinkPath (Vessel v)
-			{
-				activeVessel = v;
-
-				SetLinks ();
-
-				endRelayPower = linkList [0].relayA.relayPower;
-			}
-
-			private double _endRelaySignalStrength ()
-			{
-				SetLinks ();
-				double signal = 1d;
-				foreach (Link link in linkList) {
-					signal *= link.signalStrength;
-				}
-				return signal;
-			}
-
-			private void SetLinks ()
-			{
-				linkList = new List<Link> ();
-
-				foreach (CommNet.CommLink link in activeVessel.Connection.ControlPath) {
-					Relay relayB;
-					if (link.b.isHome) {
-						relayB = Relay.DSN;
-					} else {
-						relayB = Relay.GetRelayVessel (link.b.transform.GetComponent<Vessel> ());
-					}
-					linkList.Add (new Link (new RelayVessel (link.a.transform.GetComponent<Vessel> ()), relayB));
-				}
-			}
-		}
-
-		class Link
-		{
-			public Relay relayA, relayB;
-			public double maxRange;
-			public double signalStrength { get { return _signalStrength (); } }
-			public double distance { get { return _distance (); } }
-
-			public Link (Relay transmitter, Relay relay)
-			{
-				relayA = transmitter;
-				relayB = relay;
-
-				maxRange = AHUtil.GetRange (relayA.relayPower, relayB.relayPower);
-			}
-
-			private double _signalStrength ()
-			{
-				return AHUtil.GetSignalStrength (maxRange, distance);
-			}
-
-			private double _distance ()
-			{
-				return ((Vector3d.Distance (relayA.position, relayB.position)) - relayB.distanceOffset);
-			}
-		}
-
-		class Relay
-		{
-			public string name;
-			public double relayPower, directPower;
-//			public bool isConnected;
-//			public Relay isConnectedTo;
-			public Vector3d position { get { return _position (); } }
-			public bool isDSN = false;
-			public double distanceOffset = 0;
-
-			private static CelestialBody home;
-			public static Relay DSN { get { return _dsn; } }
-			private static Relay _dsn;
-
-			static List<RelayVessel> potentialRelays;
-
-			static Relay ()
-			{
-				home = FlightGlobals.GetHomeBody ();
-				_dsn = new Relay ();
-				_dsn.relayPower = GameVariables.Instance.GetDSNRange 
-					(ScenarioUpgradeableFacilities.GetFacilityLevel 
-						(SpaceCenterFacility.TrackingStation));
-				_dsn.directPower = _dsn.relayPower;
-				_dsn.isDSN = true;
-				_dsn.distanceOffset = home.Radius;
-				_dsn.name = /*"DSN"*/Localizer.Format ("#autoLOC_AH_0014");
-
-				potentialRelays = new List<RelayVessel> ();
-				foreach (Vessel v in FlightGlobals.Vessels.FindAll (v => (v.Connection != null) && (v != FlightGlobals.ActiveVessel))) {
-					double relayPower = AHUtil.GetActualVesselPower (v, true);
-					if (relayPower > 0) {
-						potentialRelays.Add (new RelayVessel (v));
-					}
-				}
-//				Debug.Log ("[AH] dsn distance offset : " + _dsn.distanceOffset);
-//				Debug.Log ("[AH] static dsn relay constructed");
-			}
-
-			public static RelayVessel GetRelayVessel (Vessel v)
-			{
-				return potentialRelays.Find (relay => (relay.vessel == v));
-			}
-
-
-			protected virtual Vector3d _position ()
-			{
-				return home.position;
-			}
-
-			/*
-			public static bool operator== (Relay relayA, Relay relayB)
-			{
-				if ((relayA.relayPower == relayB.relayPower) && (relayA.directPower == relayB.directPower)) {
-					return true;
-				} else {
-					return false;
-				}
-			}
-
-			public static bool operator!= (Relay relayA, Relay relayB)
-			{
-				return !(relayA == relayB);
-			}
-
-			public override bool Equals (object obj)
-			{
-				if (obj == null) {
-					if (this == null) {
-						return true;
-					} else {
-						return false;
-					}
-				}
-
-				if (obj.GetType () == this.GetType ()) {
-					if ((Relay)obj == this) {
-						return true;
-					} else {
-						return false;
-					}
-				} else {
-					return false;
-				}
-			}
-
-			public override int GetHashCode ()
-			{
-				int hash = relayPower.GetHashCode ();
-				hash = (hash * 7) + directPower.GetHashCode ();
-				return hash;
-			}*/
-		}
-
-		class RelayVessel : Relay
-		{
-			public Vessel vessel;
-
-			public RelayVessel (Vessel v)
-			{
-				vessel = v;
-				relayPower = AHUtil.GetActualVesselPower (v, true);
-				directPower = AHUtil.GetActualVesselPower (v);
-//				isConnected = vessel.Connection.IsConnected;
-				name = vessel.GetName ();
-			}
-
-			protected override Vector3d _position ()
-			{
-				return vessel.GetTransform ().position;
-			}
-		}
-
-
+//		class LinkPath
+//		{
+//			public List<Link> linkList;
+//			public double endRelayPower;
+//			public double endRelaySignalStrength { get { return _endRelaySignalStrength (); } }
+//
+//			private Vessel activeVessel;
+//
+//			public LinkPath (Vessel v)
+//			{
+//				activeVessel = v;
+//
+//				SetLinks ();
+//
+//				endRelayPower = linkList [0].relayA.relayPower;
+//			}
+//
+//			private double _endRelaySignalStrength ()
+//			{
+//				SetLinks ();
+//				double signal = 1d;
+//				foreach (Link link in linkList) {
+//					signal *= link.signalStrength;
+//				}
+//				return signal;
+//			}
+//
+//			private void SetLinks ()
+//			{
+//				linkList = new List<Link> ();
+//
+//				foreach (CommNet.CommLink link in activeVessel.Connection.ControlPath) {
+//					Relay relayB;
+//					if (link.b.isHome) {
+//						relayB = Relay.DSN;
+//					} else {
+//						relayB = Relay.GetRelayVessel (link.b.transform.GetComponent<Vessel> ());
+//					}
+//					linkList.Add (new Link (new RelayVessel (link.a.transform.GetComponent<Vessel> ()), relayB));
+//				}
+//			}
+//		}
+//
+//		class Link
+//		{
+//			public Relay relayA, relayB;
+//			public double maxRange;
+//			public double signalStrength { get { return _signalStrength (); } }
+//			public double distance { get { return _distance (); } }
+//
+//			public Link (Relay transmitter, Relay relay)
+//			{
+//				relayA = transmitter;
+//				relayB = relay;
+//
+//				maxRange = AHUtil.GetRange (relayA.relayPower, relayB.relayPower);
+//			}
+//
+//			private double _signalStrength ()
+//			{
+//				return AHUtil.GetSignalStrength (maxRange, distance);
+//			}
+//
+//			private double _distance ()
+//			{
+//				return ((Vector3d.Distance (relayA.position, relayB.position)) - relayB.distanceOffset);
+//			}
+//		}
+//
+//		class Relay
+//		{
+//			public string name;
+//			public double relayPower, directPower;
+////			public bool isConnected;
+////			public Relay isConnectedTo;
+//			public Vector3d position { get { return _position (); } }
+//			public bool isDSN = false;
+//			public double distanceOffset = 0;
+//
+//			private static CelestialBody home;
+//			public static Relay DSN { get { return _dsn; } }
+//			private static Relay _dsn;
+//
+//			static List<RelayVessel> potentialRelays;
+//
+//			static Relay ()
+//			{
+//				home = FlightGlobals.GetHomeBody ();
+//				_dsn = new Relay ();
+//				_dsn.relayPower = GameVariables.Instance.GetDSNRange 
+//					(ScenarioUpgradeableFacilities.GetFacilityLevel 
+//						(SpaceCenterFacility.TrackingStation));
+//				_dsn.directPower = _dsn.relayPower;
+//				_dsn.isDSN = true;
+//				_dsn.distanceOffset = home.Radius;
+//				_dsn.name = /*"DSN"*/Localizer.Format ("#autoLOC_AH_0014");
+//
+//				potentialRelays = new List<RelayVessel> ();
+//				foreach (Vessel v in FlightGlobals.Vessels.FindAll (v => (v.Connection != null) && (v != FlightGlobals.ActiveVessel))) {
+//					double relayPower = AHUtil.GetActualVesselPower (v, true);
+//					if (relayPower > 0) {
+//						potentialRelays.Add (new RelayVessel (v));
+//					}
+//				}
+////				Debug.Log ("[AH] dsn distance offset : " + _dsn.distanceOffset);
+////				Debug.Log ("[AH] static dsn relay constructed");
+//			}
+//
+//			public static RelayVessel GetRelayVessel (Vessel v)
+//			{
+//				return potentialRelays.Find (relay => (relay.vessel == v));
+//			}
+//
+//
+//			protected virtual Vector3d _position ()
+//			{
+//				return home.position;
+//			}
+//
+//			/*
+//			public static bool operator== (Relay relayA, Relay relayB)
+//			{
+//				if ((relayA.relayPower == relayB.relayPower) && (relayA.directPower == relayB.directPower)) {
+//					return true;
+//				} else {
+//					return false;
+//				}
+//			}
+//
+//			public static bool operator!= (Relay relayA, Relay relayB)
+//			{
+//				return !(relayA == relayB);
+//			}
+//
+//			public override bool Equals (object obj)
+//			{
+//				if (obj == null) {
+//					if (this == null) {
+//						return true;
+//					} else {
+//						return false;
+//					}
+//				}
+//
+//				if (obj.GetType () == this.GetType ()) {
+//					if ((Relay)obj == this) {
+//						return true;
+//					} else {
+//						return false;
+//					}
+//				} else {
+//					return false;
+//				}
+//			}
+//
+//			public override int GetHashCode ()
+//			{
+//				int hash = relayPower.GetHashCode ();
+//				hash = (hash * 7) + directPower.GetHashCode ();
+//				return hash;
+//			}*/
+//		}
+//
+//		class RelayVessel : Relay
+//		{
+//			public Vessel vessel;
+//
+//			public RelayVessel (Vessel v)
+//			{
+//				vessel = v;
+//				relayPower = AHUtil.GetActualVesselPower (v, true);
+//				directPower = AHUtil.GetActualVesselPower (v);
+////				isConnected = vessel.Connection.IsConnected;
+//				name = vessel.GetName ();
+//			}
+//
+//			protected override Vector3d _position ()
+//			{
+//				return vessel.GetTransform ().position;
+//			}
+//		}
+//
+//
 	}
 		
 }

@@ -90,6 +90,7 @@ namespace AntennaHelper
 			if (toolbarButtonAdded) {
 				toolbarController.OnDestroy ();
 				Destroy (toolbarController);
+				toolbarButtonAdded = false;
 			}
 		}
 
@@ -205,8 +206,8 @@ namespace AntennaHelper
 
 			GUILayout.BeginHorizontal ();
 			GUILayout.Label (detailsActiveConnectLinks [0] ["aName"], guiStyleLabelBold);
-			GUILayout.Label ((" " + Localizer.Format ("#autoLOC_AH_0055") + " "), guiStyleLabelBold);
-			GUILayout.Label (Localizer.Format ("#autoLOC_AH_0014"), guiStyleLabelBold);
+			GUILayout.Label ((" " + /*TO*/Localizer.Format ("#autoLOC_AH_0055") + " "), guiStyleLabelBold);
+			GUILayout.Label (/*DSN*/Localizer.Format ("#autoLOC_AH_0014"), guiStyleLabelBold);
 			GUILayout.Label (" : ", guiStyleLabelBold);
 			GUILayout.Label (detailsActiveConnectLinks [0] ["activeSignalStrength"], guiStyleLabelBold);
 			GUILayout.EndHorizontal ();
@@ -216,7 +217,7 @@ namespace AntennaHelper
 				GUILayout.Space (10f);
 				if (GUILayout.Button (
 					activeLink ["aName"] 
-					+ (" " + Localizer.Format ("#autoLOC_AH_0055") + " ") 
+					+ (" " + /*TO*/Localizer.Format ("#autoLOC_AH_0055") + " ") 
 					+ activeLink ["bName"] 
 					+ " : " 
 					+ activeLink ["signalStrength"]))
@@ -237,7 +238,7 @@ namespace AntennaHelper
 
 			GUILayout.Label ("", guiStyleSpace, GUILayout.Height (3f));
 
-			if (GUILayout.Button (Localizer.Format ("#autoLOC_AH_0056"))) {
+			if (GUILayout.Button (/*Potential Relays*/Localizer.Format ("#autoLOC_AH_0056"))) {
 				showPotentialRelaysWindow = !showPotentialRelaysWindow;
 			}
 
@@ -299,40 +300,32 @@ namespace AntennaHelper
 			GUILayout.BeginVertical ();
 
 			GUILayout.BeginHorizontal ();
-			GUILayout.Label (Localizer.Format ("#autoLOC_AH_0073", new string[] { selectedLink ["aName"] } ));
-//			GUILayout.Label (selectedLink ["aName"] + "  " + Localizer.Format ("#autoLOC_AH_0057") + " : ");
-//			GUILayout.Label (" " + Localizer.Format ("#autoLOC_AH_0057") + " : ");
+			GUILayout.Label (/*<<1>> \t Relay Power : */Localizer.Format ("#autoLOC_AH_0073", new string[] { selectedLink ["aName"] } ));
 			GUILayout.Label (selectedLink ["aPowerRelay"], GUILayout.ExpandWidth (false));
 			GUILayout.EndHorizontal ();
 
 			GUILayout.BeginHorizontal ();
-			GUILayout.Label (Localizer.Format ("#autoLOC_AH_0074", new string[] { selectedLink ["aName"] } ));
-//			GUILayout.Label (selectedLink ["aName"] + "  " + Localizer.Format ("#autoLOC_AH_0058") + " : ");
-//			GUILayout.Label (" " + Localizer.Format ("#autoLOC_AH_0058") + " : ");
+			GUILayout.Label (Localizer.Format (/*<<1>> \t Total Power : */"#autoLOC_AH_0074", new string[] { selectedLink ["aName"] } ));
 			GUILayout.Label (selectedLink ["aPowerTotal"], GUILayout.ExpandWidth (false));
 			GUILayout.EndHorizontal ();
 
 			GUILayout.BeginHorizontal ();
-			GUILayout.Label (Localizer.Format ("#autoLOC_AH_0073", new string[] { selectedLink ["bName"] } ));
-//			GUILayout.Label (selectedLink ["bName"] + "  " + Localizer.Format ("#autoLOC_AH_0057") + " : ");
-//			GUILayout.Label (" " + Localizer.Format ("#autoLOC_AH_0057") + " : ");
+			GUILayout.Label (/*<<1>> \t Relay Power : */Localizer.Format ("#autoLOC_AH_0073", new string[] { selectedLink ["bName"] } ));
 			GUILayout.Label (selectedLink ["bPowerRelay"], GUILayout.ExpandWidth (false));
 			GUILayout.EndHorizontal ();
 
 			GUILayout.BeginHorizontal ();
-			GUILayout.Label (Localizer.Format ("#autoLOC_AH_0074", new string[] { selectedLink ["bName"] } ));
-//			GUILayout.Label (selectedLink ["bName"] + "  " + Localizer.Format ("#autoLOC_AH_0058") + " : ");
-//			GUILayout.Label (" " + Localizer.Format ("#autoLOC_AH_0058") + " : ");
+			GUILayout.Label (/*<<1>> \t Total Power : */Localizer.Format ("#autoLOC_AH_0074", new string[] { selectedLink ["bName"] } ));
 			GUILayout.Label (selectedLink ["bPowerTotal"], GUILayout.ExpandWidth (false));
 			GUILayout.EndHorizontal ();
 
 			GUILayout.BeginHorizontal ();
-			GUILayout.Label (Localizer.Format ("#autoLOC_AH_0010") + " : ");
+			GUILayout.Label (/*Max Range*/Localizer.Format ("#autoLOC_AH_0010") + " : ");
 			GUILayout.Label (selectedLink ["maxRange"], GUILayout.ExpandWidth (false));
 			GUILayout.EndHorizontal ();
 
 			GUILayout.BeginHorizontal ();
-			GUILayout.Label (Localizer.Format ("#autoLOC_AH_0059") + " : ");
+			GUILayout.Label (/*Distance*/Localizer.Format ("#autoLOC_AH_0059") + " : ");
 			GUILayout.Label (selectedLink ["distance"], GUILayout.ExpandWidth (false));
 			GUILayout.EndHorizontal ();
 

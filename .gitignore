@@ -43,6 +43,7 @@
 *.log
 PartDatabase.cfg
 KSP/
+KSPandMH/
 relay.png
 direct.png
 Marketing/
