@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -7,7 +7,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>AntennaHelper</RootNamespace>
     <AssemblyName>AntennaHelper</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -28,7 +29,9 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
+    <Reference Include="System">
+      <HintPath>..\..\KSP\KSP_x64_Data\Managed\System.dll</HintPath>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\KSP\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
@@ -53,11 +56,16 @@
     <Compile Include="AHUtil.cs" />
     <Compile Include="AHEditor.cs" />
     <Compile Include="AHEditorWindows.cs" />
-    <Compile Include="AHTrackingStation.cs" />
     <Compile Include="AHShipList.cs" />
     <Compile Include="AHFlightWindow.cs" />
     <Compile Include="AHFlight.cs" />
     <Compile Include="AntennaHelperSettings.cs" />
+    <Compile Include="AHLinkUtil.cs" />
+    <Compile Include="AHTrackingStation.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include="AHTrackingStationD.cs" />
+    <None Include="AHTrackingStationWindow.cs" />
+  </ItemGroup>
 </Project>

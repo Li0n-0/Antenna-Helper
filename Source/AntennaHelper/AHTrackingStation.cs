@@ -35,6 +35,11 @@ namespace AntennaHelper
 
 		public void Start ()
 		{
+			if (HighLogic.CurrentGame.Mode == Game.Modes.MISSION_BUILDER)
+			{
+				Destroy (this);
+			}
+
 			if (!HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().enableInTrackingStation) {
 				Destroy (this);
 				return;
@@ -55,7 +60,6 @@ namespace AntennaHelper
 //				GetListsShip ();
 //				CreateMarkers ();
 //			}
-
 
 			// GUI
 			rectMainWindow = new Rect (0, 0, 150, 245);

@@ -19,6 +19,18 @@ namespace AntennaHelper
 				return;
 			}
 
+			if (HighLogic.CurrentGame.Mode == Game.Modes.MISSION_BUILDER)
+			{
+				if (Component.FindObjectOfType<AHUtil> () == null)
+				{
+					AHUtil util = gameObject.AddComponent<AHUtil> ();
+					util.Start ();
+				}
+
+				AHShipList.UpdateLoadedGame ();
+				AHShipList.ParseFlyingVessel ();
+			}
+
 			instance = this;
 
 			trackingStationLevel = ScenarioUpgradeableFacilities.GetFacilityLevel (SpaceCenterFacility.TrackingStation);
@@ -41,6 +53,8 @@ namespace AntennaHelper
 			GameEvents.onEditorPodDeleted.Add (PodDeleted);
 
 			GameEvents.onGameSceneSwitchRequested.Add (QuitEditor);
+
+
 		}
 
 		public void OnDestroy ()
@@ -60,6 +74,9 @@ namespace AntennaHelper
 		public void QuitEditor (GameEvents.FromToAction<GameScenes, GameScenes> eData)
 		{
 			AHSettings.WriteSave ();
+			if (HighLogic.CurrentGame.Mode == Game.Modes.MISSION_BUILDER) {
+				Destroy (this);
+			}
 		}
 
 		public void VesselLoad (ShipConstruct ship, KSP.UI.Screens.CraftBrowserDialog.LoadType screenType)
@@ -528,7 +545,13 @@ namespace AntennaHelper
 		private void GetShipList ()
 		{
 			externListShipEditor = AHShipList.GetShipList (true, false);
-			externListShipFlight = AHShipList.GetShipList (false, true);
+			if (HighLogic.CurrentGame.Mode != Game.Modes.MISSION_BUILDER)
+			{
+				externListShipFlight = AHShipList.GetShipList (false, true);
+			} else {
+				externListShipFlight = new Dictionary<string, Dictionary<string, string>> ();
+			}
+
 			GetGUIShipList ();
 		}
 
@@ -546,7 +569,9 @@ namespace AntennaHelper
 			guiExternListShipEditorSphAll = AHShipList.GetShipListAsList (true, false, "SPH");
 			guiExternListShipEditorSphRelay = AHShipList.GetShipListAsList (true, true, "SPH");
 
-			guiExternListShipFlight = AHShipList.GetShipListAsList (false);
+			if (HighLogic.CurrentGame.Mode != Game.Modes.MISSION_BUILDER) {
+				guiExternListShipFlight = AHShipList.GetShipListAsList (false);
+			}
 		}
 		#endregion
 

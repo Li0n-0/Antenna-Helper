@@ -164,6 +164,56 @@ namespace AntennaHelper
 			mainNode.Save (savePath);
 		}
 
+		public static List<Vessel> GetAllFlyingVessel ()
+		{
+			return FlightGlobals.Vessels.FindAll (
+				v => (v.vesselType != VesselType.EVA) &&
+				(v.vesselType != VesselType.Flag) &&
+				(v.vesselType != VesselType.SpaceObject) &&
+				(v.vesselType != VesselType.Unknown) &&
+				(v.vesselType != VesselType.Debris));
+		}
+
+		public static List<Vessel> GetFlyingRelays ()
+		{
+			List<Vessel> flyingRelays = new List<Vessel> ();
+			foreach (Vessel v in GetAllFlyingVessel ())
+			{
+				if (AHUtil.GetActualVesselPower (v, true) > 0)
+				{
+					flyingRelays.Add (v);
+				}
+			}
+			return flyingRelays;
+		}
+
+		public static Dictionary<Vessel, Dictionary<Vessel, LinkPath>> GetFlyingVessel (List<Vessel> masterList = null)
+		{
+			if (masterList == null) {
+				masterList = FlightGlobals.Vessels.FindAll (
+					v => (v.vesselType != VesselType.EVA) &&
+					(v.vesselType != VesselType.Flag) &&
+					(v.vesselType != VesselType.SpaceObject) &&
+					(v.vesselType != VesselType.Unknown) &&
+					(v.vesselType != VesselType.Debris));
+			}
+
+			List<Vessel> relays = masterList.FindAll (v => 
+				(v.vesselType == VesselType.Relay) && (v.Connection.IsConnected));
+
+			Dictionary<Vessel, Dictionary<Vessel, LinkPath>> returnDict = new Dictionary<Vessel, Dictionary<Vessel, LinkPath>> ();
+
+			foreach (Vessel vessel in masterList)
+			{
+				returnDict.Add (vessel, new Dictionary<Vessel, LinkPath> ());
+				foreach (Vessel relay in relays.FindAll (v => (v != vessel)))
+				{
+					returnDict [vessel].Add (relay, new LinkPath (relay));
+				}
+			}
+			return returnDict;
+		}
+
 		public static void ParseFlyingVessel (bool doRealSignalNow = false)
 		{
 			listFlyingVessel = new Dictionary<string, Dictionary<string, string>> ();
@@ -173,7 +223,8 @@ namespace AntennaHelper
 					(v.vesselType != VesselType.Flag) && 
 					(v.vesselType != VesselType.SpaceObject) && 
 					(v.vesselType != VesselType.Unknown) &&
-					(v.vesselType != VesselType.Debris)) {
+				    (v.vesselType != VesselType.Debris)/* && 
+					(v.parts.Count > 0)*/) {
 
 					string pid = v.id.ToString ();
 					double vesselPower = AHUtil.GetActualVesselPower (v, false, true, false);
@@ -316,13 +367,18 @@ namespace AntennaHelper
 			SaveToFile ();
 		}
 
-		public static Dictionary<string, Dictionary <string, string>> GetShipList (bool editorShip, bool flyingShip)
+		public static Dictionary<string, Dictionary <string, string>> GetShipList (bool editorShip, bool flyingShip, bool applyMod = false)
 		{
 			Dictionary<string, Dictionary <string, string>> returnList = new Dictionary<string, Dictionary<string, string>> ();
 
 			if (editorShip) {
 				foreach (KeyValuePair<string, Dictionary<string, string>> kvp in listEditorVessel) {
 					returnList.Add (kvp.Key, kvp.Value);
+					if (applyMod)
+					{
+						returnList [kvp.Key] ["powerTotal"] = AHUtil.TruePower (Double.Parse (returnList [kvp.Key] ["powerTotal"])).ToString ("N0");
+						returnList [kvp.Key] ["powerRelay"] = AHUtil.TruePower (Double.Parse (returnList [kvp.Key] ["powerRelay"])).ToString ("N0");
+					}
 				}
 			}
 			if (flyingShip) {
@@ -434,7 +490,6 @@ namespace AntennaHelper
 		{
 			AHShipList.UpdateLoadedGame ();
 
-
 			GameEvents.CommNet.OnNetworkInitialized.Add (CommNetInit);
 		}
 
@@ -459,6 +514,11 @@ namespace AntennaHelper
 
 		public void Start ()
 		{
+			if (HighLogic.CurrentGame.Mode == Game.Modes.MISSION_BUILDER)
+			{
+				Destroy (this);
+			}
+
 			AHShipList.shipListReady = false;
 
 			GameEvents.CommNet.OnCommStatusChange.Add (CommNetChange);
