@@ -739,16 +739,15 @@ namespace AntennaHelper
 				GUILayout.EndArea ();
 			}
 
-			if (toolbarControl != null) {
-				toolbarControl.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().useBlizzy);
-			}
+			
 		}
 		#endregion
 
 		#region ToolbarButton
 		private ToolbarControl toolbarControl;
-
-		private void AddToolbarButton ()
+        internal const string MODID = "AHEditor_NS";
+        internal const string MODNAME = "#autoLOC_AH_0001";
+        private void AddToolbarButton ()
 		{
 			toolbarControl = gameObject.AddComponent<ToolbarControl> ();
 
@@ -756,15 +755,14 @@ namespace AntennaHelper
 				ToolbarButtonOnTrue,
 				ToolbarButtonOnFalse,
 				KSP.UI.Screens.ApplicationLauncher.AppScenes.VAB | KSP.UI.Screens.ApplicationLauncher.AppScenes.SPH,
-				Localizer.Format ("#autoLOC_AH_0032"),
+				MODID,
 				"823779",
 				"AntennaHelper/Textures/icon_dish_on",
 				"AntennaHelper/Textures/icon_off",
 				"AntennaHelper/Textures/icon_dish_on_small",
 				"AntennaHelper/Textures/icon_dish_off_small",
-				Localizer.Format ("#autoLOC_AH_0001"));
+				Localizer.Format (MODNAME));
 
-			toolbarControl.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().useBlizzy);
 		}
 
 		private void RemoveToolbarButton ()
