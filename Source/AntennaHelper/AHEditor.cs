@@ -745,7 +745,7 @@ namespace AntennaHelper
 
 		#region ToolbarButton
 		private ToolbarControl toolbarControl;
-        internal const string MODID = "AHEditor_NS";
+        internal const string MODID = "AntennaHelper_NS";
         internal const string MODNAME = "#autoLOC_AH_0001";
         private void AddToolbarButton ()
 		{

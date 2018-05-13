@@ -50,8 +50,7 @@ namespace AntennaHelper
 			showSelectCircleTypeWindow = false;
 			inMapView = false;
 		}
-        internal const string MODID = "AHFlight_NS";
-        internal const string MODNAME = "#autoLOC_AH_0001";
+
         private void AddToolbarButton ()
 		{
 			KSP.UI.Screens.ApplicationLauncher.AppScenes scenes = 
@@ -72,13 +71,13 @@ namespace AntennaHelper
 					ToolbarButtonOnTrue,
 					ToolbarButtonOnFalse,
 					scenes,
-                    MODID,
+                    AHEditor.MODID,
 					"368879",
 					"AntennaHelper/Textures/icon_sat_on",
 					"AntennaHelper/Textures/icon_off",
 					"AntennaHelper/Textures/icon_dish_on_small",
 					"AntennaHelper/Textures/icon_dish_off_small",
-					Localizer.Format (MODNAME));
+					Localizer.Format (AHEditor.MODNAME));
 
 				toolbarButtonAdded = true;
 			}

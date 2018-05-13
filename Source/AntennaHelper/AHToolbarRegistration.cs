@@ -9,9 +9,7 @@ namespace AntennaHelper
     {
         void Start()
         {
-            ToolbarControl.RegisterMod(AHEditor.MODID, Localizer.Format(AHEditor.MODNAME) + " Editor");
-            ToolbarControl.RegisterMod(AHFlight.MODID, Localizer.Format(AHFlight.MODNAME) + " Flight");
-            ToolbarControl.RegisterMod(AHTrackingStation.MODID, Localizer.Format(AHTrackingStation.MODNAME) + " Tracking Station");
+            ToolbarControl.RegisterMod(AHEditor.MODID, Localizer.Format(AHEditor.MODNAME));
         }
     }
 }

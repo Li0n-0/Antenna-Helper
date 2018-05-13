@@ -478,8 +478,7 @@ namespace AntennaHelper
 			GUILayout.EndVertical ();
 			GUI.DragWindow ();
 		}
-        internal const string MODID = "AHTrackingStation_NS";
-        internal const string MODNAME = "#autoLOC_AH_0001";
+
         private void AddToolbarButton ()
 		{
 			toolbarControl = gameObject.AddComponent<ToolbarControl> ();
@@ -488,13 +487,13 @@ namespace AntennaHelper
 				ToolbarButtonOnTrue,
 				ToolbarButtonOnFalse,
 				KSP.UI.Screens.ApplicationLauncher.AppScenes.TRACKSTATION,
-                MODID,
+                AHEditor.MODID,
 				"421980",
 				"AntennaHelper/Textures/icon_dish_on",
 				"AntennaHelper/Textures/icon_off",
 				"AntennaHelper/Textures/icon_dish_on_small",
 				"AntennaHelper/Textures/icon_dish_off_small",
-				Localizer.Format (MODNAME));
+				Localizer.Format (AHEditor.MODNAME));
             
 		}
 
