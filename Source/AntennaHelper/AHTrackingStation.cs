@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using KSP.Localization;
 using ToolbarControl_NS;
+using ClickThroughFix;
 
 namespace AntennaHelper
 {
@@ -326,11 +327,11 @@ namespace AntennaHelper
 		public void OnGUI ()
 		{
 			if (mainWindowOn) {
-				rectMainWindow = GUI.Window (889204, rectMainWindow, MainWindow, Localizer.Format ("#autoLOC_AH_0001"));
+				rectMainWindow = ClickThruBlocker.GUIWindow (889204, rectMainWindow, MainWindow, Localizer.Format ("#autoLOC_AH_0001"));
 			}
 
 			if (editorShipWindowOn) {
-				rectEditorShipWindow = GUI.Window (524258, rectEditorShipWindow, EditorShipListWindow, Localizer.Format ("#autoLOC_AH_0044"));
+				rectEditorShipWindow = ClickThruBlocker.GUIWindow (524258, rectEditorShipWindow, EditorShipListWindow, Localizer.Format ("#autoLOC_AH_0044"));
 			}
 
 		}
