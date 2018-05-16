@@ -42,9 +42,6 @@ namespace AntennaHelper
 			}
 		}
 
-		[GameParameters.CustomParameterUI (/*"Use Blizzy's Toolbar"*/"#autoLOC_AH_0064")]
-		public bool useBlizzy = false;
-
 		[GameParameters.CustomParameterUI (/*"Enable in the Editor"*/"#autoLOC_AH_0065", toolTip = "#autoLOC_AH_0072")]
 		public bool enableInEditor = true;
 
@@ -68,12 +65,6 @@ namespace AntennaHelper
 
 		public override bool Enabled (MemberInfo member, GameParameters parameters)
 		{
-			if (member.Name == "useBlizzy") {
-				if (!ToolbarControl_NS.ToolbarManager.ToolbarAvailable) {
-					useBlizzy = false;
-					return false;
-				}
-			}
 			return true;
 		}
 

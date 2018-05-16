@@ -51,7 +51,7 @@ namespace AntennaHelper
 			inMapView = false;
 		}
 
-		private void AddToolbarButton ()
+        private void AddToolbarButton ()
 		{
 			KSP.UI.Screens.ApplicationLauncher.AppScenes scenes = 
 				KSP.UI.Screens.ApplicationLauncher.AppScenes.FLIGHT 
@@ -71,15 +71,13 @@ namespace AntennaHelper
 					ToolbarButtonOnTrue,
 					ToolbarButtonOnFalse,
 					scenes,
-					Localizer.Format ("#autoLOC_AH_0032"),
+                    AHEditor.MODID,
 					"368879",
 					"AntennaHelper/Textures/icon_sat_on",
 					"AntennaHelper/Textures/icon_off",
 					"AntennaHelper/Textures/icon_dish_on_small",
 					"AntennaHelper/Textures/icon_dish_off_small",
-					Localizer.Format ("#autoLOC_AH_0001"));
-
-				toolbarController.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().useBlizzy);
+					Localizer.Format (AHEditor.MODNAME));
 
 				toolbarButtonAdded = true;
 			}
@@ -149,9 +147,6 @@ namespace AntennaHelper
 
 		void OnGUI ()
 		{
-			if (toolbarController != null) {
-				toolbarController.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().useBlizzy);
-			}
 
 			if (!guiHasStarted) {
 				OnGUIStarter ();
