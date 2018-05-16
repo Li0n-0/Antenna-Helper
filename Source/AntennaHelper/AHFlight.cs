@@ -81,6 +81,14 @@ namespace AntennaHelper
 			}
 
 			vessel = FlightGlobals.ActiveVessel;
+
+			// possible fix for AH not always working, see forum around 16.05.2018
+			if (vessel == null)
+			{
+				Debug.Log ("[AH] active vessel is null, shouldn't happen...");
+				ReStartSecond ();
+			}
+
 			vesselPower = AHUtil.GetActualVesselPower (vessel);
 			vesselPowerRelay = AHUtil.GetActualVesselPower (vessel, true);
 			dsnRange = AHUtil.GetRange (vesselPower, dsnPower);
@@ -91,6 +99,13 @@ namespace AntennaHelper
 			yield return SetMarkerList ();
 			AddToolbarButton ();
 			StartCoroutine ("UpdateCommNet");
+		}
+
+		private void ReStartSecond ()
+		{
+			StopCoroutine ("StartSecond");
+			timeAtStart = Time.time;
+			StartCoroutine ("StartSecond");
 		}
 
 		private void SetActiveConnect ()

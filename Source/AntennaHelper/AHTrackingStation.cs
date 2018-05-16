@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using KSP.Localization;
 using ToolbarControl_NS;
+using ClickThroughFix;
 
 namespace AntennaHelper
 {
@@ -326,16 +327,13 @@ namespace AntennaHelper
 		public void OnGUI ()
 		{
 			if (mainWindowOn) {
-				rectMainWindow = GUI.Window (889204, rectMainWindow, MainWindow, Localizer.Format ("#autoLOC_AH_0001"));
+				rectMainWindow = ClickThruBlocker.GUIWindow (889204, rectMainWindow, MainWindow, Localizer.Format ("#autoLOC_AH_0001"));
 			}
 
 			if (editorShipWindowOn) {
-				rectEditorShipWindow = GUI.Window (524258, rectEditorShipWindow, EditorShipListWindow, Localizer.Format ("#autoLOC_AH_0044"));
+				rectEditorShipWindow = ClickThruBlocker.GUIWindow (524258, rectEditorShipWindow, EditorShipListWindow, Localizer.Format ("#autoLOC_AH_0044"));
 			}
 
-			if (toolbarControl != null) {
-				toolbarControl.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().useBlizzy);
-			}
 		}
 
 		private void MainWindow (int id)
@@ -482,7 +480,7 @@ namespace AntennaHelper
 			GUI.DragWindow ();
 		}
 
-		private void AddToolbarButton ()
+        private void AddToolbarButton ()
 		{
 			toolbarControl = gameObject.AddComponent<ToolbarControl> ();
 
@@ -490,15 +488,14 @@ namespace AntennaHelper
 				ToolbarButtonOnTrue,
 				ToolbarButtonOnFalse,
 				KSP.UI.Screens.ApplicationLauncher.AppScenes.TRACKSTATION,
-				Localizer.Format ("#autoLOC_AH_0032"),
+                AHEditor.MODID,
 				"421980",
 				"AntennaHelper/Textures/icon_dish_on",
 				"AntennaHelper/Textures/icon_off",
 				"AntennaHelper/Textures/icon_dish_on_small",
 				"AntennaHelper/Textures/icon_dish_off_small",
-				Localizer.Format ("#autoLOC_AH_0001"));
-
-			toolbarControl.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().useBlizzy);
+				Localizer.Format (AHEditor.MODNAME));
+            
 		}
 
 		private void RemoveToolbarButton ()

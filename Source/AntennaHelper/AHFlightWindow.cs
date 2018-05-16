@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using KSP.Localization;
 using ToolbarControl_NS;
+using ClickThroughFix;
 
 namespace AntennaHelper
 {
@@ -51,7 +52,7 @@ namespace AntennaHelper
 			inMapView = false;
 		}
 
-		private void AddToolbarButton ()
+        private void AddToolbarButton ()
 		{
 			KSP.UI.Screens.ApplicationLauncher.AppScenes scenes = 
 				KSP.UI.Screens.ApplicationLauncher.AppScenes.FLIGHT 
@@ -71,15 +72,13 @@ namespace AntennaHelper
 					ToolbarButtonOnTrue,
 					ToolbarButtonOnFalse,
 					scenes,
-					Localizer.Format ("#autoLOC_AH_0032"),
+                    AHEditor.MODID,
 					"368879",
 					"AntennaHelper/Textures/icon_sat_on",
 					"AntennaHelper/Textures/icon_off",
 					"AntennaHelper/Textures/icon_dish_on_small",
 					"AntennaHelper/Textures/icon_dish_off_small",
-					Localizer.Format ("#autoLOC_AH_0001"));
-
-				toolbarController.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().useBlizzy);
+					Localizer.Format (AHEditor.MODNAME));
 
 				toolbarButtonAdded = true;
 			}
@@ -149,33 +148,30 @@ namespace AntennaHelper
 
 		void OnGUI ()
 		{
-			if (toolbarController != null) {
-				toolbarController.UseBlizzy (HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().useBlizzy);
-			}
 
 			if (!guiHasStarted) {
 				OnGUIStarter ();
 			}
 			if (!hasStarted && (showActiveConnectWindow || showSelectCircleTypeWindow)) {
-				rectNotStartedWindow = GUILayout.Window (485768, rectNotStartedWindow, NotStartedWindow, Localizer.Format ("#autoLOC_AH_0001"));
+				rectNotStartedWindow = ClickThruBlocker.GUILayoutWindow (485768, rectNotStartedWindow, NotStartedWindow, Localizer.Format ("#autoLOC_AH_0001"));
 				return;
 			}
 			if (showActiveConnectWindow) {
-				rectActiveConnectWindow = GUILayout.Window (434324, rectActiveConnectWindow, ActiveConnectWindow, Localizer.Format ("#autoLOC_AH_0001"));
+				rectActiveConnectWindow = ClickThruBlocker.GUILayoutWindow (434324, rectActiveConnectWindow, ActiveConnectWindow, Localizer.Format ("#autoLOC_AH_0001"));
 			}
 			if (showSelectCircleTypeWindow) {
-				rectSelectCircleTypeWindow = GUILayout.Window (647886, rectSelectCircleTypeWindow, SelectCircleTypeWindow, Localizer.Format ("#autoLOC_AH_0052"));
+				rectSelectCircleTypeWindow = ClickThruBlocker.GUILayoutWindow (647886, rectSelectCircleTypeWindow, SelectCircleTypeWindow, Localizer.Format ("#autoLOC_AH_0052"));
 			}
 			if (showPotentialRelaysWindow) {
 				rectPotentialRelaysWindow.position = new Vector2 (
 					rectActiveConnectWindow.position.x, 
 					rectActiveConnectWindow.position.y + rectActiveConnectWindow.size.y);
 				
-				rectPotentialRelaysWindow = GUILayout.Window (307428, rectPotentialRelaysWindow, PotentialRelaysWindow, Localizer.Format ("#autoLOC_AH_0053"));
+				rectPotentialRelaysWindow = ClickThruBlocker.GUILayoutWindow (307428, rectPotentialRelaysWindow, PotentialRelaysWindow, Localizer.Format ("#autoLOC_AH_0053"));
 			}
 			if (showLinkDetailWindow) {
 				rectLinkDetailWindow.position = rectActiveConnectWindow.position - linkDetailPosOffset;
-				rectLinkDetailWindow = GUILayout.Window (675752, rectLinkDetailWindow, LinkDetailWindow, Localizer.Format ("#autoLOC_AH_0054", new string[] { selectedLink ["aName"], selectedLink ["bName"] } ));
+				rectLinkDetailWindow = ClickThruBlocker.GUILayoutWindow (675752, rectLinkDetailWindow, LinkDetailWindow, Localizer.Format ("#autoLOC_AH_0054", new string[] { selectedLink ["aName"], selectedLink ["bName"] } ));
 			}
 		}
 

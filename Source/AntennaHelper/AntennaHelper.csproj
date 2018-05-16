@@ -41,6 +41,7 @@
     <Compile Include="AntennaHelperSettings.cs" />
     <Compile Include="AHLinkUtil.cs" />
     <Compile Include="AHTrackingStation.cs" />
+    <Compile Include="AHToolbarRegistration.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -66,6 +67,10 @@
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>..\..\KSPandMH\KSP_x64_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ClickThroughBlocker">
+      <HintPath>..\..\KSPandMH\GameData\ClickThroughBlocker\Plugins\ClickThroughBlocker.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
