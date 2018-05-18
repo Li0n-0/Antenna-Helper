@@ -250,6 +250,10 @@ namespace AntennaHelper
 
 		private void VesselDestroy (Vessel v)
 		{
+			if (v == null) {
+				return;
+			}
+
 			if (v == vessel) {
 				StopAllCoroutines ();
 				Destroy (this);
