@@ -251,18 +251,22 @@ namespace AntennaHelper
 		private void VesselDestroy (Vessel v)
 		{
 			if (v == null) {
+				Debug.Log ("[AH] a null vessel is destroyed");
 				return;
 			}
 
 			if (v == vessel) {
+				Debug.Log ("[AH] the active vessel is destroyed");
 				StopAllCoroutines ();
 				Destroy (this);
 				return;
 			}
 			if (relays.ContainsKey (v)) {
+				Debug.Log ("[AH] a relay vessel is destroyed, named : " + v.GetName ());
 				relays.Remove (v);
 			}
 			if (markersRelay.ContainsKey (v)) {
+				Debug.Log ("[AH] a vessel with its AH map marker is destroyed, named : " + v.GetName ());
 				Destroy (markersRelay[v].gameObject);
 				markersRelay.Remove (v);
 			}
