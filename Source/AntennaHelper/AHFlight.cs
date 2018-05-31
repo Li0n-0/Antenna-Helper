@@ -263,12 +263,18 @@ namespace AntennaHelper
 				relays.Remove (v);
 			}
 			if (markersRelay.ContainsKey (v)) {
+				Destroy (markersRelay[v].gameObject);
 				markersRelay.Remove (v);
 			}
 		}
 
 		private void VesselModified (Vessel v = null)
 		{
+			if (v != vessel)
+			{
+				return;
+			}
+
 			double actualPower = AHUtil.GetActualVesselPower (FlightGlobals.ActiveVessel);
 
 			if (actualPower != vesselPower) {
