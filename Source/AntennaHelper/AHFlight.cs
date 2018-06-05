@@ -76,7 +76,7 @@ namespace AntennaHelper
 
 		private IEnumerator StartSecond ()
 		{
-			while (Time.time < timeAtStart + 1f) {
+			while (Time.time < timeAtStart + HighLogic.CurrentGame.Parameters.CustomParams<AntennaHelperSettings> ().startDelay/*1f*/) {
 				yield return timers [0];
 			}
 
@@ -255,20 +255,27 @@ namespace AntennaHelper
 				return;
 			}
 
+			if ((relays != null) && (relays.ContainsKey (v))) {
+				Debug.Log ("[AH] a relay vessel is destroyed, named : " + v.GetName ());
+				relays.Remove (v);
+			}
+			if ((markersRelay != null) && (markersRelay.ContainsKey (v))) {
+				Debug.Log ("[AH] a vessel with its AH map marker is destroyed, named : " + v.GetName ());
+				Destroy (markersRelay[v].gameObject);
+				markersRelay.Remove (v);
+			}
+
+			if (vessel == null)
+			{
+				Debug.Log ("[AH] active vessel not set, vessel destroyed : " + v.GetName ());
+				return;
+			}
+
 			if (v == vessel) {
 				Debug.Log ("[AH] the active vessel is destroyed");
 				StopAllCoroutines ();
 				Destroy (this);
 				return;
-			}
-			if (relays.ContainsKey (v)) {
-				Debug.Log ("[AH] a relay vessel is destroyed, named : " + v.GetName ());
-				relays.Remove (v);
-			}
-			if (markersRelay.ContainsKey (v)) {
-				Debug.Log ("[AH] a vessel with its AH map marker is destroyed, named : " + v.GetName ());
-				Destroy (markersRelay[v].gameObject);
-				markersRelay.Remove (v);
 			}
 		}
 

@@ -63,6 +63,9 @@ namespace AntennaHelper
 		[GameParameters.CustomStringParameterUI (/*If set to 0, GUI is updated only when opening the window*/"#autoLOC_AH_0071", autoPersistance = false)]
 		public string paramDummy = "";
 
+		[GameParameters.CustomFloatParameterUI (/*debug*/"Start Delay", displayFormat = "0.0", maxValue = 10f, minValue = .1f)]
+		public float startDelay = 1f;
+
 		public override bool Enabled (MemberInfo member, GameParameters parameters)
 		{
 			return true;
