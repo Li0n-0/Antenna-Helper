@@ -143,6 +143,8 @@ namespace AntennaHelper
 
 		private void SetRelayList ()
 		{
+			Relay.UpdateRelayVessels ();
+
 			relays = new Dictionary<Vessel, LinkPath> ();
 
 			foreach (Vessel relay in FlightGlobals.Vessels.FindAll 

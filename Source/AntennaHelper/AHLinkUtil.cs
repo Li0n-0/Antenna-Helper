@@ -102,6 +102,14 @@ namespace AntennaHelper
 			_dsn.distanceOffset = home.Radius;
 			_dsn.name = /*"DSN"*/Localizer.Format ("#autoLOC_AH_0014");
 
+			//				Debug.Log ("[AH] dsn distance offset : " + _dsn.distanceOffset);
+			//				Debug.Log ("[AH] static dsn relay constructed");
+
+			UpdateRelayVessels ();
+		}
+
+		public static void UpdateRelayVessels ()
+		{
 			potentialRelays = new List<RelayVessel> ();
 			foreach (Vessel v in FlightGlobals.Vessels.FindAll (v => (v.Connection != null) && (v != FlightGlobals.ActiveVessel))) {
 				double relayPower = AHUtil.GetActualVesselPower (v, true);
@@ -109,8 +117,6 @@ namespace AntennaHelper
 					potentialRelays.Add (new RelayVessel (v));
 				}
 			}
-			//				Debug.Log ("[AH] dsn distance offset : " + _dsn.distanceOffset);
-			//				Debug.Log ("[AH] static dsn relay constructed");
 		}
 
 		public static RelayVessel GetRelayVessel (Vessel v)
