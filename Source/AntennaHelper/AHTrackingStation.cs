@@ -144,6 +144,7 @@ namespace AntennaHelper
 				DestroyMarkers ();
 			}
 
+			AHShipList.ParseFlyingVessel (true);
 			GetListsShip ();
 			CreateMarkers ();
 
