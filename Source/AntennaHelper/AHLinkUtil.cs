@@ -111,7 +111,7 @@ namespace AntennaHelper
 		public static void UpdateRelayVessels ()
 		{
 			potentialRelays = new List<RelayVessel> ();
-			foreach (Vessel v in FlightGlobals.Vessels.FindAll (v => (v.Connection != null) && (v != FlightGlobals.ActiveVessel))) {
+			foreach (Vessel v in FlightGlobals.Vessels.FindAll (v => (v.Connection != null))) {
 				double relayPower = AHUtil.GetActualVesselPower (v, true);
 				if (relayPower > 0) {
 					potentialRelays.Add (new RelayVessel (v));
