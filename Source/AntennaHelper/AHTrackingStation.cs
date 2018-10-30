@@ -144,6 +144,7 @@ namespace AntennaHelper
 				DestroyMarkers ();
 			}
 
+			AHShipList.ParseFlyingVessel (true);
 			GetListsShip ();
 			CreateMarkers ();
 
@@ -286,7 +287,7 @@ namespace AntennaHelper
 		{
 			HideCircles ();
 
-			if (targetPid == "") {
+			if (targetPid == "" || !listMarkers.ContainsKey (targetPid)) {
 				return;
 			}
 
@@ -341,7 +342,7 @@ namespace AntennaHelper
 			GUILayout.BeginVertical ();
 
 			string transmitterName = "";
-			if (targetPid != "") {
+			if (targetPid != "" && listShipTransmitter.ContainsKey (targetPid)) {
 				transmitterName = listShipTransmitter [targetPid] ["name"];
 			}
 

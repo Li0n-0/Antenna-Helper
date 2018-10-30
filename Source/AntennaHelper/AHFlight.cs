@@ -28,8 +28,8 @@ namespace AntennaHelper
 
 		Dictionary<Vessel, LinkPath> relays;
 
-		Dictionary<Vessel, AHMapMarker> markersRelay;
-		AHMapMarker markerDSN;
+		Dictionary<Vessel, GameObject> markerObjectsRelay;
+		GameObject markerObjectDSN;
 
 		private float timeAtStart;
 		private bool hasStarted = false;
@@ -143,6 +143,8 @@ namespace AntennaHelper
 
 		private void SetRelayList ()
 		{
+			Relay.UpdateRelayVessels ();
+
 			relays = new Dictionary<Vessel, LinkPath> ();
 
 			foreach (Vessel relay in FlightGlobals.Vessels.FindAll 
@@ -171,34 +173,36 @@ namespace AntennaHelper
 
 		private IEnumerator SetMarkerList ()
 		{
-			markerDSN = CreateMapMarkerDSN ();
+			markerObjectDSN = CreateMapMarkerDSN ();
 
-			markersRelay = new Dictionary<Vessel, AHMapMarker> ();
+			markerObjectsRelay = new Dictionary<Vessel, GameObject> ();
 
 			foreach (KeyValuePair<Vessel, LinkPath> relay in relays) {
 				yield return timers [0];
-				markersRelay.Add (relay.Key, CreateMapMarkerRelay (relay.Key));
+				markerObjectsRelay.Add (relay.Key, CreateMapMarkerRelay (relay.Key));
 			}
 
 		}
 
-		private AHMapMarker CreateMapMarkerRelay (Vessel relay)
+		private GameObject CreateMapMarkerRelay (Vessel relay)
 		{
 			double realSignal = relays [relay].endRelaySignalStrength;//AHUtil.GetREALSignal (relay.Connection.ControlPath);
 			double range = AHUtil.GetDistanceAt0 
 							(AHUtil.GetRange (vesselPower, relays [relay].endRelayPower));
-			AHMapMarker marker = new GameObject ().AddComponent<AHMapMarker> ();
+			GameObject markerObject = new GameObject ();
+			AHMapMarker marker = markerObject.AddComponent<AHMapMarker> ();
 			marker.SetUp (range, vessel, relay.mapObject.trf, false, realSignal);
 
 
-			return marker;
+			return markerObject;
 		}
 
-		private AHMapMarker CreateMapMarkerDSN ()
+		private GameObject CreateMapMarkerDSN ()
 		{
-			AHMapMarker marker = new GameObject ().AddComponent<AHMapMarker> ();
+			GameObject markerObject = new GameObject ();
+			AHMapMarker marker = markerObject.AddComponent<AHMapMarker> ();
 			marker.SetUp (dsnRange, vessel, dsnBody.MapObject.trf, true, 1d);
-			return marker;
+			return markerObject;
 		}
 		#endregion
 
@@ -225,14 +229,14 @@ namespace AntennaHelper
 
 		private void DestroyMarkers ()
 		{
-			if (markerDSN != null) {
-				Destroy (markerDSN.gameObject);
+			if (markerObjectDSN != null) {
+				Destroy (markerObjectDSN);
 			}
 
-			if (markersRelay != null) {
-				foreach (KeyValuePair<Vessel, AHMapMarker> marker in markersRelay) {
-					if (marker.Value != null) {
-						Destroy (marker.Value.gameObject);
+			if (markerObjectsRelay != null) {
+				foreach (KeyValuePair<Vessel, GameObject> markerObject in markerObjectsRelay) {
+					if (markerObject.Value != null) {
+						Destroy (markerObject.Value);
 					}
 
 				}
@@ -259,10 +263,10 @@ namespace AntennaHelper
 				Debug.Log ("[AH] a relay vessel is destroyed, named : " + v.GetName ());
 				relays.Remove (v);
 			}
-			if ((markersRelay != null) && (markersRelay.ContainsKey (v))) {
+			if ((markerObjectsRelay != null) && (markerObjectsRelay.ContainsKey (v))) {
 				Debug.Log ("[AH] a vessel with its AH map marker is destroyed, named : " + v.GetName ());
-				Destroy (markersRelay[v].gameObject);
-				markersRelay.Remove (v);
+				Destroy (markerObjectsRelay [v]);
+				markerObjectsRelay.Remove (v);
 			}
 
 			if (vessel == null)
@@ -310,10 +314,11 @@ namespace AntennaHelper
 				{
 //					relaySS = AHUtil.GetREALSignal (relay.Connection.ControlPath);
 
-					if ((relays [relay].endRelaySignalStrength > markersRelay [relay].scale + .01d) 
-						|| (relays [relay].endRelaySignalStrength < markersRelay [relay].scale - .01d))
+					AHMapMarker marker = markerObjectsRelay [relay].GetComponent<AHMapMarker> ();
+					if ((relays [relay].endRelaySignalStrength > marker.scale + .01d) 
+						|| (relays [relay].endRelaySignalStrength < marker.scale - .01d))
 					{
-						markersRelay [relay].SetScale (relays [relay].endRelaySignalStrength);
+						marker.SetScale (relays [relay].endRelaySignalStrength);
 					}
 					yield return timers [0];
 				}
