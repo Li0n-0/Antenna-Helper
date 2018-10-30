@@ -177,6 +177,8 @@ Thanks to [Skalou](https://forum.kerbalspaceprogram.com/index.php?/profile/13349
 
 Thanks to [wile1411](https://forum.kerbalspaceprogram.com/index.php?/profile/28891-wile1411/) for his bug report and suggestions.
 
+Thanks to [Wyzard](https://forum.kerbalspaceprogram.com/index.php?/profile/162363-wyzard/) for his several bug fix.
+
 Thanks to the translators : 
 * Japanese version : [EBOSHI](https://forum.kerbalspaceprogram.com/index.php?/profile/165938-eboshi/), [COLOT](https://forum.kerbalspaceprogram.com/index.php?/profile/185886-colot/) and [anarog_1](https://forum.kerbalspaceprogram.com/index.php?/profile/172934-anarog_1/)
 * Simplified Chinese : [CN_Warren](https://forum.kerbalspaceprogram.com/index.php?/profile/183380-cn_warren/)

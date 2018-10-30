@@ -412,7 +412,7 @@ namespace AntennaHelper
 				} else if (connectedTo != null) {
 					ShowDSNCircles (false);
 					ShowRelaysCircles (false);
-					markersRelay [connectedTo].Show ();
+					markerObjectsRelay [connectedTo].GetComponent<AHMapMarker> ().Show ();
 				}
 				guiStyleSelectDSN = guiStyleButtonNorm;
 				guiStyleSelectRelay = guiStyleButtonNorm;
@@ -436,21 +436,21 @@ namespace AntennaHelper
 		private void ShowDSNCircles (bool show = true)
 		{
 			if (show) {
-				markerDSN.Show ();
+				markerObjectDSN.GetComponent<AHMapMarker> ().Show ();
 			} else {
-				markerDSN.Hide ();
+				markerObjectDSN.GetComponent<AHMapMarker> ().Hide ();
 			}
 		}
 
 		private void ShowRelaysCircles (bool show = true)
 		{
 			if (show) {
-				foreach (KeyValuePair<Vessel, AHMapMarker> relayMarkers in markersRelay) {
-					relayMarkers.Value.Show ();
+				foreach (KeyValuePair<Vessel, GameObject> relayMarkerObjects in markerObjectsRelay) {
+					relayMarkerObjects.Value.GetComponent<AHMapMarker> ().Show ();
 				}
 			} else {
-				foreach (KeyValuePair<Vessel, AHMapMarker> relayMarkers in markersRelay) {
-					relayMarkers.Value.Hide ();
+				foreach (KeyValuePair<Vessel, GameObject> relayMarkerObjects in markerObjectsRelay) {
+					relayMarkerObjects.Value.GetComponent<AHMapMarker> ().Hide ();
 				}
 			}
 		}
